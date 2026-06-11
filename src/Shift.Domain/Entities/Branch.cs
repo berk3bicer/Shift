@@ -18,4 +18,5 @@ public class Branch : BaseEntity, ITenantEntity
 
     // Şube aktif mi? (kapatılan şube silinmez, pasifleştirilir)
     public bool IsActive { get; set; } = true;
+    public ICollection<UserBranch> UserBranches { get; set; } = new List<UserBranch>();
 }

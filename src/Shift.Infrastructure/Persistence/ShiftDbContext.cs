@@ -18,9 +18,12 @@ public class ShiftDbContext : DbContext, IShiftDbContext
 
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<Branch> Branches => Set<Branch>();
+    public DbSet<Position> Positions => Set<Position>();
+    public DbSet<Shift.Domain.Entities.Shift> Shifts => Set<Shift.Domain.Entities.Shift>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
+    public DbSet<UserBranch> UserBranches => Set<UserBranch>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -43,6 +46,53 @@ public class ShiftDbContext : DbContext, IShiftDbContext
         // Branch tenant'a ait -> global tenant filtresi (izolasyon)
         modelBuilder.Entity<Branch>().HasQueryFilter(
             b => b.TenantId == _tenantProvider.GetTenantId());
+
+        // ── Position (Pozisyon) ──
+        // Aynı işletmede iki pozisyon aynı ada sahip olamaz
+        modelBuilder.Entity<Position>()
+            .HasIndex(p => new { p.TenantId, p.Name })
+            .IsUnique();
+
+        // Para alanı: decimal precision/scale belirt (numeric(10,2))
+        // 10 basamak toplam, 2'si ondalık → 99.999.999,99'a kadar saat ücreti
+        modelBuilder.Entity<Position>()
+            .Property(p => p.HourlyRate)
+            .HasPrecision(10, 2);
+
+        // Position tenant'a ait -> global filtre
+        modelBuilder.Entity<Position>().HasQueryFilter(
+            p => p.TenantId == _tenantProvider.GetTenantId());
+
+        // ── Shift (Vardiya) ──
+        // Branch -> Shifts: vardiya bir şubeye ait. Şube silinmesi vardiyayı silmesin.
+        modelBuilder.Entity<Shift.Domain.Entities.Shift>()
+            .HasOne(s => s.Branch)
+            .WithMany()
+            .HasForeignKey(s => s.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // User -> Shifts: atanan personel. Personel silinirse vardiya
+        // "açık vardiya"ya döner (UserId null olur), kayıt korunur.
+        modelBuilder.Entity<Shift.Domain.Entities.Shift>()
+            .HasOne(s => s.User)
+            .WithMany()
+            .HasForeignKey(s => s.UserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Position -> Shifts: pozisyon silinmesi vardiyayı silmesin.
+        modelBuilder.Entity<Shift.Domain.Entities.Shift>()
+            .HasOne(s => s.Position)
+            .WithMany()
+            .HasForeignKey(s => s.PositionId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Takvim sorgularını hızlandır: şube + zaman aralığı sık sorgulanacak
+        modelBuilder.Entity<Shift.Domain.Entities.Shift>()
+            .HasIndex(s => new { s.BranchId, s.StartTime });
+
+        // Shift tenant'a ait -> global filtre
+        modelBuilder.Entity<Shift.Domain.Entities.Shift>().HasQueryFilter(
+            s => s.TenantId == _tenantProvider.GetTenantId());
 
         // User: TenantId üzerinden global filtre.
         // Her User sorgusuna otomatik "WHERE TenantId = currentTenant" eklenir.
@@ -81,6 +131,27 @@ public class ShiftDbContext : DbContext, IShiftDbContext
         // UserRole tenant'a ait -> global filtre
         modelBuilder.Entity<UserRole>().HasQueryFilter(
             ur => ur.TenantId == _tenantProvider.GetTenantId());
+        // ── UserBranch (Kullanıcı-Şube köprüsü) ──
+        modelBuilder.Entity<UserBranch>()
+            .HasOne(ub => ub.User)
+            .WithMany(u => u.UserBranches)
+            .HasForeignKey(ub => ub.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UserBranch>()
+            .HasOne(ub => ub.Branch)
+            .WithMany(b => b.UserBranches)
+            .HasForeignKey(ub => ub.BranchId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Aynı kullanıcı aynı şubeye iki kez atanmasın
+        modelBuilder.Entity<UserBranch>()
+            .HasIndex(ub => new { ub.UserId, ub.BranchId })
+            .IsUnique();
+
+        // UserBranch tenant'a ait -> global filtre
+        modelBuilder.Entity<UserBranch>().HasQueryFilter(
+            ub => ub.TenantId == _tenantProvider.GetTenantId());
 
         // Roller her tenant için ortak referans verisi (seed)
         var seedDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);

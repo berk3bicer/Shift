@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Shift.API/Shift.API.csproj" />
+    <Project Path="src/Shift.Application/Shift.Application.csproj" />
+    <Project Path="src/Shift.Domain/Shift.Domain.csproj" />
+    <Project Path="src/Shift.Infrastructure/Shift.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Shift.Tests/Shift.Tests.csproj" />
+  </Folder>
+</Solution>

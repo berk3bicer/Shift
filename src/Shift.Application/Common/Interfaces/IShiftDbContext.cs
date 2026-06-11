@@ -6,6 +6,7 @@ namespace Shift.Application.Common.Interfaces;
 public interface IShiftDbContext
 {
     DbSet<Tenant> Tenants { get; }
+    DbSet<Branch> Branches { get; }
     DbSet<User> Users { get; }
     DbSet<Role> Roles { get; }
     DbSet<UserRole> UserRoles { get; }

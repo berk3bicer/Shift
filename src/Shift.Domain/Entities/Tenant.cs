@@ -10,6 +10,9 @@ public class Tenant : BaseEntity
 
     // Bir Tenant'ın birden çok kullanıcısı olur
     public ICollection<User> Users { get; set; } = new List<User>();
+
+    // Bir Tenant'ın birden çok şubesi olur
+    public ICollection<Branch> Branches { get; set; } = new List<Branch>();
 }
 
 public enum BusinessType

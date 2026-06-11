@@ -17,6 +17,7 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     }
 
     public DbSet<Tenant> Tenants => Set<Tenant>();
+    public DbSet<Branch> Branches => Set<Branch>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
@@ -25,6 +26,23 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // ── Branch (Şube) ──
+        // Tenant -> Branches ilişkisi: bir şube bir işletmeye aittir
+        modelBuilder.Entity<Branch>()
+            .HasOne(b => b.Tenant)
+            .WithMany(t => t.Branches)
+            .HasForeignKey(b => b.TenantId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Aynı işletmede iki şube aynı ada sahip olamaz
+        modelBuilder.Entity<Branch>()
+            .HasIndex(b => new { b.TenantId, b.Name })
+            .IsUnique();
+
+        // Branch tenant'a ait -> global tenant filtresi (izolasyon)
+        modelBuilder.Entity<Branch>().HasQueryFilter(
+            b => b.TenantId == _tenantProvider.GetTenantId());
 
         // User: TenantId üzerinden global filtre.
         // Her User sorgusuna otomatik "WHERE TenantId = currentTenant" eklenir.

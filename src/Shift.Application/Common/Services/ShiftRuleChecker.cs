@@ -135,6 +135,30 @@ public class ShiftRuleChecker : IShiftRuleChecker
                 warnings.Add($"Yetersiz dinlenme: sonraki vardiya ile arada yalnızca {restAfter:0.#} saat var (en az {MinRestHours:0.#} saat önerilir).");
         }
 
+        // ── Müsaitlik kontrolü (UYARI) ──
+        // Personelin, vardiyanın düştüğü GÜNE ait "müsait değil" kayıtları var mı?
+        // Vardiyanın saat aralığı, müsaitsizlik aralığıyla çakışıyorsa uyar.
+        // Engellemiyoruz: yönetici acil durumda yine de atayabilmeli (7shifts modeli).
+        var shiftDay = startTime.DayOfWeek;                    // vardiyanın haftalık günü
+        var shiftStartTod = TimeOnly.FromDateTime(startTime);  // sadece saat kısmı
+        var shiftEndTod = TimeOnly.FromDateTime(endTime);
+
+        var dayUnavailabilities = await _db.Availabilities
+            .Where(a => a.UserId == uid && a.DayOfWeek == shiftDay)
+            .Select(a => new { a.StartTime, a.EndTime, a.Reason })
+            .ToListAsync(ct);
+
+        foreach (var ua in dayUnavailabilities)
+        {
+            // Saat aralığı kesişimi: ua.Start < shiftEnd && ua.End > shiftStart.
+            if (ua.StartTime < shiftEndTod && ua.EndTime > shiftStartTod)
+            {
+                var reasonText = string.IsNullOrWhiteSpace(ua.Reason) ? "" : $" (sebep: {ua.Reason})";
+                warnings.Add(
+                    $"Personel bu saatte müsait değil: {ua.StartTime:HH\\:mm}–{ua.EndTime:HH\\:mm}{reasonText}.");
+            }
+        }
+
         return warnings;
     }
 }

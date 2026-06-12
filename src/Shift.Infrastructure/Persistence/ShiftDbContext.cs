@@ -20,6 +20,7 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     public DbSet<Branch> Branches => Set<Branch>();
     public DbSet<Position> Positions => Set<Position>();
     public DbSet<Shift.Domain.Entities.Shift> Shifts => Set<Shift.Domain.Entities.Shift>();
+    public DbSet<Availability> Availabilities => Set<Availability>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
@@ -93,6 +94,23 @@ public class ShiftDbContext : DbContext, IShiftDbContext
         // Shift tenant'a ait -> global filtre
         modelBuilder.Entity<Shift.Domain.Entities.Shift>().HasQueryFilter(
             s => s.TenantId == _tenantProvider.GetTenantId());
+
+        // ── Availability (Müsaitlik) ──
+        // User -> Availabilities: bir personelin birden çok müsaitlik kaydı olabilir.
+        // Personel silinirse müsaitlik kayıtları da gitsin (Cascade).
+        modelBuilder.Entity<Availability>()
+            .HasOne(a => a.User)
+            .WithMany()
+            .HasForeignKey(a => a.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Sorgu hızı: bir personelin belirli gündeki müsaitliğini ararken kullanılır.
+        modelBuilder.Entity<Availability>()
+            .HasIndex(a => new { a.UserId, a.DayOfWeek });
+
+        // Availability tenant'a ait -> global filtre (tenant izolasyonu)
+        modelBuilder.Entity<Availability>().HasQueryFilter(
+            a => a.TenantId == _tenantProvider.GetTenantId());
 
         // User: TenantId üzerinden global filtre.
         // Her User sorgusuna otomatik "WHERE TenantId = currentTenant" eklenir.

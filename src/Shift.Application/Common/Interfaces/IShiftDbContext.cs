@@ -9,6 +9,7 @@ public interface IShiftDbContext
     DbSet<Branch> Branches { get; }
     DbSet<Position> Positions { get; }
     DbSet<Shift.Domain.Entities.Shift> Shifts { get; }
+    DbSet<Availability> Availabilities { get; }
     DbSet<User> Users { get; }
     DbSet<Role> Roles { get; }
     DbSet<UserRole> UserRoles { get; }

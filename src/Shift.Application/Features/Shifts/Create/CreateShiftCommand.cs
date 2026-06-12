@@ -12,4 +12,6 @@ public record CreateShiftCommand(
     string? Notes
 ) : IRequest<CreateShiftResult>;
 
-public record CreateShiftResult(Guid ShiftId);
+// Warnings: İş Kanunu limit ihlalleri gibi "engellemeyen ama haberdar eden"
+// durumlar burada döner. Boş liste = hiçbir uyarı yok, her şey temiz.
+public record CreateShiftResult(Guid ShiftId, IReadOnlyList<string> Warnings);

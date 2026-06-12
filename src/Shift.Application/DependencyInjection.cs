@@ -20,6 +20,10 @@ public static class DependencyInjection
         // FluentValidation: bu assembly'deki tüm validator'ları otomatik bulup kaydeder
         services.AddValidatorsFromAssembly(assembly);
 
+        // Vardiya iş kuralları servisi — Create ve Update handler'ları kullanır.
+        // Scoped: DbContext ile aynı yaşam döngüsü (her HTTP isteğinde bir örnek).
+        services.AddScoped<Common.Interfaces.IShiftRuleChecker, Common.Services.ShiftRuleChecker>();
+
         return services;
     }
 }

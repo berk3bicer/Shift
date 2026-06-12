@@ -2,6 +2,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shift.Application.Features.Shifts.Create;
+using Shift.Application.Features.Shifts.Update;
+using Shift.Application.Features.Shifts.Delete;
 using Shift.Application.Features.Shifts.List;
 
 namespace Shift.API.Controllers;
@@ -38,5 +40,24 @@ public class ShiftsController : ControllerBase
     {
         var result = await _mediator.Send(new ListShiftsQuery(branchId, rangeStart, rangeEnd));
         return Ok(result);
+    }
+
+    // Vardiya güncelleme: yalnızca sahip veya yönetici
+    [Authorize(Roles = "Owner,Manager")]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateShiftCommand command)
+    {
+        // URL'deki id otorite — body'deki Id ile değiştirilemez (güvenlik).
+        var result = await _mediator.Send(command with { Id = id });
+        return Ok(result);
+    }
+
+    // Vardiya silme: yalnızca sahip veya yönetici
+    [Authorize(Roles = "Owner,Manager")]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _mediator.Send(new DeleteShiftCommand(id));
+        return NoContent();
     }
 }

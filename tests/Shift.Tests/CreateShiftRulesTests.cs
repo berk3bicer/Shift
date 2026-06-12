@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Shift.Application.Features.Shifts.Create;
 using Shift.Domain.Entities;
+using Shift.Application.Common.Services;
 using Shift.Infrastructure.Persistence;
 using ShiftEntity = Shift.Domain.Entities.Shift;
 
@@ -65,7 +66,7 @@ public class CreateShiftRulesTests
         // Mevcut: 15 Haz 09:00–13:00
         await SeedShiftAsync(db, branchId, positionId, userId, D(15, 9), D(15, 13));
 
-        var handler = new CreateShiftHandler(db);
+        var handler = new CreateShiftHandler(db, new ShiftRuleChecker(db));
         // Yeni: 15 Haz 11:00–15:00 → ortaya biniyor → çakışma
         var cmd = new CreateShiftCommand(branchId, positionId, userId, D(15, 11), D(15, 15), null);
 
@@ -80,7 +81,7 @@ public class CreateShiftRulesTests
         var (db, branchId, positionId, userId) = await SetupAsync();
         await SeedShiftAsync(db, branchId, positionId, userId, D(15, 9), D(15, 13));
 
-        var handler = new CreateShiftHandler(db);
+        var handler = new CreateShiftHandler(db, new ShiftRuleChecker(db));
         // 13:00–17:00 → ilkinin tam bittiği anda başlıyor → meşru
         var cmd = new CreateShiftCommand(branchId, positionId, userId, D(15, 13), D(15, 17), null);
 
@@ -99,7 +100,7 @@ public class CreateShiftRulesTests
         await SeedShiftAsync(db, branchId, positionId, userId, D(15, 9), D(15, 13));
         await SeedShiftAsync(db, branchId, positionId, userId, D(15, 13), D(15, 17));
 
-        var handler = new CreateShiftHandler(db);
+        var handler = new CreateShiftHandler(db, new ShiftRuleChecker(db));
         // +4 saat: 17–21 → toplam 12 saat (>11)
         var cmd = new CreateShiftCommand(branchId, positionId, userId, D(15, 17), D(15, 21), null);
 
@@ -115,7 +116,7 @@ public class CreateShiftRulesTests
     {
         var (db, branchId, positionId, userId) = await SetupAsync();
 
-        var handler = new CreateShiftHandler(db);
+        var handler = new CreateShiftHandler(db, new ShiftRuleChecker(db));
         // Tek vardiya 4 saat → hiçbir limit aşılmaz
         var cmd = new CreateShiftCommand(branchId, positionId, userId, D(16, 9), D(16, 13), null);
 
@@ -135,7 +136,7 @@ public class CreateShiftRulesTests
         await SeedShiftAsync(db, branchId, positionId, userId, D(17, 9), D(17, 20));
         await SeedShiftAsync(db, branchId, positionId, userId, D(18, 9), D(18, 20));
 
-        var handler = new CreateShiftHandler(db);
+        var handler = new CreateShiftHandler(db, new ShiftRuleChecker(db));
         // +2 saat (19 Haz 09–11) → toplam 46 saat (>45)
         var cmd = new CreateShiftCommand(branchId, positionId, userId, D(19, 9), D(19, 11), null);
 
@@ -153,7 +154,7 @@ public class CreateShiftRulesTests
         // Önceki: 15 Haz 18:00–23:00
         await SeedShiftAsync(db, branchId, positionId, userId, D(15, 18), D(15, 23));
 
-        var handler = new CreateShiftHandler(db);
+        var handler = new CreateShiftHandler(db, new ShiftRuleChecker(db));
         // Yeni: 16 Haz 09:00 → 23:00'ten 09:00'a 10 saat ara (<11)
         var cmd = new CreateShiftCommand(branchId, positionId, userId, D(16, 9), D(16, 13), null);
 
@@ -170,7 +171,7 @@ public class CreateShiftRulesTests
         // Atanmış 12 saatlik vardiya var ama yeni vardiya AÇIK (UserId=null)
         await SeedShiftAsync(db, branchId, positionId, userId, D(15, 9), D(15, 21));
 
-        var handler = new CreateShiftHandler(db);
+        var handler = new CreateShiftHandler(db, new ShiftRuleChecker(db));
         // Açık vardiya, aynı saatlerde bile → çakışma/limit kontrolü çalışmaz
         var cmd = new CreateShiftCommand(branchId, positionId, (Guid?)null, D(15, 9), D(15, 21), null);
 

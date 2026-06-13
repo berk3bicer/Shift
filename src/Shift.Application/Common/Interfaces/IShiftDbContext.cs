@@ -11,6 +11,7 @@ public interface IShiftDbContext
     DbSet<Shift.Domain.Entities.Shift> Shifts { get; }
     DbSet<Availability> Availabilities { get; }
     DbSet<TimeOffRequest> TimeOffRequests { get; }
+    DbSet<Notification> Notifications { get; }
     DbSet<User> Users { get; }
     DbSet<Role> Roles { get; }
     DbSet<UserRole> UserRoles { get; }

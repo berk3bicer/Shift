@@ -22,6 +22,7 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     public DbSet<Shift.Domain.Entities.Shift> Shifts => Set<Shift.Domain.Entities.Shift>();
     public DbSet<Availability> Availabilities => Set<Availability>();
     public DbSet<TimeOffRequest> TimeOffRequests => Set<TimeOffRequest>();
+    public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
@@ -138,6 +139,26 @@ public class ShiftDbContext : DbContext, IShiftDbContext
         // TimeOffRequest tenant'a ait -> global filtre (tenant izolasyonu)
         modelBuilder.Entity<TimeOffRequest>().HasQueryFilter(
             t => t.TenantId == _tenantProvider.GetTenantId());
+
+        // ── Notification (Bildirim) ──
+        // User -> Notifications: bir kullanıcının çok bildirimi olur.
+        // Kullanıcı silinince bildirimleri de gitsin (Cascade) — anlamsız kalmasın.
+        modelBuilder.Entity<Notification>()
+            .HasOne(n => n.User)
+            .WithMany()
+            .HasForeignKey(n => n.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Sorgu hızı: "kullanıcının okunmamış bildirimleri" sık sorgulanır.
+        modelBuilder.Entity<Notification>()
+            .HasIndex(n => new { n.UserId, n.IsRead });
+
+        // RelatedEntityId'ye FK YOK — bilinçli. Bildirim, işaret ettiği kayıt
+        // (vardiya vb.) silinse bile durabilmeli (geçmiş bildirim anlamlı kalır).
+
+        // Notification tenant'a ait -> global filtre
+        modelBuilder.Entity<Notification>().HasQueryFilter(
+            n => n.TenantId == _tenantProvider.GetTenantId());
 
         // User: TenantId üzerinden global filtre.
         // Her User sorgusuna otomatik "WHERE TenantId = currentTenant" eklenir.

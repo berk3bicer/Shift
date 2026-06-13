@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Shift.Application.Features.TimeOff.Create;
 using Shift.Application.Features.TimeOff.Decide;
 using Shift.Application.Features.TimeOff.List;
+using Shift.Application.Features.TimeOff.Mine;
+using Shift.Application.Features.TimeOff.Pending;
 
 namespace Shift.API.Controllers;
 
@@ -20,8 +22,7 @@ public class TimeOffRequestsController : ControllerBase
     }
 
     // İzin talebi oluşturma: HERKES kendi adına açabilir (Staff dahil).
-    // UserId token'dan geldiği için ekstra rol kısıtı koymuyoruz —
-    // login olan herkes kendi izin talebini açabilmeli.
+    // UserId token'dan geldiği için ekstra rol kısıtı koymuyoruz.
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateTimeOffCommand command)
     {
@@ -29,7 +30,24 @@ public class TimeOffRequestsController : ControllerBase
         return Ok(result);
     }
 
-    // Bir personelin izin talepleri: yönetici akışı (onay için talepleri görür).
+    // Personelin KENDİ talepleri (UserId token'dan). Login olan herkes.
+    [HttpGet("mine")]
+    public async Task<IActionResult> Mine()
+    {
+        var result = await _mediator.Send(new MyTimeOffQuery());
+        return Ok(result);
+    }
+
+    // Onay kuyruğu: tüm bekleyen talepler. Sadece yönetici/sahip.
+    [Authorize(Roles = "Owner,Manager")]
+    [HttpGet("pending")]
+    public async Task<IActionResult> Pending()
+    {
+        var result = await _mediator.Send(new PendingTimeOffQuery());
+        return Ok(result);
+    }
+
+    // Belirli bir personelin talepleri: yönetici akışı.
     [Authorize(Roles = "Owner,Manager")]
     [HttpGet]
     public async Task<IActionResult> List([FromQuery] Guid userId)
@@ -59,6 +77,5 @@ public class TimeOffRequestsController : ControllerBase
     }
 }
 
-// approve/reject body'si sadece opsiyonel not taşır. Karar URL'den (approve/reject),
-// id URL'den geliyor — body'de yalnızca not var.
+// approve/reject body'si sadece opsiyonel not taşır.
 public record DecideTimeOffBody(string? DecisionNote);

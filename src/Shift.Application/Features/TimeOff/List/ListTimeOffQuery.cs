@@ -7,9 +7,11 @@ namespace Shift.Application.Features.TimeOff.List;
 public record ListTimeOffQuery(Guid UserId) : IRequest<IReadOnlyList<TimeOffListItem>>;
 
 // Dışa dönük DTO — entity'yi doğrudan sızdırmıyoruz.
+// UserFullName: yönetici onay kuyruğunda "kim?" görünür olsun diye.
 public record TimeOffListItem(
     Guid Id,
     Guid UserId,
+    string UserFullName,
     DateOnly StartDate,
     DateOnly EndDate,
     TimeOffType Type,

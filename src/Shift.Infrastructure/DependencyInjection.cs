@@ -28,6 +28,12 @@ public static class DependencyInjection
         // Scoped: her HTTP isteği için bir tane (istek boyunca aynı tenant).
         services.AddScoped<TenantProvider>();
         services.AddScoped<ITenantProvider>(sp => sp.GetRequiredService<TenantProvider>());
+
+        // CurrentUserProvider: aynı desen. Login olan kullanıcının UserId'sini
+        // token'dan okur. Somut tip de kayıtlı (test'te SetUserId için).
+        services.AddScoped<CurrentUserProvider>();
+        services.AddScoped<ICurrentUserProvider>(sp => sp.GetRequiredService<CurrentUserProvider>());
+
         services.AddHttpContextAccessor();
 
         return services;

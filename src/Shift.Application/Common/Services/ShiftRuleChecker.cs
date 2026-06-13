@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Shift.Application.Common.Interfaces;
+using Shift.Domain.Entities;
 
 namespace Shift.Application.Common.Services;
 
@@ -157,6 +158,28 @@ public class ShiftRuleChecker : IShiftRuleChecker
                 warnings.Add(
                     $"Personel bu saatte müsait değil: {ua.StartTime:HH\\:mm}–{ua.EndTime:HH\\:mm}{reasonText}.");
             }
+        }
+
+        // ── Onaylı izin kontrolü (UYARI) ──
+        // Personelin, vardiyanın düştüğü GÜNE denk gelen ONAYLI (Approved) izni var mı?
+        // İzin gün-bazlı: StartDate <= vardiyaGünü <= EndDate ise o gün izinli.
+        // Sadece Approved'a bakarız: Pending henüz taahhüt değil, Rejected geçersiz.
+        // Engellemiyoruz — yönetici override edebilir (7shifts modeli).
+        var shiftDate = DateOnly.FromDateTime(startTime);
+
+        var approvedLeaves = await _db.TimeOffRequests
+            .Where(t => t.UserId == uid
+                     && t.Status == TimeOffStatus.Approved
+                     && t.StartDate <= shiftDate
+                     && t.EndDate >= shiftDate)
+            .Select(t => new { t.StartDate, t.EndDate, t.Type })
+            .ToListAsync(ct);
+
+        foreach (var leave in approvedLeaves)
+        {
+            warnings.Add(
+                $"Personel bu tarihte onaylı izinde: {leave.StartDate:dd.MM.yyyy}–{leave.EndDate:dd.MM.yyyy} " +
+                $"({leave.Type} izni).");
         }
 
         return warnings;

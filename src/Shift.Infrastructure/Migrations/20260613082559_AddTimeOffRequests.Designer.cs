@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Shift.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using Shift.Infrastructure.Persistence;
 namespace Shift.Infrastructure.Migrations
 {
     [DbContext(typeof(ShiftDbContext))]
-    partial class ShiftDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260613082559_AddTimeOffRequests")]
+    partial class AddTimeOffRequests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

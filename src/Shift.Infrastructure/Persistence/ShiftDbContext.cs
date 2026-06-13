@@ -21,6 +21,7 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     public DbSet<Position> Positions => Set<Position>();
     public DbSet<Shift.Domain.Entities.Shift> Shifts => Set<Shift.Domain.Entities.Shift>();
     public DbSet<Availability> Availabilities => Set<Availability>();
+    public DbSet<TimeOffRequest> TimeOffRequests => Set<TimeOffRequest>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
@@ -111,6 +112,32 @@ public class ShiftDbContext : DbContext, IShiftDbContext
         // Availability tenant'a ait -> global filtre (tenant izolasyonu)
         modelBuilder.Entity<Availability>().HasQueryFilter(
             a => a.TenantId == _tenantProvider.GetTenantId());
+
+        // ── TimeOffRequest (İzin) ──
+        // İKİ ayrı User ilişkisi var, ikisi de Users tablosuna bakar:
+        //   1) User          = talebi oluşturan personel
+        //   2) DecidedByUser = kararı veren yönetici (nullable, karar öncesi boş)
+        // EF'e ikisini AÇIKÇA ayırmamız şart, yoksa tek ilişki sanıp karıştırır.
+        // İkisi de Restrict: kullanıcı silinince izin geçmişi (audit) uçmasın.
+        modelBuilder.Entity<TimeOffRequest>()
+            .HasOne(t => t.User)
+            .WithMany()
+            .HasForeignKey(t => t.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TimeOffRequest>()
+            .HasOne(t => t.DecidedByUser)
+            .WithMany()
+            .HasForeignKey(t => t.DecidedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Sorgu hızı: "bu personelin izinleri" ve "bekleyen talepler" sık sorgulanır.
+        modelBuilder.Entity<TimeOffRequest>()
+            .HasIndex(t => new { t.UserId, t.Status });
+
+        // TimeOffRequest tenant'a ait -> global filtre (tenant izolasyonu)
+        modelBuilder.Entity<TimeOffRequest>().HasQueryFilter(
+            t => t.TenantId == _tenantProvider.GetTenantId());
 
         // User: TenantId üzerinden global filtre.
         // Her User sorgusuna otomatik "WHERE TenantId = currentTenant" eklenir.

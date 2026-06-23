@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Shift.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using Shift.Infrastructure.Persistence;
 namespace Shift.Infrastructure.Migrations
 {
     [DbContext(typeof(ShiftDbContext))]
-    partial class ShiftDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260623214000_AddOvertimeRecord")]
+    partial class AddOvertimeRecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,12 +190,6 @@ namespace Shift.Infrastructure.Migrations
                         .HasPrecision(7, 2)
                         .HasColumnType("numeric(7,2)");
 
-                    b.Property<DateTime?>("UnlockedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("UnlockedByUserId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -202,8 +199,6 @@ namespace Shift.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("LockedByUserId");
-
-                    b.HasIndex("UnlockedByUserId");
 
                     b.HasIndex("UserId", "PeriodStart", "PeriodEnd")
                         .IsUnique();
@@ -700,11 +695,6 @@ namespace Shift.Infrastructure.Migrations
                         .HasForeignKey("LockedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Shift.Domain.Entities.User", "UnlockedByUser")
-                        .WithMany()
-                        .HasForeignKey("UnlockedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Shift.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -742,8 +732,6 @@ namespace Shift.Infrastructure.Migrations
                         });
 
                     b.Navigation("LockedByUser");
-
-                    b.Navigation("UnlockedByUser");
 
                     b.Navigation("User");
 

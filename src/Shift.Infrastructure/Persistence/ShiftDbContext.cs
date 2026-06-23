@@ -24,6 +24,7 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     public DbSet<TimeOffRequest> TimeOffRequests => Set<TimeOffRequest>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<OvertimeSettings> OvertimeSettings => Set<OvertimeSettings>();
+    public DbSet<OvertimeRecord> OvertimeRecords => Set<OvertimeRecord>();
     public DbSet<TimeClock> TimeClocks => Set<TimeClock>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
@@ -152,6 +153,65 @@ public class ShiftDbContext : DbContext, IShiftDbContext
         modelBuilder.Entity<OvertimeSettings>()
             .HasIndex(o => o.TenantId)
             .IsUnique();
+
+        // ── OvertimeRecord (Donmuş Mesai Kaydı / Bordro) ──
+        // User -> OvertimeRecords: bir personelin çok dönem kaydı olur.
+        // Restrict: personel silinse bile bordro geçmişi (audit) korunmalı.
+        modelBuilder.Entity<OvertimeRecord>()
+            .HasOne(o => o.User)
+            .WithMany()
+            .HasForeignKey(o => o.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Kapanışı yapan yönetici (audit). İKİNCİ User FK'si — TimeOffRequest'teki
+        // DecidedByUser deseninin aynısı. EF'e açıkça ayrı ilişki olduğunu söylüyoruz.
+        // Nullable (henüz kilitlenmemiş kayıtta boş). Restrict: yönetici silinse geçmiş durur.
+        modelBuilder.Entity<OvertimeRecord>()
+            .HasOne(o => o.LockedByUser)
+            .WithMany()
+            .HasForeignKey(o => o.LockedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Kilidi açan yönetici (audit). ÜÇÜNCÜ User FK'si. Aynı desen, Restrict.
+        modelBuilder.Entity<OvertimeRecord>()
+            .HasOne(o => o.UnlockedByUser)
+            .WithMany()
+            .HasForeignKey(o => o.UnlockedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Aynı personele aynı dönem İKİ kez kapatılamaz → (UserId, PeriodStart, PeriodEnd)
+        // unique. Bu, "Haziran'ı yanlışlıkla iki kez dondurma" hatasını DB'de engeller.
+        modelBuilder.Entity<OvertimeRecord>()
+            .HasIndex(o => new { o.UserId, o.PeriodStart, o.PeriodEnd })
+            .IsUnique();
+
+        // Saat ve para alanları decimal precision. Saatler numeric(7,2) (haftalarca
+        // toplam saat 999,99'u aşmaz ama bordro güvenli olsun diye 7 basamak).
+        modelBuilder.Entity<OvertimeRecord>().Property(o => o.TotalHours).HasPrecision(7, 2);
+        modelBuilder.Entity<OvertimeRecord>().Property(o => o.NormalHours).HasPrecision(7, 2);
+        modelBuilder.Entity<OvertimeRecord>().Property(o => o.OvertimeHours).HasPrecision(7, 2);
+        // Ücret alanları para hassasiyeti: numeric(10,2) (Position.HourlyRate ile aynı).
+        modelBuilder.Entity<OvertimeRecord>().Property(o => o.AppliedHourlyRate).HasPrecision(10, 2);
+        modelBuilder.Entity<OvertimeRecord>().Property(o => o.OvertimeMultiplier).HasPrecision(5, 2);
+        modelBuilder.Entity<OvertimeRecord>().Property(o => o.GrossAmount).HasPrecision(12, 2);
+
+        // ── Haftalık kırılım → jsonb kolonu (OwnsMany + ToJson) ──
+        // Weeks listesi ayrı tabloya AÇILMAZ; tek bir jsonb kolonunda gömülü durur.
+        // Owned type: kendi kimliği yok, OvertimeRecord ile yaşar/ölür. Sorgulanmayan,
+        // hep birlikte okunan, değişmeyen snapshot için ideal (ayrı tablo + join yükü yok).
+        modelBuilder.Entity<OvertimeRecord>()
+            .OwnsMany(o => o.Weeks, b =>
+            {
+                b.ToJson();
+                // jsonb içindeki decimal'ler de precision alır (PostgreSQL number serialize).
+                b.Property(w => w.TotalHours).HasPrecision(7, 2);
+                b.Property(w => w.NormalHours).HasPrecision(7, 2);
+                b.Property(w => w.OvertimeHours).HasPrecision(7, 2);
+            });
+
+        // OvertimeRecord tenant'a ait -> global filtre (tenant izolasyonu)
+        modelBuilder.Entity<OvertimeRecord>().HasQueryFilter(
+            o => o.TenantId == _tenantProvider.GetTenantId());
 
         // Tüm çarpan/oran alanları para hassasiyetinde decimal.
         // numeric(5,2) → 999,99'a kadar çarpan (1.5, 2.0 gibi) fazlasıyla yeter.

@@ -30,5 +30,6 @@ public class Notification : BaseEntity, ITenantEntity
 // (izin onaylandı, görev atandı, stok uyarısı...). Spec'teki olay→bildirim tablosu.
 public enum NotificationType
 {
-    ShiftPublished = 0   // Vardiya/program yayınlandı
+    ShiftPublished = 0,  // Vardiya/program yayınlandı
+    LateClockIn = 1      // Personel vardiyasına geç giriş yaptı
 }

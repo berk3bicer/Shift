@@ -23,6 +23,7 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     public DbSet<Availability> Availabilities => Set<Availability>();
     public DbSet<TimeOffRequest> TimeOffRequests => Set<TimeOffRequest>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<TimeClock> TimeClocks => Set<TimeClock>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
@@ -159,6 +160,32 @@ public class ShiftDbContext : DbContext, IShiftDbContext
         // Notification tenant'a ait -> global filtre
         modelBuilder.Entity<Notification>().HasQueryFilter(
             n => n.TenantId == _tenantProvider.GetTenantId());
+
+        // ── TimeClock (Giriş-Çıkış / Puantaj) ──
+        // User -> TimeClocks: bir personelin çok puantaj kaydı olur.
+        // Restrict: personel silinse bile puantaj geçmişi (audit/bordro) korunur.
+        modelBuilder.Entity<TimeClock>()
+            .HasOne(tc => tc.User)
+            .WithMany()
+            .HasForeignKey(tc => tc.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Branch -> TimeClocks: puantaj bir şubede gerçekleşir.
+        // Restrict: şube silinse bile geçmiş puantaj korunur.
+        modelBuilder.Entity<TimeClock>()
+            .HasOne(tc => tc.Branch)
+            .WithMany()
+            .HasForeignKey(tc => tc.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Sorgu hızı: "bu personelin AÇIK kaydı var mı?" (CheckOutTime == null)
+        // her ClockIn/ClockOut'ta sorgulanır → en kritik index.
+        modelBuilder.Entity<TimeClock>()
+            .HasIndex(tc => new { tc.UserId, tc.CheckOutTime });
+
+        // TimeClock tenant'a ait -> global filtre (izolasyon)
+        modelBuilder.Entity<TimeClock>().HasQueryFilter(
+            tc => tc.TenantId == _tenantProvider.GetTenantId());
 
         // User: TenantId üzerinden global filtre.
         // Her User sorgusuna otomatik "WHERE TenantId = currentTenant" eklenir.

@@ -23,6 +23,7 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     public DbSet<Availability> Availabilities => Set<Availability>();
     public DbSet<TimeOffRequest> TimeOffRequests => Set<TimeOffRequest>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<OvertimeSettings> OvertimeSettings => Set<OvertimeSettings>();
     public DbSet<TimeClock> TimeClocks => Set<TimeClock>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
@@ -141,14 +142,33 @@ public class ShiftDbContext : DbContext, IShiftDbContext
         modelBuilder.Entity<TimeOffRequest>().HasQueryFilter(
             t => t.TenantId == _tenantProvider.GetTenantId());
 
-        // ── Notification (Bildirim) ──
-        // User -> Notifications: bir kullanıcının çok bildirimi olur.
-        // Kullanıcı silinince bildirimleri de gitsin (Cascade) — anlamsız kalmasın.
-        modelBuilder.Entity<Notification>()
-            .HasOne(n => n.User)
-            .WithMany()
-            .HasForeignKey(n => n.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // Notification tenant'a ait -> global filtre
+        modelBuilder.Entity<Notification>().HasQueryFilter(
+            n => n.TenantId == _tenantProvider.GetTenantId());
+
+        // ── OvertimeSettings (Mesai Ayarları) ──
+        // Tenant başına TEK kayıt olmalı → TenantId üzerinde unique index.
+        // Bu, "bir işletmenin bir çarpan seti vardır" kuralını DB seviyesinde garantiler.
+        modelBuilder.Entity<OvertimeSettings>()
+            .HasIndex(o => o.TenantId)
+            .IsUnique();
+
+        // Tüm çarpan/oran alanları para hassasiyetinde decimal.
+        // numeric(5,2) → 999,99'a kadar çarpan (1.5, 2.0 gibi) fazlasıyla yeter.
+        modelBuilder.Entity<OvertimeSettings>()
+            .Property(o => o.WeeklyOvertimeThresholdHours).HasPrecision(5, 2);
+        modelBuilder.Entity<OvertimeSettings>()
+            .Property(o => o.OvertimeMultiplier).HasPrecision(5, 2);
+        modelBuilder.Entity<OvertimeSettings>()
+            .Property(o => o.NightMultiplier).HasPrecision(5, 2);
+        modelBuilder.Entity<OvertimeSettings>()
+            .Property(o => o.WeekendMultiplier).HasPrecision(5, 2);
+        modelBuilder.Entity<OvertimeSettings>()
+            .Property(o => o.HolidayMultiplier).HasPrecision(5, 2);
+
+        // OvertimeSettings tenant'a ait -> global filtre (tenant izolasyonu)
+        modelBuilder.Entity<OvertimeSettings>().HasQueryFilter(
+            o => o.TenantId == _tenantProvider.GetTenantId());
 
         // Sorgu hızı: "kullanıcının okunmamış bildirimleri" sık sorgulanır.
         modelBuilder.Entity<Notification>()

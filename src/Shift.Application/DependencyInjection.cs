@@ -24,6 +24,10 @@ public static class DependencyInjection
         // Scoped: DbContext ile aynı yaşam döngüsü (her HTTP isteğinde bir örnek).
         services.AddScoped<Common.Interfaces.IShiftRuleChecker, Common.Services.ShiftRuleChecker>();
 
+        // Mesai hesap motoru — anlık görüntü (Query) ve ileride OvertimeRecord kullanır.
+        // Scoped: DbContext ile aynı yaşam döngüsü.
+        services.AddScoped<Common.Interfaces.IOvertimeCalculator, Common.Services.Overtime.OvertimeCalculator>();
+
         return services;
     }
 }

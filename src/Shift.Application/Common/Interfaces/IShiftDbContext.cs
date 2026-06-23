@@ -13,6 +13,7 @@ public interface IShiftDbContext
     DbSet<TimeOffRequest> TimeOffRequests { get; }
     DbSet<Notification> Notifications { get; }
     DbSet<TimeClock> TimeClocks { get; }
+    DbSet<OvertimeSettings> OvertimeSettings { get; }
     DbSet<User> Users { get; }
     DbSet<Role> Roles { get; }
     DbSet<UserRole> UserRoles { get; }

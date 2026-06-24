@@ -5,6 +5,7 @@ using Shift.Application.Features.Overtime.Summary;
 using Shift.Application.Features.Overtime.Close;
 using Shift.Application.Features.Overtime.Records.List;
 using Shift.Application.Features.Overtime.Records.Get;
+using Shift.Application.Features.Overtime.Records.Export;
 using Shift.Application.Features.Overtime.Unlock;
 
 namespace Shift.API.Controllers;
@@ -62,6 +63,22 @@ public class OvertimeController : ControllerBase
         var result = await _mediator.Send(
             new ListOvertimeRecordsQuery(userId, from, to), ct);
         return Ok(result);
+    }
+
+    // Kapanmış mesai kayıtlarını CSV dosyası olarak indirir (bordro için).
+    // Owner + Manager. Filtreler ListRecords ile aynı: ?userId=&from=&to=
+    // Fark: JSON değil, indirilebilir CSV döner. Sadece kilitli kayıtlar.
+    [HttpGet("records/export")]
+    [Authorize(Roles = "Owner,Manager")]
+    public async Task<IActionResult> ExportRecords(
+        [FromQuery] Guid? userId,
+        [FromQuery] DateOnly? from,
+        [FromQuery] DateOnly? to,
+        CancellationToken ct)
+    {
+        var result = await _mediator.Send(
+            new ExportOvertimeRecordsQuery(userId, from, to), ct);
+        return File(result.Content, "text/csv", result.FileName);
     }
 
     // Tek bir kapanmış mesai kaydının tam detayı (haftalık kırılım dahil).

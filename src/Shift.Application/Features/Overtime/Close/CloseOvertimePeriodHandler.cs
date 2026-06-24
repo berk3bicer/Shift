@@ -27,12 +27,9 @@ public class CloseOvertimePeriodHandler
         CloseOvertimePeriodCommand request, CancellationToken ct)
     {
         // ── 1) Aynı dönem kaydı var mı? Varsa kilit durumuna göre davran ──
-        // Global filter sayesinde bu sorgu yalnızca kendi tenant'ına bakar.
         //   - Kilitli kayıt varsa  → HATA (önce unlock gerekir; bordro korunur).
         //   - Kilitsiz kayıt varsa → ÜZERİNE yeniden yaz (recalculate akışı).
         //   - Hiç yoksa            → yeni oluştur.
-        // Not: aynı dönemi tekrar çekerken global filter + (UserId,Period) ile teklik
-        // garanti (unique index). FirstOrDefault güvenli.
         var existing = await _db.OvertimeRecords.FirstOrDefaultAsync(
             o => o.UserId == request.UserId
               && o.PeriodStart == request.From
@@ -45,7 +42,6 @@ public class CloseOvertimePeriodHandler
 
         // ── 2) Mesaiyi hesapla (saf servis) ──
         // Calculator personeli bulamazsa "Personel bulunamadı" fırlatır → 400.
-        // Bu, IDOR/tenant korumasını da kapsar (başka tenant'ın personeli görünmez).
         var summary = await _calculator.CalculateForUserAsync(
             request.UserId, request.From, request.To, ct);
 
@@ -64,17 +60,17 @@ public class CloseOvertimePeriodHandler
         if (existing is not null)
         {
             // ── Recalculate: kilitsiz mevcut kaydın ÜZERİNE yaz ──
-            // (Buraya geldiysek existing kilitsiz — kilitli olsaydı yukarıda dönerdik.)
-            // Kayıt korunur (Id, CreatedAt, unlock audit'i sabit kalır); sadece
-            // hesaplanan değerler tazelenir ve tekrar kilitlenir.
+            // Kayıt korunur (Id, CreatedAt, unlock audit'i sabit); değerler tazelenir.
             record = existing;
             record.TotalHours = summary.TotalHours;
             record.NormalHours = summary.NormalHours;
             record.OvertimeHours = summary.OvertimeHours;
+            record.AppliedHourlyRate = summary.AppliedHourlyRate;
+            record.OvertimeMultiplier = summary.OvertimeMultiplier;
+            record.GrossAmount = summary.GrossAmount;
             record.Weeks = weekSnapshots;
 
-            // Yeniden kilitle. Bu kapanışın audit'i LockedAt/LockedBy'ı tazeler;
-            // UnlockedAt/UnlockedBy son açılışın izi olarak DURUR (denetim geçmişi).
+            // Yeniden kilitle. LockedAt/LockedBy tazelenir; UnlockedAt/By DURUR (denetim izi).
             record.IsLocked = true;
             record.LockedAt = now;
             record.LockedByUserId = _currentUser.GetUserId();
@@ -91,10 +87,11 @@ public class CloseOvertimePeriodHandler
                 NormalHours = summary.NormalHours,
                 OvertimeHours = summary.OvertimeHours,
 
-                // Ücret alanları şimdilik boş (İK modülü gelince doldurulacak).
-                AppliedHourlyRate = null,
-                OvertimeMultiplier = null,
-                GrossAmount = null,
+                // Ücret snapshot'ı: kapanış anındaki saat ücreti + çarpan + brüt.
+                // Ücret tanımsızsa (pozisyon/HourlyRate yok) üçü de null gelir.
+                AppliedHourlyRate = summary.AppliedHourlyRate,
+                OvertimeMultiplier = summary.OvertimeMultiplier,
+                GrossAmount = summary.GrossAmount,
 
                 Weeks = weekSnapshots,
 

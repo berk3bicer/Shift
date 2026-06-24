@@ -69,6 +69,15 @@ public class ShiftDbContext : DbContext, IShiftDbContext
         modelBuilder.Entity<Position>().HasQueryFilter(
             p => p.TenantId == _tenantProvider.GetTenantId());
 
+        // User -> Position (birincil pozisyon): bordro ücreti buradan gelir.
+        // Pozisyon silinirse personel pozisyonsuz kalsın (SetNull), personel SİLİNMESİN.
+        // FK nullable olduğu için SetNull doğru davranış.
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Position)
+            .WithMany()
+            .HasForeignKey(u => u.PositionId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         // ── Shift (Vardiya) ──
         // Branch -> Shifts: vardiya bir şubeye ait. Şube silinmesi vardiyayı silmesin.
         modelBuilder.Entity<Shift.Domain.Entities.Shift>()

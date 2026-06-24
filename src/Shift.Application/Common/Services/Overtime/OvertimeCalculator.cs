@@ -20,26 +20,29 @@ public class OvertimeCalculator : IOvertimeCalculator
         DateOnly to,
         CancellationToken ct)
     {
-        // ── 1) Haftalık eşiği ayarlardan oku (lazy default) ──
-        // Kayıt yoksa entity varsayılanı (45) kullanılır. Calculator ayarı
-        // okur ama asla yazmaz. Global filter zaten doğru tenant'a bakar.
+        // ── 1) Ayarları oku (lazy default) ──
+        // Eşik (45) ve fazla mesai çarpanı (1.5) ayardan gelir; kayıt yoksa
+        // entity varsayılanları kullanılır. Calculator okur, asla yazmaz.
         var settings = await _db.OvertimeSettings.FirstOrDefaultAsync(ct);
         var threshold = settings?.WeeklyOvertimeThresholdHours ?? 45m;
+        var overtimeMultiplier = settings?.OvertimeMultiplier ?? 1.5m;
 
-        // ── 2) Personelin adını al (özet kişi bilgisi taşır) ──
+        // ── 2) Personel + birincil pozisyonunun saat ücreti ──
+        // PositionId null olabilir (pozisyon atanmamış); Position.HourlyRate de
+        // null olabilir (ücret girilmemiş). İkisinden biri null → ücret hesabı yok.
         var user = await _db.Users
             .Where(u => u.Id == userId)
-            .Select(u => new { u.FullName })
+            .Select(u => new
+            {
+                u.FullName,
+                HourlyRate = u.Position != null ? u.Position.HourlyRate : null
+            })
             .FirstOrDefaultAsync(ct);
 
         if (user is null)
             throw new InvalidOperationException("Personel bulunamadı.");
 
-        // ── 3) Dönemin TimeClock kayıtlarını çek ──
-        // Sadece KAPALI kayıtlar (CheckOutTime != null): açık kaydın süresi
-        // henüz belli değil, mesaiye giremez.
-        // Dönem sınırı: kaydın giriş günü [from, to] aralığında olmalı.
-        // DateOnly'yi DateTime'a çeviriyoruz (TimeClock UTC DateTime tutuyor).
+        // ── 3) Dönemin KAPALI TimeClock kayıtlarını çek ──
         var fromDt = from.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
         var toDt = to.AddDays(1).ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc); // to günü dahil
 
@@ -52,9 +55,6 @@ public class OvertimeCalculator : IOvertimeCalculator
             .ToListAsync(ct);
 
         // ── 4) Kayıtları HAFTALARA grupla ──
-        // Her kaydı, giriş gününün düştüğü haftanın Pazartesi'sine eşle.
-        // Hafta hesabı ShiftRuleChecker ile AYNI deterministik formül:
-        //   geri gidilecek gün = ((int)gün - 1 + 7) % 7  (Pazartesi=0 olacak şekilde)
         var weeklyGroups = records
             .GroupBy(r => GetWeekStart(DateOnly.FromDateTime(r.CheckInTime)))
             .OrderBy(g => g.Key);
@@ -63,11 +63,9 @@ public class OvertimeCalculator : IOvertimeCalculator
 
         foreach (var group in weeklyGroups)
         {
-            // O haftadaki tüm kayıtların süre toplamı (saat).
             var totalHours = (decimal)group
                 .Sum(r => (r.CheckOut - r.CheckInTime).TotalHours);
 
-            // Eşiğe kadar olan = normal, üstü = fazla mesai.
             var normalHours = Math.Min(totalHours, threshold);
             var overtimeHours = Math.Max(0m, totalHours - threshold);
 
@@ -78,26 +76,51 @@ public class OvertimeCalculator : IOvertimeCalculator
                 OvertimeHours: Round(overtimeHours)));
         }
 
-        // ── 5) Dönem özeti: haftaların toplamı ──
+        // ── 5) Dönem saat toplamları ──
+        var totalNormal = Round(weeks.Sum(w => w.NormalHours));
+        var totalOvertime = Round(weeks.Sum(w => w.OvertimeHours));
+        var totalAll = Round(weeks.Sum(w => w.TotalHours));
+
+        // ── 6) Brüt ücret hesabı ──
+        // Ücret tanımlıysa: brüt = normal×ücret + fazla×ücret×çarpan.
+        // Tanımsızsa (ücret null): üç alan da null döner — "hesaplanamadı".
+        decimal? appliedRate = user.HourlyRate;
+        decimal? appliedMultiplier = null;
+        decimal? grossAmount = null;
+
+        if (appliedRate is { } rate)
+        {
+            appliedMultiplier = overtimeMultiplier;
+            var normalPay = totalNormal * rate;
+            var overtimePay = totalOvertime * rate * overtimeMultiplier;
+            grossAmount = RoundMoney(normalPay + overtimePay);
+        }
+
         return new StaffOvertimeSummary(
             UserId: userId,
             UserFullName: user.FullName,
-            TotalHours: Round(weeks.Sum(w => w.TotalHours)),
-            NormalHours: Round(weeks.Sum(w => w.NormalHours)),
-            OvertimeHours: Round(weeks.Sum(w => w.OvertimeHours)),
-            Weeks: weeks);
+            TotalHours: totalAll,
+            NormalHours: totalNormal,
+            OvertimeHours: totalOvertime,
+            Weeks: weeks,
+            AppliedHourlyRate: appliedRate,
+            OvertimeMultiplier: appliedMultiplier,
+            GrossAmount: grossAmount);
     }
 
     // Bir günün düştüğü haftanın Pazartesi'sini döner (deterministik).
-    // ShiftRuleChecker'daki ((int)DayOfWeek - 1 + 7) % 7 mantığının aynısı.
     private static DateOnly GetWeekStart(DateOnly date)
     {
         var daysSinceMonday = ((int)date.DayOfWeek - 1 + 7) % 7;
         return date.AddDays(-daysSinceMonday);
     }
 
-    // Saatleri 2 ondalığa yuvarla (bordro okunabilirliği). Banker's rounding
-    // yerine standart (AwayFromZero) — "8.345 → 8.35" beklenen davranış.
+    // Saatleri 2 ondalığa yuvarla.
     private static decimal Round(decimal hours)
         => Math.Round(hours, 2, MidpointRounding.AwayFromZero);
+
+    // Parayı 2 ondalığa yuvarla (kuruş). Saat yuvarlamayla aynı kural ama
+    // ayrı isim — niyet net olsun (biri saat, biri para).
+    private static decimal RoundMoney(decimal amount)
+        => Math.Round(amount, 2, MidpointRounding.AwayFromZero);
 }

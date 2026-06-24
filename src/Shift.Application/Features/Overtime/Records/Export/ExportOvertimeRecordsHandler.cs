@@ -49,6 +49,7 @@ public class ExportOvertimeRecordsHandler
                     o.NormalHours,
                     o.OvertimeHours,
                     o.TotalHours,
+                    o.GrossAmount,
                     o.LockedAt
                 })
             .OrderBy(x => x.FullName)
@@ -66,6 +67,7 @@ public class ExportOvertimeRecordsHandler
             "Normal Saat",
             "Fazla Mesai Saat",
             "Toplam Saat",
+            "Brut Tutar",
             "Kapanis Tarihi"
         };
 
@@ -82,6 +84,9 @@ public class ExportOvertimeRecordsHandler
             x.NormalHours.ToString("0.00", ci),
             x.OvertimeHours.ToString("0.00", ci),
             x.TotalHours.ToString("0.00", ci),
+            // Brüt null ise BOŞ bırak ("0.00" değil): null=ücret tanımsız, 0=bedava çalıştı.
+            // Boş hücre yöneticiye "ücret gir" der; 0.00 eksiği gizler.
+            x.GrossAmount?.ToString("0.00", ci) ?? "",
             x.LockedAt?.ToString("yyyy-MM-dd HH:mm", ci) ?? ""
         }).ToList();
 

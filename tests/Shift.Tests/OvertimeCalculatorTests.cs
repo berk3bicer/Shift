@@ -167,4 +167,87 @@ public class OvertimeCalculatorTests
 
         Assert.Equal(6m, result.TotalHours);   // sadece Haziran
     }
+
+    // ════════════════════════════════════════════════════════════════
+    //  ÜCRET / BRÜT HESABI (Gün 13)
+    // ════════════════════════════════════════════════════════════════
+
+    // Yardımcı: bir personele ücretli pozisyon atar.
+    private static async Task AssignPositionWithRateAsync(
+        ShiftDbContext db, Guid tenantId, Guid staffId, decimal? hourlyRate)
+    {
+        var position = new Position
+        {
+            TenantId = tenantId,
+            Name = "Barista",
+            HourlyRate = hourlyRate
+        };
+        db.Positions.Add(position);
+        await db.SaveChangesAsync();
+
+        var staff = await db.Users.FirstAsync(u => u.Id == staffId);
+        staff.PositionId = position.Id;
+        await db.SaveChangesAsync();
+    }
+
+    // ── 6) Ücretli personel, fazla mesai YOK: brüt = saat × ücret ──
+    [Fact]
+    public async Task Ucretli_Personel_Normal_Saat_Brut_Hesaplanir()
+    {
+        var (db, tenantId, staffId) = await SetupAsync();
+        await AssignPositionWithRateAsync(db, tenantId, staffId, 100m);
+
+        var monday = new DateTime(2026, 6, 1, 9, 0, 0, DateTimeKind.Utc);
+        for (int i = 0; i < 5; i++)
+            await AddClosedRecordAsync(db, tenantId, staffId, monday.AddDays(i), 8);
+
+        var calc = new OvertimeCalculator(db);
+        var result = await calc.CalculateForUserAsync(
+            staffId, new DateOnly(2026, 6, 1), new DateOnly(2026, 6, 30),
+            CancellationToken.None);
+
+        Assert.Equal(100m, result.AppliedHourlyRate);
+        Assert.Equal(1.5m, result.OvertimeMultiplier);
+        Assert.Equal(4000m, result.GrossAmount);   // 40 × 100
+    }
+
+    // ── 7) Ücretli personel, FAZLA MESAİLİ: çarpan uygulanır ──
+    [Fact]
+    public async Task Ucretli_Personel_Fazla_Mesai_Carpan_Uygulanir()
+    {
+        var (db, tenantId, staffId) = await SetupAsync();
+        await AssignPositionWithRateAsync(db, tenantId, staffId, 100m);
+
+        var monday = new DateTime(2026, 6, 1, 9, 0, 0, DateTimeKind.Utc);
+        for (int i = 0; i < 6; i++)
+            await AddClosedRecordAsync(db, tenantId, staffId, monday.AddDays(i), 9);
+
+        var calc = new OvertimeCalculator(db);
+        var result = await calc.CalculateForUserAsync(
+            staffId, new DateOnly(2026, 6, 1), new DateOnly(2026, 6, 30),
+            CancellationToken.None);
+
+        // 45 × 100 = 4500  +  9 × 100 × 1.5 = 1350  →  5850
+        Assert.Equal(5850m, result.GrossAmount);
+    }
+
+    // ── 8) ÜCRETSİZ personel (pozisyon/ücret yok): brüt NULL ──
+    [Fact]
+    public async Task Ucretsiz_Personel_Brut_Null_Doner()
+    {
+        var (db, tenantId, staffId) = await SetupAsync();
+
+        var monday = new DateTime(2026, 6, 1, 9, 0, 0, DateTimeKind.Utc);
+        await AddClosedRecordAsync(db, tenantId, staffId, monday, 8);
+
+        var calc = new OvertimeCalculator(db);
+        var result = await calc.CalculateForUserAsync(
+            staffId, new DateOnly(2026, 6, 1), new DateOnly(2026, 6, 30),
+            CancellationToken.None);
+
+        Assert.Null(result.AppliedHourlyRate);
+        Assert.Null(result.OvertimeMultiplier);
+        Assert.Null(result.GrossAmount);
+        Assert.Equal(8m, result.TotalHours);   // saat hesaplanır, ücret null
+    }
 }

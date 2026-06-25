@@ -23,9 +23,18 @@ public record StaffOvertimeSummary(
     IReadOnlyList<WeeklyOvertimeBreakdown> Weeks,  // Hafta hafta kırılım
 
     // ── Ücret hesabı (null = ücret tanımsız, hesaplanamadı) ──
-    // Personelin pozisyonu yoksa ya da pozisyonun HourlyRate'i null'sa, üçü de null.
-    // null ≠ 0: 0 "bedava çalıştı" der (yanlış); null "ücret girilmemiş" der (doğru).
+    // Personelin pozisyonu yoksa ya da pozisyonun HourlyRate'i null'sa, hepsi null.
+    // null ≠ 0: 0 "bedava çalıştı"/"prim yok" der (yanlış); null "ücret girilmemiş" der (doğru).
     decimal? AppliedHourlyRate,  // Hesapta kullanılan saat ücreti (snapshot)
     decimal? OvertimeMultiplier, // Uygulanan fazla mesai çarpanı (snapshot)
-    decimal? GrossAmount         // Brüt = normal×ücret + fazla×ücret×çarpan
+
+    // ── Gece / hafta sonu primi (differential model) ──
+    // Prim = primli vardiya saati × ücret × (çarpan − 1). Çarpan TÜM vardiyaya uygulanır
+    // (vardiya gece penceresine değiyorsa / hafta sonuna düşüyorsa, o vardiyanın tüm
+    // saatleri primli). Taban ücretin ÜSTÜNE eklenir; fazla mesai ekseninden bağımsız.
+    // Ücret varsa ama çarpan 1.0 ise prim = 0 (gerçek sıfır), ücret yoksa null.
+    decimal? NightPremium,       // Gece primi (çarpan−1 farkı)
+    decimal? WeekendPremium,     // Hafta sonu primi (çarpan−1 farkı)
+
+    decimal? GrossAmount         // Brüt = normal×ücret + fazla×ücret×fazlaÇarpan + gecePrim + haftaSonuPrim
 );

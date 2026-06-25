@@ -23,18 +23,20 @@ public class OvertimeSettings : BaseEntity, ITenantEntity
     public decimal OvertimeMultiplier { get; set; } = 1.5m;
 
     // ── Gece çarpanı ──
-    // Gece saat aralığına düşen çalışma saatlerine uygulanır.
+    // Karar: çarpan TÜM vardiyaya uygulanır — bir vardiya gece penceresine bir dakika
+    // bile değiyorsa o vardiyanın tüm saatleri "gece" sayılır (kısmi değil). Calculator
+    // primi differential olarak ekler: gece saati × ücret × (çarpan−1).
     // Basit model (kullanıcı tercihi): yasal 7.5s gece limiti denetimi YOK,
-    // sadece "gece saatlerine katsayı". 1.0 = gece farkı yok (varsayılan kapalı).
+    // sadece "gece vardiyasına katsayı". 1.0 = gece farkı yok (varsayılan kapalı).
     public decimal NightMultiplier { get; set; } = 1.0m;
 
     // Gece aralığının başı ve sonu (TimeOnly). Varsayılan: 20:00–06:00.
-    // Bu aralığa düşen çalışma saatleri NightMultiplier ile çarpılır.
+    // Bir vardiya bu aralığa değiyorsa NightMultiplier ile primlenir (tüm vardiya).
     public TimeOnly NightStart { get; set; } = new TimeOnly(20, 0);
     public TimeOnly NightEnd { get; set; } = new TimeOnly(6, 0);
 
     // ── Hafta sonu çarpanı ──
-    // Cumartesi/Pazar çalışmasına uygulanır. 1.0 = fark yok (varsayılan).
+    // Check-in'i Cumartesi/Pazar olan vardiyaya uygulanır (tüm vardiya). 1.0 = fark yok.
     public decimal WeekendMultiplier { get; set; } = 1.0m;
 
     // ── Resmi tatil çarpanı ──

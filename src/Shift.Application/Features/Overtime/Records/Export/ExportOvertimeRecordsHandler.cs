@@ -49,6 +49,8 @@ public class ExportOvertimeRecordsHandler
                     o.NormalHours,
                     o.OvertimeHours,
                     o.TotalHours,
+                    o.NightPremium,
+                    o.WeekendPremium,
                     o.GrossAmount,
                     o.LockedAt
                 })
@@ -67,6 +69,8 @@ public class ExportOvertimeRecordsHandler
             "Normal Saat",
             "Fazla Mesai Saat",
             "Toplam Saat",
+            "Gece Primi",
+            "Hafta Sonu Primi",
             "Brut Tutar",
             "Kapanis Tarihi"
         };
@@ -84,6 +88,9 @@ public class ExportOvertimeRecordsHandler
             x.NormalHours.ToString("0.00", ci),
             x.OvertimeHours.ToString("0.00", ci),
             x.TotalHours.ToString("0.00", ci),
+            // Primler null ise BOŞ ("0.00" değil): null=ücret tanımsız, 0=prim yok.
+            x.NightPremium?.ToString("0.00", ci) ?? "",
+            x.WeekendPremium?.ToString("0.00", ci) ?? "",
             // Brüt null ise BOŞ bırak ("0.00" değil): null=ücret tanımsız, 0=bedava çalıştı.
             // Boş hücre yöneticiye "ücret gir" der; 0.00 eksiği gizler.
             x.GrossAmount?.ToString("0.00", ci) ?? "",

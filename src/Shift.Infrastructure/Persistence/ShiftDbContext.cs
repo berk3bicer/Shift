@@ -202,6 +202,8 @@ public class ShiftDbContext : DbContext, IShiftDbContext
         // Ücret alanları para hassasiyeti: numeric(10,2) (Position.HourlyRate ile aynı).
         modelBuilder.Entity<OvertimeRecord>().Property(o => o.AppliedHourlyRate).HasPrecision(10, 2);
         modelBuilder.Entity<OvertimeRecord>().Property(o => o.OvertimeMultiplier).HasPrecision(5, 2);
+        modelBuilder.Entity<OvertimeRecord>().Property(o => o.NightPremium).HasPrecision(12, 2);
+        modelBuilder.Entity<OvertimeRecord>().Property(o => o.WeekendPremium).HasPrecision(12, 2);
         modelBuilder.Entity<OvertimeRecord>().Property(o => o.GrossAmount).HasPrecision(12, 2);
 
         // ── Haftalık kırılım → jsonb kolonu (OwnsMany + ToJson) ──

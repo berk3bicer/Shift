@@ -67,6 +67,8 @@ public class CloseOvertimePeriodHandler
             record.OvertimeHours = summary.OvertimeHours;
             record.AppliedHourlyRate = summary.AppliedHourlyRate;
             record.OvertimeMultiplier = summary.OvertimeMultiplier;
+            record.NightPremium = summary.NightPremium;
+            record.WeekendPremium = summary.WeekendPremium;
             record.GrossAmount = summary.GrossAmount;
             record.Weeks = weekSnapshots;
 
@@ -91,6 +93,8 @@ public class CloseOvertimePeriodHandler
                 // Ücret tanımsızsa (pozisyon/HourlyRate yok) üçü de null gelir.
                 AppliedHourlyRate = summary.AppliedHourlyRate,
                 OvertimeMultiplier = summary.OvertimeMultiplier,
+                NightPremium = summary.NightPremium,
+                WeekendPremium = summary.WeekendPremium,
                 GrossAmount = summary.GrossAmount,
 
                 Weeks = weekSnapshots,

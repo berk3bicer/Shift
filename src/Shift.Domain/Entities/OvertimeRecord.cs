@@ -36,13 +36,21 @@ public class OvertimeRecord : BaseEntity, ITenantEntity
     public decimal NormalHours { get; set; }
     public decimal OvertimeHours { get; set; }
 
-    // ── Ücret/tutar (spec: Çarpan, Tutar) — ŞİMDİLİK BOŞ ──
-    // Ücret altyapısı İK modülüyle gelecek (Position.HourlyRate nullable, User-Position
-    // doğrudan bağı yok). Alanları şimdiden açıyoruz ki kapanış akışı ve tablo şeması
-    // hazır olsun; doldurma sonraki faz. nullable = "henüz hesaplanmadı" demek.
+    // ── Ücret/tutar (spec: Çarpan, Tutar) ──
+    // Gün 13'te dolduruldu: kapanışta Calculator brütü hesaplar, snapshot buraya yazılır.
+    // nullable = "ücret tanımsız (pozisyon/HourlyRate yok) → hesaplanamadı". null ≠ 0.
     public decimal? AppliedHourlyRate { get; set; }   // kapanış anındaki saat ücreti (snapshot)
-    public decimal? OvertimeMultiplier { get; set; }  // kapanışta uygulanan çarpan (snapshot)
-    public decimal? GrossAmount { get; set; }         // hesaplanan brüt tutar
+    public decimal? OvertimeMultiplier { get; set; }  // kapanışta uygulanan fazla mesai çarpanı (snapshot)
+
+    // ── Gece / hafta sonu primi (snapshot) ──
+    // Differential primler: gece/hafta sonu vardiyalarının tüm saatine uygulanan
+    // (çarpan−1) farkının lira karşılığı. Brüt'e taban ücretin üstüne eklendi.
+    // Tutarı dondurmak çarpanın etkisini dondurur: ayar sonradan değişse de bu kapalı
+    // bordro değişmez (Gün 13 snapshot felsefesi). null = ücret tanımsızdı, 0 = prim yoktu.
+    public decimal? NightPremium { get; set; }        // gece primi (snapshot)
+    public decimal? WeekendPremium { get; set; }      // hafta sonu primi (snapshot)
+
+    public decimal? GrossAmount { get; set; }         // brüt = taban + gece + hafta sonu primi
 
     // ── Haftalık kırılım snapshot'ı (jsonb) ──
     // Calculator'ın ürettiği hafta hafta kırılımın donmuş kopyası. Denetim/itiraz

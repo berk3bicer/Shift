@@ -250,4 +250,158 @@ public class OvertimeCalculatorTests
         Assert.Null(result.GrossAmount);
         Assert.Equal(8m, result.TotalHours);   // saat hesaplanır, ücret null
     }
+
+    // ════════════════════════════════════════════════════════════════
+    //  GECE / HAFTA SONU PRİMİ (Gün 14) — çarpan TÜM vardiyaya, differential
+    // ════════════════════════════════════════════════════════════════
+
+    // Yardımcı: tenant'a çarpan ayarı yazar (gece/hafta sonu). Verilmeyen 1.0 (etkisiz).
+    private static async Task SetMultipliersAsync(
+        ShiftDbContext db, Guid tenantId,
+        decimal night = 1.0m, decimal weekend = 1.0m)
+    {
+        db.OvertimeSettings.Add(new OvertimeSettings
+        {
+            TenantId = tenantId,
+            NightMultiplier = night,
+            WeekendMultiplier = weekend
+            // Eşik/fazla mesai/gece penceresi entity varsayılanları (45 / 1.5 / 20:00–06:00).
+        });
+        await db.SaveChangesAsync();
+    }
+
+    // ── 9) HAFTA SONU primi: Cmt vardiyasının TÜM saatine (çarpan−1) ──
+    [Fact]
+    public async Task Hafta_Sonu_Vardiyasi_Tum_Saate_Prim_Alir()
+    {
+        var (db, tenantId, staffId) = await SetupAsync();
+        await AssignPositionWithRateAsync(db, tenantId, staffId, 100m);
+        await SetMultipliersAsync(db, tenantId, weekend: 2.0m);
+
+        // 2026-06-06 Cumartesi, 8 saat. Tek vardiya, hafta sonu.
+        await AddClosedRecordAsync(db, tenantId, staffId,
+            new DateTime(2026, 6, 6, 9, 0, 0, DateTimeKind.Utc), 8);
+
+        var calc = new OvertimeCalculator(db);
+        var result = await calc.CalculateForUserAsync(
+            staffId, new DateOnly(2026, 6, 1), new DateOnly(2026, 6, 30),
+            CancellationToken.None);
+
+        // Taban: 8 × 100 = 800. Hafta sonu primi: 8 × 100 × (2.0−1) = 800.
+        Assert.Equal(800m, result.WeekendPremium);
+        Assert.Equal(0m, result.NightPremium);          // gece değil → prim 0 (null değil, ücret var)
+        Assert.Equal(1600m, result.GrossAmount);        // 800 taban + 800 prim
+    }
+
+    // ── 10) GECE primi: vardiya gece penceresine DEĞİYORSA tüm saati primli ──
+    [Fact]
+    public async Task Gece_Penceresine_Degen_Vardiya_Tum_Saate_Prim_Alir()
+    {
+        var (db, tenantId, staffId) = await SetupAsync();
+        await AssignPositionWithRateAsync(db, tenantId, staffId, 100m);
+        await SetMultipliersAsync(db, tenantId, night: 1.5m);
+
+        // 2026-06-03 Çarşamba 18:00–22:00 (4s). Pencere 20:00–06:00'ya değiyor (20–22).
+        // Karar: değen vardiyanın TÜM 4 saati gece → prim 4×100×0.5 = 200.
+        await AddClosedRecordAsync(db, tenantId, staffId,
+            new DateTime(2026, 6, 3, 18, 0, 0, DateTimeKind.Utc), 4);
+        // 2026-06-04 Perşembe 09:00–17:00 (8s). Geceye DEĞMİYOR → prim yok.
+        await AddClosedRecordAsync(db, tenantId, staffId,
+            new DateTime(2026, 6, 4, 9, 0, 0, DateTimeKind.Utc), 8);
+
+        var calc = new OvertimeCalculator(db);
+        var result = await calc.CalculateForUserAsync(
+            staffId, new DateOnly(2026, 6, 1), new DateOnly(2026, 6, 30),
+            CancellationToken.None);
+
+        Assert.Equal(200m, result.NightPremium);        // sadece gece vardiyası
+        Assert.Equal(0m, result.WeekendPremium);        // ikisi de hafta içi
+        // Taban: 12 × 100 = 1200 (45 altı, hepsi normal). Brüt 1200 + 200 = 1400.
+        Assert.Equal(1400m, result.GrossAmount);
+    }
+
+    // ── 11) Gece yarısını SARAN vardiya: 22:00→06:00 tamamı gece ──
+    [Fact]
+    public async Task Gece_Yarisini_Asan_Vardiya_Gece_Sayilir()
+    {
+        var (db, tenantId, staffId) = await SetupAsync();
+        await AssignPositionWithRateAsync(db, tenantId, staffId, 100m);
+        await SetMultipliersAsync(db, tenantId, night: 2.0m);
+
+        // 2026-06-02 Salı 22:00 → 2026-06-03 06:00 (8s). Pencere 20:00–06:00 içinde.
+        await AddClosedRecordAsync(db, tenantId, staffId,
+            new DateTime(2026, 6, 2, 22, 0, 0, DateTimeKind.Utc), 8);
+
+        var calc = new OvertimeCalculator(db);
+        var result = await calc.CalculateForUserAsync(
+            staffId, new DateOnly(2026, 6, 1), new DateOnly(2026, 6, 30),
+            CancellationToken.None);
+
+        Assert.Equal(800m, result.NightPremium);        // 8 × 100 × (2.0−1)
+    }
+
+    // ── 12) STACK: gece + hafta sonu aynı vardiyada toplanır ──
+    [Fact]
+    public async Task Gece_Ve_Hafta_Sonu_Primleri_Toplanir()
+    {
+        var (db, tenantId, staffId) = await SetupAsync();
+        await AssignPositionWithRateAsync(db, tenantId, staffId, 100m);
+        await SetMultipliersAsync(db, tenantId, night: 1.5m, weekend: 2.0m);
+
+        // 2026-06-06 Cumartesi 20:00–24:00 (4s). Hem hafta sonu hem gece.
+        await AddClosedRecordAsync(db, tenantId, staffId,
+            new DateTime(2026, 6, 6, 20, 0, 0, DateTimeKind.Utc), 4);
+
+        var calc = new OvertimeCalculator(db);
+        var result = await calc.CalculateForUserAsync(
+            staffId, new DateOnly(2026, 6, 1), new DateOnly(2026, 6, 30),
+            CancellationToken.None);
+
+        Assert.Equal(200m, result.NightPremium);        // 4×100×0.5
+        Assert.Equal(400m, result.WeekendPremium);      // 4×100×1.0
+        // Taban 400 + gece 200 + hafta sonu 400 = 1000.
+        Assert.Equal(1000m, result.GrossAmount);
+    }
+
+    // ── 13) Çarpan 1.0 (varsayılan): gece/hafta sonu vardiyası prim ALMAZ ──
+    // null değil 0: ücret var ama prim yok. Geriye uyumluluğu çivileyen test.
+    [Fact]
+    public async Task Carpan_Bir_Ise_Prim_Sifir_Null_Degil()
+    {
+        var (db, tenantId, staffId) = await SetupAsync();
+        await AssignPositionWithRateAsync(db, tenantId, staffId, 100m);
+        // Ayar yazmıyoruz → çarpanlar 1.0 (varsayılan). Cmt + gece vardiyası.
+        await AddClosedRecordAsync(db, tenantId, staffId,
+            new DateTime(2026, 6, 6, 22, 0, 0, DateTimeKind.Utc), 4);
+
+        var calc = new OvertimeCalculator(db);
+        var result = await calc.CalculateForUserAsync(
+            staffId, new DateOnly(2026, 6, 1), new DateOnly(2026, 6, 30),
+            CancellationToken.None);
+
+        Assert.Equal(0m, result.NightPremium);          // çarpan 1.0 → prim 0
+        Assert.Equal(0m, result.WeekendPremium);
+        Assert.Equal(400m, result.GrossAmount);         // sadece taban 4×100
+    }
+
+    // ── 14) ÜCRETSİZ personel: gece/hafta sonu vardiyasında bile prim NULL ──
+    [Fact]
+    public async Task Ucretsiz_Personel_Primler_Null_Doner()
+    {
+        var (db, tenantId, staffId) = await SetupAsync();
+        await SetMultipliersAsync(db, tenantId, night: 2.0m, weekend: 2.0m);
+        // Pozisyon/ücret YOK. Cmt gece vardiyası.
+        await AddClosedRecordAsync(db, tenantId, staffId,
+            new DateTime(2026, 6, 6, 22, 0, 0, DateTimeKind.Utc), 4);
+
+        var calc = new OvertimeCalculator(db);
+        var result = await calc.CalculateForUserAsync(
+            staffId, new DateOnly(2026, 6, 1), new DateOnly(2026, 6, 30),
+            CancellationToken.None);
+
+        Assert.Null(result.NightPremium);               // ücret tanımsız → hesaplanamadı
+        Assert.Null(result.WeekendPremium);
+        Assert.Null(result.GrossAmount);
+        Assert.Equal(4m, result.TotalHours);            // saat yine hesaplanır
+    }
 }

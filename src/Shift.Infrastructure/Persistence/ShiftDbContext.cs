@@ -27,6 +27,7 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     public DbSet<OvertimeRecord> OvertimeRecords => Set<OvertimeRecord>();
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
     public DbSet<Checklist> Checklists => Set<Checklist>();
+    public DbSet<ChecklistItem> ChecklistItems => Set<ChecklistItem>();
     public DbSet<ChecklistRun> ChecklistRuns => Set<ChecklistRun>();
     public DbSet<ShiftNote> ShiftNotes => Set<ShiftNote>();
     public DbSet<Announcement> Announcements => Set<Announcement>();

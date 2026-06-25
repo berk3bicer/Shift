@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shift.Application.Features.Checklists.Create;
 using Shift.Application.Features.Checklists.List;
+using Shift.Application.Features.Checklists.Update;
+using Shift.Application.Features.Checklists.Delete;
 
 namespace Shift.API.Controllers;
 
@@ -37,5 +39,23 @@ public class ChecklistsController : ControllerBase
     {
         var result = await _mediator.Send(new ListChecklistsQuery(type, includeInactive));
         return Ok(result);
+    }
+
+    // Şablon güncelleme (ad/tür/madde listesi replace): yönetici. URL'deki id otorite.
+    [Authorize(Roles = "Owner,Manager")]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateChecklistCommand command)
+    {
+        await _mediator.Send(command with { Id = id });
+        return NoContent();
+    }
+
+    // Şablon silme = soft-disable (IsActive=false; geçmiş çalıştırmalar korunur): yönetici.
+    [Authorize(Roles = "Owner,Manager")]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _mediator.Send(new DeleteChecklistCommand(id));
+        return NoContent();
     }
 }

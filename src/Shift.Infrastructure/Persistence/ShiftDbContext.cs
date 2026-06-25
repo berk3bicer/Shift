@@ -26,6 +26,8 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     public DbSet<OvertimeSettings> OvertimeSettings => Set<OvertimeSettings>();
     public DbSet<OvertimeRecord> OvertimeRecords => Set<OvertimeRecord>();
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
+    public DbSet<Checklist> Checklists => Set<Checklist>();
+    public DbSet<ChecklistRun> ChecklistRuns => Set<ChecklistRun>();
     public DbSet<TimeClock> TimeClocks => Set<TimeClock>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
@@ -327,6 +329,82 @@ public class ShiftDbContext : DbContext, IShiftDbContext
         // TaskItem tenant'a ait -> global filtre (tenant izolasyonu)
         modelBuilder.Entity<TaskItem>().HasQueryFilter(
             t => t.TenantId == _tenantProvider.GetTenantId());
+
+        // ── Checklist (Kontrol Listesi ŞABLONU) ──
+        // Şablon maddeleri şablonla yaşar/ölür → Cascade.
+        modelBuilder.Entity<Checklist>()
+            .HasMany(c => c.Items)
+            .WithOne(i => i.Checklist)
+            .HasForeignKey(i => i.ChecklistId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Checklist>().Property(c => c.Name).HasMaxLength(200);
+        modelBuilder.Entity<ChecklistItem>().Property(i => i.Text).HasMaxLength(500);
+
+        // Checklist + child ChecklistItem tenant filtresi. Child'a da matching filter:
+        // EF "filtreli parent ile zorunlu ilişki" uyarısını engeller + izolasyon.
+        modelBuilder.Entity<Checklist>().HasQueryFilter(
+            c => c.TenantId == _tenantProvider.GetTenantId());
+        modelBuilder.Entity<ChecklistItem>().HasQueryFilter(
+            i => i.TenantId == _tenantProvider.GetTenantId());
+
+        // ── ChecklistRun (doldurulmuş ÇALIŞTIRMA) ──
+        // Şube: çalıştırma bir şubede olur. Şube silinse geçmiş çalıştırma korunur → Restrict.
+        modelBuilder.Entity<ChecklistRun>()
+            .HasOne(r => r.Branch)
+            .WithMany()
+            .HasForeignKey(r => r.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Şablon: çalıştırma hangi şablondan türedi. Şablon silinmesin → Restrict.
+        modelBuilder.Entity<ChecklistRun>()
+            .HasOne(r => r.Checklist)
+            .WithMany()
+            .HasForeignKey(r => r.ChecklistId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Başlatan/tamamlayan personel (audit). İki ayrı User FK'si — TimeOffRequest deseni.
+        modelBuilder.Entity<ChecklistRun>()
+            .HasOne(r => r.StartedByUser)
+            .WithMany()
+            .HasForeignKey(r => r.StartedByUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<ChecklistRun>()
+            .HasOne(r => r.CompletedByUser)
+            .WithMany()
+            .HasForeignKey(r => r.CompletedByUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Çalıştırma maddeleri çalıştırmayla yaşar/ölür → Cascade.
+        modelBuilder.Entity<ChecklistRun>()
+            .HasMany(r => r.Items)
+            .WithOne(i => i.ChecklistRun)
+            .HasForeignKey(i => i.ChecklistRunId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // İşaretleyen personel (audit). Silinse işaret durur → SetNull.
+        modelBuilder.Entity<ChecklistRunItem>()
+            .HasOne(i => i.CheckedByUser)
+            .WithMany()
+            .HasForeignKey(i => i.CheckedByUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<ChecklistRun>().Property(r => r.ChecklistName).HasMaxLength(200);
+        modelBuilder.Entity<ChecklistRunItem>().Property(i => i.Text).HasMaxLength(500);
+        modelBuilder.Entity<ChecklistRunItem>().Property(i => i.Note).HasMaxLength(500);
+
+        // Aynı şube + şablon + gün için TEK çalıştırma (bir günde iki açılış olmaz) →
+        // unique index. "Bugünün açılışını iki kez başlatma" hatasını DB'de engeller.
+        modelBuilder.Entity<ChecklistRun>()
+            .HasIndex(r => new { r.BranchId, r.ChecklistId, r.RunDate })
+            .IsUnique();
+
+        // ChecklistRun + child ChecklistRunItem tenant filtresi (matching, EF uyarısı için).
+        modelBuilder.Entity<ChecklistRun>().HasQueryFilter(
+            r => r.TenantId == _tenantProvider.GetTenantId());
+        modelBuilder.Entity<ChecklistRunItem>().HasQueryFilter(
+            i => i.TenantId == _tenantProvider.GetTenantId());
 
         // User: TenantId üzerinden global filtre.
         // Her User sorgusuna otomatik "WHERE TenantId = currentTenant" eklenir.

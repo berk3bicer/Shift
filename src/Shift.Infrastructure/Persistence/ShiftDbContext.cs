@@ -29,6 +29,7 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     public DbSet<Checklist> Checklists => Set<Checklist>();
     public DbSet<ChecklistRun> ChecklistRuns => Set<ChecklistRun>();
     public DbSet<ShiftNote> ShiftNotes => Set<ShiftNote>();
+    public DbSet<Announcement> Announcements => Set<Announcement>();
     public DbSet<TimeClock> TimeClocks => Set<TimeClock>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
@@ -431,6 +432,28 @@ public class ShiftDbContext : DbContext, IShiftDbContext
         // ShiftNote tenant'a ait -> global filtre (tenant izolasyonu).
         modelBuilder.Entity<ShiftNote>().HasQueryFilter(
             n => n.TenantId == _tenantProvider.GetTenantId());
+
+        // ── Announcement (Duyuru) ──
+        // Hedef şube (nullable). Şube silinse duyuru kalsın → SetNull.
+        modelBuilder.Entity<Announcement>()
+            .HasOne(a => a.Branch)
+            .WithMany()
+            .HasForeignKey(a => a.BranchId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Duyuruyu yapan yönetici (audit). Silinse duyuru durur → SetNull.
+        modelBuilder.Entity<Announcement>()
+            .HasOne(a => a.CreatedByUser)
+            .WithMany()
+            .HasForeignKey(a => a.CreatedByUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Announcement>().Property(a => a.Title).HasMaxLength(200);
+        modelBuilder.Entity<Announcement>().Property(a => a.Body).HasMaxLength(4000);
+
+        // Announcement tenant'a ait -> global filtre (tenant izolasyonu).
+        modelBuilder.Entity<Announcement>().HasQueryFilter(
+            a => a.TenantId == _tenantProvider.GetTenantId());
 
         // User: TenantId üzerinden global filtre.
         // Her User sorgusuna otomatik "WHERE TenantId = currentTenant" eklenir.

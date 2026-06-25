@@ -19,6 +19,7 @@ public interface IShiftDbContext
     DbSet<Checklist> Checklists { get; }
     DbSet<ChecklistRun> ChecklistRuns { get; }
     DbSet<ShiftNote> ShiftNotes { get; }
+    DbSet<Announcement> Announcements { get; }
     DbSet<User> Users { get; }
     DbSet<Role> Roles { get; }
     DbSet<UserRole> UserRoles { get; }

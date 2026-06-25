@@ -28,6 +28,7 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
     public DbSet<Checklist> Checklists => Set<Checklist>();
     public DbSet<ChecklistRun> ChecklistRuns => Set<ChecklistRun>();
+    public DbSet<ShiftNote> ShiftNotes => Set<ShiftNote>();
     public DbSet<TimeClock> TimeClocks => Set<TimeClock>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
@@ -405,6 +406,31 @@ public class ShiftDbContext : DbContext, IShiftDbContext
             r => r.TenantId == _tenantProvider.GetTenantId());
         modelBuilder.Entity<ChecklistRunItem>().HasQueryFilter(
             i => i.TenantId == _tenantProvider.GetTenantId());
+
+        // ── ShiftNote (Vardiya Notu / handoff akışı) ──
+        // Şube: not bir şubeye ait. Şube silinse not geçmişi korunur → Restrict.
+        modelBuilder.Entity<ShiftNote>()
+            .HasOne(n => n.Branch)
+            .WithMany()
+            .HasForeignKey(n => n.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Notu bırakan personel (audit). Silinse not durur → SetNull.
+        modelBuilder.Entity<ShiftNote>()
+            .HasOne(n => n.CreatedByUser)
+            .WithMany()
+            .HasForeignKey(n => n.CreatedByUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<ShiftNote>().Property(n => n.Content).HasMaxLength(2000);
+
+        // Feed sorgusu: "bu şubenin bu gün(ler)deki notları" — şube + tarih sık sorgulanır.
+        modelBuilder.Entity<ShiftNote>()
+            .HasIndex(n => new { n.BranchId, n.NoteDate });
+
+        // ShiftNote tenant'a ait -> global filtre (tenant izolasyonu).
+        modelBuilder.Entity<ShiftNote>().HasQueryFilter(
+            n => n.TenantId == _tenantProvider.GetTenantId());
 
         // User: TenantId üzerinden global filtre.
         // Her User sorgusuna otomatik "WHERE TenantId = currentTenant" eklenir.

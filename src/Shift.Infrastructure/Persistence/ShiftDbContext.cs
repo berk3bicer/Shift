@@ -31,6 +31,7 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     public DbSet<ChecklistRun> ChecklistRuns => Set<ChecklistRun>();
     public DbSet<ShiftNote> ShiftNotes => Set<ShiftNote>();
     public DbSet<Announcement> Announcements => Set<Announcement>();
+    public DbSet<Attachment> Attachments => Set<Attachment>();
     public DbSet<TimeClock> TimeClocks => Set<TimeClock>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
@@ -454,6 +455,26 @@ public class ShiftDbContext : DbContext, IShiftDbContext
 
         // Announcement tenant'a ait -> global filtre (tenant izolasyonu).
         modelBuilder.Entity<Announcement>().HasQueryFilter(
+            a => a.TenantId == _tenantProvider.GetTenantId());
+
+        // ── Attachment (Dosya/Fotoğraf iliştirme) ──
+        // Yükleyen personel (audit). Silinse kayıt durur → SetNull.
+        modelBuilder.Entity<Attachment>()
+            .HasOne(a => a.UploadedByUser)
+            .WithMany()
+            .HasForeignKey(a => a.UploadedByUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Attachment>().Property(a => a.StorageKey).HasMaxLength(500);
+        modelBuilder.Entity<Attachment>().Property(a => a.ContentType).HasMaxLength(100);
+        modelBuilder.Entity<Attachment>().Property(a => a.FileName).HasMaxLength(255);
+
+        // Sorgu: "şu varlığın iliştirmeleri" (OwnerType + OwnerId) sık sorgulanır.
+        modelBuilder.Entity<Attachment>()
+            .HasIndex(a => new { a.OwnerType, a.OwnerId });
+
+        // Attachment tenant'a ait -> global filtre (tenant izolasyonu).
+        modelBuilder.Entity<Attachment>().HasQueryFilter(
             a => a.TenantId == _tenantProvider.GetTenantId());
 
         // User: TenantId üzerinden global filtre.

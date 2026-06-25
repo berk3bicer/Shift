@@ -5,6 +5,7 @@ using Shift.Application.Common.Interfaces;
 using Shift.Infrastructure.Authentication;
 using Shift.Infrastructure.MultiTenancy;
 using Shift.Infrastructure.Persistence;
+using Shift.Infrastructure.Storage;
 
 
 namespace Shift.Infrastructure;
@@ -35,6 +36,20 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserProvider>(sp => sp.GetRequiredService<CurrentUserProvider>());
 
         services.AddHttpContextAccessor();
+
+        // Dosya depolama: ayarları bağla + sağlayıcıyı seç. Şimdilik yerel mock;
+        // R2 credential gelince Provider="R2" + R2FileStorage takılır (aynı IFileStorage).
+        var fsSection = configuration.GetSection(FileStorageOptions.SectionName);
+        services.Configure<FileStorageOptions>(opt =>
+        {
+            opt.Provider = fsSection["Provider"] ?? opt.Provider;
+            opt.LocalBasePath = fsSection["LocalBasePath"] ?? opt.LocalBasePath;
+            opt.PublicBaseUrl = fsSection["PublicBaseUrl"] ?? opt.PublicBaseUrl;
+            opt.SigningSecret = fsSection["SigningSecret"] ?? opt.SigningSecret;
+            if (int.TryParse(fsSection["UrlExpiryMinutes"], out var m)) opt.UrlExpiryMinutes = m;
+        });
+        services.AddScoped<LocalFileStorage>();
+        services.AddScoped<IFileStorage>(sp => sp.GetRequiredService<LocalFileStorage>());
 
         return services;
     }

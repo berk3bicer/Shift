@@ -15,6 +15,7 @@ public interface IShiftDbContext
     DbSet<TimeClock> TimeClocks { get; }
     DbSet<OvertimeSettings> OvertimeSettings { get; }
     DbSet<OvertimeRecord> OvertimeRecords { get; }
+    DbSet<TaskItem> Tasks { get; }
     DbSet<User> Users { get; }
     DbSet<Role> Roles { get; }
     DbSet<UserRole> UserRoles { get; }

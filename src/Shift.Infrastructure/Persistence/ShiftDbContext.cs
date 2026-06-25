@@ -25,6 +25,7 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<OvertimeSettings> OvertimeSettings => Set<OvertimeSettings>();
     public DbSet<OvertimeRecord> OvertimeRecords => Set<OvertimeRecord>();
+    public DbSet<TaskItem> Tasks => Set<TaskItem>();
     public DbSet<TimeClock> TimeClocks => Set<TimeClock>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
@@ -277,6 +278,55 @@ public class ShiftDbContext : DbContext, IShiftDbContext
         // TimeClock tenant'a ait -> global filtre (izolasyon)
         modelBuilder.Entity<TimeClock>().HasQueryFilter(
             tc => tc.TenantId == _tenantProvider.GetTenantId());
+
+        // ── TaskItem (Kanban Görev) ──
+        // Branch -> Tasks: görev bir şubeye ait. Şube silinse görev geçmişi uçmasın.
+        modelBuilder.Entity<TaskItem>()
+            .HasOne(t => t.Branch)
+            .WithMany()
+            .HasForeignKey(t => t.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Atanan personel: silinirse görev "havuza" döner (SetNull), görev korunur.
+        modelBuilder.Entity<TaskItem>()
+            .HasOne(t => t.AssignedUser)
+            .WithMany()
+            .HasForeignKey(t => t.AssignedUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Atanan pozisyon: silinirse atama kopar (SetNull), görev korunur.
+        modelBuilder.Entity<TaskItem>()
+            .HasOne(t => t.AssignedPosition)
+            .WithMany()
+            .HasForeignKey(t => t.AssignedPositionId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Oluşturan/atayan yönetici (audit). İKİNCİ User FK'si — TimeOffRequest deseni.
+        // EF'e açıkça ayrı ilişki olduğunu söylüyoruz. SetNull: yönetici silinse görev durur.
+        modelBuilder.Entity<TaskItem>()
+            .HasOne(t => t.CreatedByUser)
+            .WithMany()
+            .HasForeignKey(t => t.CreatedByUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Tamamlayan personel (audit). ÜÇÜNCÜ User FK'si. Aynı desen, SetNull.
+        modelBuilder.Entity<TaskItem>()
+            .HasOne(t => t.CompletedByUser)
+            .WithMany()
+            .HasForeignKey(t => t.CompletedByUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Metin alanları için makul üst sınır (DB'de nvarchar/text boyutu).
+        modelBuilder.Entity<TaskItem>().Property(t => t.Title).HasMaxLength(200);
+        modelBuilder.Entity<TaskItem>().Property(t => t.Description).HasMaxLength(2000);
+
+        // Sorgu hızı: pano "şube + durum" ile sorgulanır (Yapılacak sütununu çek vb.).
+        modelBuilder.Entity<TaskItem>()
+            .HasIndex(t => new { t.BranchId, t.Status });
+
+        // TaskItem tenant'a ait -> global filtre (tenant izolasyonu)
+        modelBuilder.Entity<TaskItem>().HasQueryFilter(
+            t => t.TenantId == _tenantProvider.GetTenantId());
 
         // User: TenantId üzerinden global filtre.
         // Her User sorgusuna otomatik "WHERE TenantId = currentTenant" eklenir.

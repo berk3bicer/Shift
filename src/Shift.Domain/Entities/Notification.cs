@@ -31,5 +31,7 @@ public class Notification : BaseEntity, ITenantEntity
 public enum NotificationType
 {
     ShiftPublished = 0,  // Vardiya/program yayınlandı
-    LateClockIn = 1      // Personel vardiyasına geç giriş yaptı
+    LateClockIn = 1,     // Personel vardiyasına geç giriş yaptı
+    TaskAssigned = 2,    // Sana (veya pozisyonuna) bir görev atandı
+    TaskCompleted = 3    // Atadığın görev tamamlandı (atayana/oluşturana gider)
 }

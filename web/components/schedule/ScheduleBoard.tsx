@@ -147,7 +147,7 @@ export default function ScheduleBoard({
         <button
           onClick={onPublishWeek}
           disabled={publishing || draftCount === 0}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {publishing ? "Yayınlanıyor…" : `Haftayı Yayınla${draftCount ? ` (${draftCount} taslak)` : ""}`}
         </button>
@@ -174,7 +174,7 @@ export default function ScheduleBoard({
               onDragLeave={() => setOverDay((d) => (d === day.iso ? null : d))}
               onDrop={() => onDropDay(day.iso)}
               className={`min-h-[16rem] rounded-xl p-3 transition-all duration-200 ${
-                isOver ? "bg-indigo-50/80 ring-2 ring-indigo-200" : "bg-slate-50/50 border border-slate-100"
+                isOver ? "bg-slate-200/50 ring-2 ring-slate-300" : "bg-slate-50/50 border border-slate-100"
               }`}
             >
               <div className="mb-4 flex items-start justify-between px-1">
@@ -184,7 +184,7 @@ export default function ScheduleBoard({
                 </div>
                 <button
                   onClick={() => setModalDay(day.iso)}
-                  className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200/50 text-slate-500 transition-colors hover:bg-indigo-100 hover:text-indigo-600"
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200/50 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-900"
                   title="Yeni vardiya ekle"
                   aria-label="Yeni vardiya"
                 >
@@ -223,7 +223,7 @@ export default function ScheduleBoard({
                               autoFocus
                               defaultValue={s.userId ?? ""}
                               onChange={(e) => onAssign(s, e.target.value)}
-                              className="w-full rounded-lg border border-slate-300 bg-slate-50 px-2 py-1.5 text-xs text-slate-900 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+                              className="w-full rounded-lg border border-slate-300 bg-slate-50 px-2 py-1.5 text-xs text-slate-900 outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-500 transition-colors"
                             >
                               <option value="">Açık vardiya (atama yok)</option>
                               {staff.map((m) => (

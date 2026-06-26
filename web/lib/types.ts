@@ -104,10 +104,30 @@ export interface TaskDto {
   completedAt: string | null;
 }
 
-// Backend GlobalExceptionHandler'ın ProblemDetails çıktısı.
 export interface ProblemDetails {
   status: number;
   title: string;
   detail?: string;
   errors?: string[];
+}
+
+// ── Müsaitlik (Availability) ──
+export enum DayOfWeek {
+  Sunday = 0,
+  Monday = 1,
+  Tuesday = 2,
+  Wednesday = 3,
+  Thursday = 4,
+  Friday = 5,
+  Saturday = 6,
+}
+
+export interface AvailabilityDto {
+  id: string;
+  userId: string;
+  userFullName: string | null;
+  dayOfWeek: DayOfWeek;
+  startTime: string; // "HH:mm" veya "HH:mm:ss"
+  endTime: string;
+  reason: string | null;
 }

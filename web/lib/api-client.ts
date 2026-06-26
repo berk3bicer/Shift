@@ -171,3 +171,45 @@ export async function publishWeek(
     notifiedUserCount: data.notifiedUserCount ?? 0,
   };
 }
+
+// ── Müsaitlik (Availability) ──
+
+export async function createAvailability(payload: {
+  userId: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+  reason: string | null;
+}): Promise<{ id: string }> {
+  if (isMockMode) {
+    console.log("[MOCK] Availability created", payload);
+    await new Promise(r => setTimeout(r, 400));
+    return { id: "mock-avail-" + Date.now() };
+  }
+
+  const res = await fetch(`/api/proxy/api/availability`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Eklenemedi (${res.status}).`);
+  }
+  const data = await res.json();
+  return { id: data.id };
+}
+
+export async function deleteAvailability(id: string): Promise<void> {
+  if (isMockMode) {
+    console.log(`[MOCK] Availability ${id} deleted`);
+    await new Promise(r => setTimeout(r, 300));
+    return;
+  }
+
+  const res = await fetch(`/api/proxy/api/availability/${id}`, { method: "DELETE" });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Silinemedi (${res.status}).`);
+  }
+}

@@ -1,6 +1,6 @@
 import "server-only";
 import { getToken } from "./session";
-import type { BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskDto } from "./types";
+import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskDto } from "./types";
 
 // SUNUCU tarafı API istemcisi. Server component / route handler buradan .NET'i DOĞRUDAN
 // çağırır (server-to-server → CORS YOK; backend'e dokunmadan). Token httpOnly cookie'den.
@@ -44,6 +44,10 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
         { id: "shift2", branchId: "b1", positionId: "p2", userId: "s2", startTime: start.toISOString(), endTime: end.toISOString(), notes: "", status: 0 }
       ] as any;
     }
+    if (path.includes("/api/availability")) return [
+      { id: "a1", userId: "s1", userFullName: "Ahmet Yılmaz", dayOfWeek: 2, startTime: "13:00", endTime: "18:00", reason: "Okul" },
+      { id: "a2", userId: "s1", userFullName: "Ahmet Yılmaz", dayOfWeek: 4, startTime: "09:00", endTime: "12:00", reason: "Kurs" },
+    ] as any;
     return [] as any; // default return array to prevent map errors
   }
 
@@ -94,3 +98,8 @@ export function getShifts(branchId: string, rangeStartIso: string, rangeEndIso: 
   });
   return apiFetch<ShiftDto[]>(`/api/shifts?${qs.toString()}`);
 }
+
+export const getAvailabilities = (userId?: string) => {
+  const qs = userId ? `?userId=${userId}` : "";
+  return apiFetch<AvailabilityDto[]>(`/api/availability${qs}`);
+};

@@ -12,20 +12,24 @@ export class ApiClientError extends Error {
   }
 }
 
-// Vardiyayı günceller (gün-taşıma VEYA kişi-atama). PUT FULL update ister (patch değil)
-// → ShiftDto'nun tüm alanlarını geri gönderir, yalnız overrides'taki alan(lar)ı değiştirir.
-// userId null verilebilir (açık vardiya / atama kaldır). Dönüş: backend Warnings[]
-// (İş Kanunu limitleri — engellemez). 4xx → throw (çakışma → çağıran geri alır).
+const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK === "true";
+
+// Vardiyayı günceller
 export async function updateShift(
   shift: ShiftDto,
   overrides: { startTime?: string; endTime?: string; userId?: string | null },
 ): Promise<{ warnings: string[] }> {
+  if (isMockMode) {
+    console.log("[MOCK] Shift updated");
+    await new Promise(r => setTimeout(r, 400));
+    return { warnings: [] };
+  }
+
   const res = await fetch(`/api/proxy/api/shifts/${shift.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       positionId: shift.positionId,
-      // userId override'ı null OLABİLİR → 'in' kontrolüyle ayır (undefined=değişme).
       userId: "userId" in overrides ? overrides.userId : shift.userId,
       startTime: overrides.startTime ?? shift.startTime,
       endTime: overrides.endTime ?? shift.endTime,
@@ -50,6 +54,12 @@ export async function updateShift(
 // Görevi başka kolona taşı (status değişir). Backend serbest hareket + Done yan etkileri.
 // Sonuç warnings taşımaz; hata (nadir 400 / ağ) → throw → hook geri alır.
 export async function moveTask(id: string, newStatus: number): Promise<void> {
+  if (isMockMode) {
+    console.log(`[MOCK] Task ${id} moved to status ${newStatus}`);
+    await new Promise(r => setTimeout(r, 300)); // Simulate network latency
+    return;
+  }
+
   const res = await fetch(`/api/proxy/api/tasks/${id}/move`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -71,6 +81,12 @@ export async function createTask(payload: {
   assignedUserId: string | null;
   assignedPositionId: string | null;
 }): Promise<{ taskId: string }> {
+  if (isMockMode) {
+    console.log("[MOCK] Task created", payload);
+    await new Promise(r => setTimeout(r, 500)); // Simulate network latency
+    return { taskId: "mock-task-" + Date.now() };
+  }
+
   const res = await fetch(`/api/proxy/api/tasks`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -94,6 +110,12 @@ export async function createShift(payload: {
   endTime: string;
   notes: string | null;
 }): Promise<{ shiftId: string; warnings: string[] }> {
+  if (isMockMode) {
+    console.log("[MOCK] Shift created", payload);
+    await new Promise(r => setTimeout(r, 500));
+    return { shiftId: "mock-shift-" + Date.now(), warnings: [] };
+  }
+
   const res = await fetch(`/api/proxy/api/shifts`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -109,6 +131,12 @@ export async function createShift(payload: {
 
 // Vardiya sil (HARD delete — geri alınamaz). 204 döner.
 export async function deleteShift(id: string): Promise<void> {
+  if (isMockMode) {
+    console.log(`[MOCK] Shift ${id} deleted`);
+    await new Promise(r => setTimeout(r, 300));
+    return;
+  }
+
   const res = await fetch(`/api/proxy/api/shifts/${id}`, { method: "DELETE" });
   if (!res.ok) {
     const problem = await res.json().catch(() => null);
@@ -122,6 +150,12 @@ export async function publishWeek(
   rangeStartIso: string,
   rangeEndIso: string,
 ): Promise<{ publishedCount: number; notifiedUserCount: number }> {
+  if (isMockMode) {
+    console.log(`[MOCK] Week published`);
+    await new Promise(r => setTimeout(r, 600));
+    return { publishedCount: 5, notifiedUserCount: 2 };
+  }
+
   const res = await fetch(`/api/proxy/api/shifts/publish-week`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

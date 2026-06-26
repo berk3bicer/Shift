@@ -18,6 +18,35 @@ export class ApiError extends Error {
 
 // Token'lı temel istek. Oturum yoksa 401 fırlatır (çağıran login'e yönlendirir).
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  // MOCK DATA FALLBACK FOR UI TESTING
+  const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK === "true"; 
+
+  if (isMockMode) {
+    console.log(`[MOCK] Intercepted ${path}`);
+    if (path.includes("/api/auth/me")) return { id: "user1", email: "admin@shift.com", roles: ["Admin"], branchId: "b1", name: "Test Admin" } as any;
+    if (path.includes("/api/branches")) return [{ id: "b1", name: "Kadıköy Merkez Şubesi" }] as any;
+    if (path.includes("/api/positions")) return [{ id: "p1", name: "Barista", defaultColor: "bg-amber-500 text-white" }, { id: "p2", name: "Garson", defaultColor: "bg-blue-500 text-white" }] as any;
+    if (path.includes("/api/staff")) return [
+      { id: "s1", fullName: "Ahmet Yılmaz", positionName: "Barista", email: "ahmet@shift.com", branchId: "b1", role: 1 },
+      { id: "s2", fullName: "Ayşe Demir", positionName: "Garson", email: "ayse@shift.com", branchId: "b1", role: 1 }
+    ] as any;
+    if (path.includes("/api/tasks")) return [
+      { id: "t1", branchId: "b1", title: "Kahve makinesini temizle", description: "Gün sonu temizliği", priority: 2, category: 0, status: 0, assignedUserName: "Ahmet Yılmaz", assignedUserId: "s1" },
+      { id: "t2", branchId: "b1", title: "Stok sayımı", description: "Süt ve kahve", priority: 1, category: 1, status: 1, assignedUserName: "Ayşe Demir", assignedUserId: "s2" },
+      { id: "t3", branchId: "b1", title: "Masa 4 adisyon", description: "", priority: 0, category: 2, status: 2 }
+    ] as any;
+    if (path.includes("/api/shifts")) {
+      const today = new Date();
+      const start = new Date(today.setHours(9, 0, 0, 0));
+      const end = new Date(today.setHours(17, 0, 0, 0));
+      return [
+        { id: "shift1", branchId: "b1", positionId: "p1", userId: "s1", startTime: start.toISOString(), endTime: end.toISOString(), notes: "Sabah vardiyası", status: 1 },
+        { id: "shift2", branchId: "b1", positionId: "p2", userId: "s2", startTime: start.toISOString(), endTime: end.toISOString(), notes: "", status: 0 }
+      ] as any;
+    }
+    return [] as any; // default return array to prevent map errors
+  }
+
   const token = await getToken();
   if (!token) throw new ApiError(401, null, "Oturum yok.");
 

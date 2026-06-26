@@ -263,3 +263,36 @@ export async function decideTimeOffRequest(
     throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Karar işlenemedi (${res.status}).`);
   }
 }
+
+// ── Giriş-Çıkış (Time Clock) ──
+export async function clockIn(branchId: string): Promise<void> {
+  if (isMockMode) {
+    console.log(`[MOCK] Clocked in at branch ${branchId}`);
+    await new Promise(r => setTimeout(r, 400));
+    return;
+  }
+
+  const res = await fetch(`/api/proxy/api/timeclocks/clock-in`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ branchId }),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Giriş yapılamadı (${res.status}).`);
+  }
+}
+
+export async function clockOut(): Promise<void> {
+  if (isMockMode) {
+    console.log(`[MOCK] Clocked out`);
+    await new Promise(r => setTimeout(r, 400));
+    return;
+  }
+
+  const res = await fetch(`/api/proxy/api/timeclocks/clock-out`, { method: "POST" });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Çıkış yapılamadı (${res.status}).`);
+  }
+}

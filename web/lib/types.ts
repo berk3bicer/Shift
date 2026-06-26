@@ -157,3 +157,15 @@ export interface TimeOffRequestDto {
   decidedByUserId: string | null;
   decidedByUserFullName: string | null;
 }
+
+// ── Giriş-Çıkış (Time Clock) ──
+export interface TimeClockDto {
+  id: string;
+  userId: string;
+  userFullName: string | null;
+  branchId: string;
+  checkInTime: string; // ISO
+  checkOutTime: string | null; // ISO (null = halen içeride/açık kayıt)
+  isLate: boolean;
+  workedMinutes: number | null; // checkOutTime doluysa hesaplanır
+}

@@ -1,6 +1,6 @@
 import "server-only";
 import { getToken } from "./session";
-import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskDto, TimeOffRequestDto } from "./types";
+import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskDto, TimeOffRequestDto, TimeClockDto } from "./types";
 
 // SUNUCU tarafı API istemcisi. Server component / route handler buradan .NET'i DOĞRUDAN
 // çağırır (server-to-server → CORS YOK; backend'e dokunmadan). Token httpOnly cookie'den.
@@ -54,6 +54,16 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
       return [
         { id: "to1", userId: "s1", userFullName: "Ahmet Yılmaz", startDate: today.toISOString().split("T")[0], endDate: nextWeek.toISOString().split("T")[0], type: 0, status: 0, note: "Yıllık izin", decidedByUserId: null, decidedByUserFullName: null },
         { id: "to2", userId: "s2", userFullName: "Ayşe Demir", startDate: today.toISOString().split("T")[0], endDate: today.toISOString().split("T")[0], type: 1, status: 1, note: "Hastane randevusu", decidedByUserId: "user1", decidedByUserFullName: "Test Admin" },
+      ] as any;
+    }
+    if (path.includes("/api/timeclocks")) {
+      const today = new Date();
+      const morning = new Date(today.setHours(9, 15, 0, 0));
+      const evening = new Date(today.setHours(17, 10, 0, 0));
+      const justNow = new Date();
+      return [
+        { id: "tc1", userId: "s1", userFullName: "Ahmet Yılmaz", branchId: "b1", checkInTime: morning.toISOString(), checkOutTime: evening.toISOString(), isLate: true, workedMinutes: 475 },
+        { id: "tc2", userId: "s2", userFullName: "Ayşe Demir", branchId: "b1", checkInTime: justNow.toISOString(), checkOutTime: null, isLate: false, workedMinutes: null },
       ] as any;
     }
     return [] as any; // default return array to prevent map errors
@@ -113,3 +123,9 @@ export const getAvailabilities = (userId?: string) => {
 };
 
 export const getTimeOffRequests = () => apiFetch<TimeOffRequestDto[]>("/api/timeoffrequests");
+
+export const getTimeClocks = (branchId: string, mineOnly: boolean = false) => {
+  const qs = new URLSearchParams();
+  if (branchId && !mineOnly) qs.set("branchId", branchId);
+  return apiFetch<TimeClockDto[]>(`/api/timeclocks${mineOnly ? '/mine' : ''}?${qs.toString()}`);
+};

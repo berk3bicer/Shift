@@ -19,8 +19,7 @@ import {
   publishWeek,
   ApiClientError,
 } from "@/lib/api-client";
-
-type Feedback = { type: "error" | "warning" | "success"; text: string } | null;
+import { useOptimisticList } from "@/lib/useOptimisticList";
 
 // Haftalık çizelge — tüm yönetim etkileşimleri:
 //   • Gün-taşıma (sürükle) + kişi-atama (tıkla) → optimistic + rollback (applyUpdate).
@@ -39,11 +38,11 @@ export default function ScheduleBoard({
   staff: StaffDto[];
   positions: PositionDto[];
 }) {
-  const [shifts, setShifts] = useState<ShiftDto[]>(initialShifts);
-  const [feedback, setFeedback] = useState<Feedback>(null);
+  // Optimistic+rollback çekirdeği paylaşılan hook'tan (Kanban da aynısını kullanır).
+  const { items: shifts, setItems: setShifts, feedback, setFeedback, pendingId: savingId, mutate } =
+    useOptimisticList<ShiftDto>(initialShifts);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [overDay, setOverDay] = useState<string | null>(null);
-  const [savingId, setSavingId] = useState<string | null>(null);
   const [assigningId, setAssigningId] = useState<string | null>(null);
   const [modalDay, setModalDay] = useState<string | null>(null);
   const [publishing, setPublishing] = useState(false);
@@ -63,27 +62,6 @@ export default function ScheduleBoard({
     arr.sort((a, b) => formatTime(a.startTime).localeCompare(formatTime(b.startTime)));
   }
 
-  // Optimistic + rollback çekirdeği (sürükle/atama).
-  async function applyUpdate(
-    shift: ShiftDto,
-    patch: Partial<ShiftDto>,
-    overrides: { startTime?: string; endTime?: string; userId?: string | null },
-  ) {
-    const prev = shifts;
-    setShifts((cur) => cur.map((s) => (s.id === shift.id ? { ...s, ...patch } : s)));
-    setFeedback(null);
-    setSavingId(shift.id);
-    try {
-      const { warnings } = await updateShift(shift, overrides);
-      if (warnings.length > 0) setFeedback({ type: "warning", text: warnings.join("  •  ") });
-    } catch (e) {
-      setShifts(prev);
-      setFeedback({ type: "error", text: e instanceof ApiClientError ? e.message : "İşlem başarısız." });
-    } finally {
-      setSavingId(null);
-    }
-  }
-
   async function onDropDay(targetDayIso: string) {
     const id = draggingId;
     setDraggingId(null);
@@ -95,7 +73,12 @@ export default function ScheduleBoard({
     if (delta === 0) return;
     const newStart = shiftIsoByDays(shift.startTime, delta);
     const newEnd = shiftIsoByDays(shift.endTime, delta);
-    await applyUpdate(shift, { startTime: newStart, endTime: newEnd }, { startTime: newStart, endTime: newEnd });
+    await mutate({
+      id: shift.id,
+      optimistic: (items) =>
+        items.map((s) => (s.id === shift.id ? { ...s, startTime: newStart, endTime: newEnd } : s)),
+      run: () => updateShift(shift, { startTime: newStart, endTime: newEnd }),
+    });
   }
 
   function onAssign(shift: ShiftDto, value: string) {
@@ -103,21 +86,23 @@ export default function ScheduleBoard({
     const newUserId = value === "" ? null : value;
     if (newUserId === shift.userId) return;
     const newName = newUserId ? staffById.get(newUserId) ?? null : null;
-    applyUpdate(shift, { userId: newUserId, userFullName: newName }, { userId: newUserId });
+    mutate({
+      id: shift.id,
+      optimistic: (items) =>
+        items.map((s) => (s.id === shift.id ? { ...s, userId: newUserId, userFullName: newName } : s)),
+      run: () => updateShift(shift, { userId: newUserId }),
+    });
   }
 
   async function onDelete(shift: ShiftDto) {
     if (!confirm("Bu vardiya kalıcı olarak silinecek (geri alınamaz). Emin misiniz?")) return;
     setAssigningId(null);
-    setSavingId(shift.id);
     setFeedback(null);
     try {
       await deleteShift(shift.id);
       setShifts((cur) => cur.filter((s) => s.id !== shift.id));
     } catch (e) {
       setFeedback({ type: "error", text: e instanceof ApiClientError ? e.message : "Silinemedi." });
-    } finally {
-      setSavingId(null);
     }
   }
 

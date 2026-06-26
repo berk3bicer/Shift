@@ -95,7 +95,7 @@ export default function ShiftModal({
           <select
             value={positionId}
             onChange={(e) => setPositionId(e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-2 py-2 text-sm"
+            className="w-full rounded-md border border-gray-300 bg-white px-2 py-2 text-sm text-slate-900 outline-none focus:border-gray-900"
           >
             {positions.map((p) => (
               <option key={p.id} value={p.id}>{p.name}</option>
@@ -110,7 +110,7 @@ export default function ShiftModal({
               type="time"
               value={start}
               onChange={(e) => setStart(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-2 py-2 text-sm"
+              className="w-full rounded-md border border-gray-300 bg-white px-2 py-2 text-sm text-slate-900 outline-none focus:border-gray-900"
             />
           </div>
           <div className="flex-1 space-y-1">
@@ -119,7 +119,7 @@ export default function ShiftModal({
               type="time"
               value={end}
               onChange={(e) => setEnd(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-2 py-2 text-sm"
+              className="w-full rounded-md border border-gray-300 bg-white px-2 py-2 text-sm text-slate-900 outline-none focus:border-gray-900"
             />
           </div>
         </div>
@@ -129,7 +129,7 @@ export default function ShiftModal({
           <select
             value={userId}
             onChange={(e) => setUserId(e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-2 py-2 text-sm"
+            className="w-full rounded-md border border-gray-300 bg-white px-2 py-2 text-sm text-slate-900 outline-none focus:border-gray-900"
           >
             <option value="">Açık vardiya (atama yok)</option>
             {staff.map((m) => (

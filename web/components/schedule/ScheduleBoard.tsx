@@ -142,11 +142,12 @@ export default function ScheduleBoard({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+        <h2 className="text-xl font-semibold tracking-tight text-slate-900">Vardiya Çizelgesi</h2>
         <button
           onClick={onPublishWeek}
           disabled={publishing || draftCount === 0}
-          className="rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {publishing ? "Yayınlanıyor…" : `Haftayı Yayınla${draftCount ? ` (${draftCount} taslak)` : ""}`}
         </button>
@@ -162,7 +163,7 @@ export default function ScheduleBoard({
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-7">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-7">
         {days.map((day) => {
           const dayShifts = byDay.get(day.iso) ?? [];
           const isOver = overDay === day.iso;
@@ -172,25 +173,27 @@ export default function ScheduleBoard({
               onDragOver={(e) => { e.preventDefault(); if (overDay !== day.iso) setOverDay(day.iso); }}
               onDragLeave={() => setOverDay((d) => (d === day.iso ? null : d))}
               onDrop={() => onDropDay(day.iso)}
-              className={`min-h-28 rounded-lg p-2 transition-colors ${isOver ? "bg-blue-100 ring-2 ring-blue-300" : "bg-gray-100/60"}`}
+              className={`min-h-[16rem] rounded-xl p-3 transition-all duration-200 ${
+                isOver ? "bg-indigo-50/80 ring-2 ring-indigo-200" : "bg-slate-50/50 border border-slate-100"
+              }`}
             >
-              <div className="mb-2 flex items-start justify-between px-1">
+              <div className="mb-4 flex items-start justify-between px-1">
                 <div>
-                  <div className="text-sm font-medium text-gray-900">{day.name}</div>
-                  <div className="text-xs text-gray-400">{day.label}</div>
+                  <div className="text-sm font-bold text-slate-900">{day.name}</div>
+                  <div className="text-xs font-medium text-slate-400">{day.label}</div>
                 </div>
                 <button
                   onClick={() => setModalDay(day.iso)}
-                  className="rounded px-1.5 text-lg leading-none text-gray-400 hover:bg-gray-200 hover:text-gray-700"
-                  title="Yeni vardiya"
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200/50 text-slate-500 transition-colors hover:bg-indigo-100 hover:text-indigo-600"
+                  title="Yeni vardiya ekle"
                   aria-label="Yeni vardiya"
                 >
-                  +
+                  <span className="text-sm leading-none">+</span>
                 </button>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {dayShifts.length === 0 ? (
-                  <div className="px-1 py-4 text-center text-xs text-gray-300">—</div>
+                  <div className="py-6 text-center text-xs font-medium text-slate-300">Vardiya yok</div>
                 ) : (
                   dayShifts.map((s) => (
                     <div key={s.id} className="relative">
@@ -211,16 +214,16 @@ export default function ScheduleBoard({
 
                       {assigningId === s.id && (
                         <div
-                          className="absolute left-0 right-0 top-full z-10 mt-1 space-y-2 rounded-md border border-gray-200 bg-white p-2 shadow-lg"
+                          className="absolute left-0 right-0 top-full z-10 mt-1.5 space-y-3 rounded-xl border border-slate-200 bg-white p-3 shadow-xl ring-1 ring-slate-900/5"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <div>
-                            <label className="mb-1 block text-[11px] font-medium text-gray-500">Kişi ata</label>
+                            <label className="mb-1.5 block text-xs font-semibold text-slate-700">Kişi ata</label>
                             <select
                               autoFocus
                               defaultValue={s.userId ?? ""}
                               onChange={(e) => onAssign(s, e.target.value)}
-                              className="w-full rounded border border-gray-300 px-1 py-1 text-xs outline-none focus:border-gray-900"
+                              className="w-full rounded-lg border border-slate-300 bg-slate-50 px-2 py-1.5 text-xs text-slate-900 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
                             >
                               <option value="">Açık vardiya (atama yok)</option>
                               {staff.map((m) => (
@@ -232,9 +235,9 @@ export default function ScheduleBoard({
                           </div>
                           <button
                             onClick={() => onDelete(s)}
-                            className="w-full rounded border border-red-200 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
+                            className="w-full rounded-lg bg-red-50 px-2 py-1.5 text-xs font-semibold text-red-600 transition-colors hover:bg-red-100"
                           >
-                            Sil
+                            Vardiyayı Sil
                           </button>
                         </div>
                       )}

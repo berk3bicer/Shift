@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { TimeClockDto } from "@/lib/types";
+import type { TimeClockDto, StaffDto } from "@/lib/types";
 import { clockIn, clockOut, ApiClientError } from "@/lib/api-client";
 import { LogIn, LogOut, Clock, AlertTriangle, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -9,14 +9,15 @@ import { useRouter } from "next/navigation";
 export default function TimeClockBoard({
   initialClocks,
   branchId,
-  currentUserId,
+  staff,
 }: {
   initialClocks: TimeClockDto[];
   branchId: string;
-  currentUserId: string;
+  staff: StaffDto[];
 }) {
   const router = useRouter();
   const [clocks, setClocks] = useState<TimeClockDto[]>(initialClocks);
+  const [currentUserId, setCurrentUserId] = useState<string>(staff[0]?.id || "s1");
   const [loading, setLoading] = useState<"in" | "out" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,10 +30,11 @@ export default function TimeClockBoard({
     try {
       await clockIn(branchId);
       // Optimistic update for mock mode
+      const member = staff.find(s => s.id === currentUserId);
       const newClock: TimeClockDto = {
         id: "mock-new-" + Date.now(),
         userId: currentUserId,
-        userFullName: currentUserId === "s2" ? "Ayşe Demir" : "Demo Kullanıcı",
+        userFullName: member?.fullName || "Bilinmeyen Personel",
         branchId,
         checkInTime: new Date().toISOString(),
         checkOutTime: null,
@@ -78,24 +80,38 @@ export default function TimeClockBoard({
           <p className="text-sm text-slate-500">Personelin gerçek çalışma saatlerini ve geç girişlerini takip edin.</p>
         </div>
         
-        <div className="flex items-center gap-3 rounded-xl bg-white p-2 shadow-sm ring-1 ring-slate-200">
-          <button
-            onClick={handleClockIn}
-            disabled={!!myOpenRecord || loading !== null}
-            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading === "in" ? <Clock className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
-            Giriş Yap (Clock In)
-          </button>
-          
-          <button
-            onClick={handleClockOut}
-            disabled={!myOpenRecord || loading !== null}
-            className="flex items-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-rose-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading === "out" ? <Clock className="h-4 w-4 animate-spin" /> : <LogOut className="h-4 w-4" />}
-            Çıkış Yap (Clock Out)
-          </button>
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-slate-600">Kimlik:</span>
+            <select
+              value={currentUserId}
+              onChange={(e) => setCurrentUserId(e.target.value)}
+              className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-500"
+            >
+              {staff.map(s => (
+                <option key={s.id} value={s.id}>{s.fullName}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-1.5 ring-1 ring-slate-200">
+            <button
+              onClick={handleClockIn}
+              disabled={!!myOpenRecord || loading !== null}
+              className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading === "in" ? <Clock className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
+              Giriş Yap
+            </button>
+            
+            <button
+              onClick={handleClockOut}
+              disabled={!myOpenRecord || loading !== null}
+              className="flex items-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-rose-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading === "out" ? <Clock className="h-4 w-4 animate-spin" /> : <LogOut className="h-4 w-4" />}
+              Çıkış Yap
+            </button>
+          </div>
         </div>
       </div>
 

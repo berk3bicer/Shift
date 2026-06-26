@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { TimeClockDto } from "@/lib/types";
 import { clockIn, clockOut, ApiClientError } from "@/lib/api-client";
-import { LogIn, LogOut, Clock, AlertTriangle } from "lucide-react";
+import { LogIn, LogOut, Clock, AlertTriangle, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function TimeClockBoard({

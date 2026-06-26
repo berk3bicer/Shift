@@ -211,5 +211,54 @@ export async function deleteAvailability(id: string): Promise<void> {
   if (!res.ok) {
     const problem = await res.json().catch(() => null);
     throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Silinemedi (${res.status}).`);
+}
+
+// ── İzin (Time Off) ──
+export async function createTimeOffRequest(payload: {
+  userId: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
+  type: number;
+  note: string | null;
+}): Promise<{ id: string }> {
+  if (isMockMode) {
+    console.log("[MOCK] Time Off created", payload);
+    await new Promise(r => setTimeout(r, 400));
+    return { id: "mock-to-" + Date.now() };
+  }
+
+  const res = await fetch(`/api/proxy/api/timeoffrequests`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Talep oluşturulamadı (${res.status}).`);
+  }
+  const data = await res.json();
+  return { id: data.id };
+}
+
+export async function decideTimeOffRequest(
+  id: string,
+  decision: "Approve" | "Reject",
+  note?: string
+): Promise<void> {
+  if (isMockMode) {
+    console.log(`[MOCK] Time Off ${id} decided as ${decision} with note: ${note}`);
+    await new Promise(r => setTimeout(r, 400));
+    return;
+  }
+
+  const path = decision === "Approve" ? "approve" : "reject";
+  const res = await fetch(`/api/proxy/api/timeoffrequests/${id}/${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ note }),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Karar işlenemedi (${res.status}).`);
   }
 }

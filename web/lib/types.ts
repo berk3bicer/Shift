@@ -131,3 +131,29 @@ export interface AvailabilityDto {
   endTime: string;
   reason: string | null;
 }
+
+// ── İzin (Time Off) ──
+export enum TimeOffStatus {
+  Pending = 0,
+  Approved = 1,
+  Rejected = 2,
+}
+
+export enum TimeOffType {
+  Annual = 0, // Yıllık izin
+  Sick = 1,   // Hastalık
+  Excuse = 2, // Mazeret
+}
+
+export interface TimeOffRequestDto {
+  id: string;
+  userId: string;
+  userFullName: string | null;
+  startDate: string; // "YYYY-MM-DD"
+  endDate: string; // "YYYY-MM-DD"
+  type: TimeOffType;
+  status: TimeOffStatus;
+  note: string | null;
+  decidedByUserId: string | null;
+  decidedByUserFullName: string | null;
+}

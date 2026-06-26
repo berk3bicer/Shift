@@ -1,6 +1,6 @@
 import "server-only";
 import { getToken } from "./session";
-import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskDto } from "./types";
+import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskDto, TimeOffRequestDto } from "./types";
 
 // SUNUCU tarafı API istemcisi. Server component / route handler buradan .NET'i DOĞRUDAN
 // çağırır (server-to-server → CORS YOK; backend'e dokunmadan). Token httpOnly cookie'den.
@@ -48,6 +48,14 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
       { id: "a1", userId: "s1", userFullName: "Ahmet Yılmaz", dayOfWeek: 2, startTime: "13:00", endTime: "18:00", reason: "Okul" },
       { id: "a2", userId: "s1", userFullName: "Ahmet Yılmaz", dayOfWeek: 4, startTime: "09:00", endTime: "12:00", reason: "Kurs" },
     ] as any;
+    if (path.includes("/api/timeoffrequests")) {
+      const today = new Date();
+      const nextWeek = new Date(today); nextWeek.setDate(today.getDate() + 7);
+      return [
+        { id: "to1", userId: "s1", userFullName: "Ahmet Yılmaz", startDate: today.toISOString().split("T")[0], endDate: nextWeek.toISOString().split("T")[0], type: 0, status: 0, note: "Yıllık izin", decidedByUserId: null, decidedByUserFullName: null },
+        { id: "to2", userId: "s2", userFullName: "Ayşe Demir", startDate: today.toISOString().split("T")[0], endDate: today.toISOString().split("T")[0], type: 1, status: 1, note: "Hastane randevusu", decidedByUserId: "user1", decidedByUserFullName: "Test Admin" },
+      ] as any;
+    }
     return [] as any; // default return array to prevent map errors
   }
 
@@ -103,3 +111,5 @@ export const getAvailabilities = (userId?: string) => {
   const qs = userId ? `?userId=${userId}` : "";
   return apiFetch<AvailabilityDto[]>(`/api/availability${qs}`);
 };
+
+export const getTimeOffRequests = () => apiFetch<TimeOffRequestDto[]>("/api/timeoffrequests");

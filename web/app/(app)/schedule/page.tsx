@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getBranches, getShifts, ApiError } from "@/lib/api-server";
 import { mondayOf, addDaysIso, rangeForWeek } from "@/lib/date";
-import ScheduleGrid from "@/components/schedule/ScheduleGrid";
+import ScheduleBoard from "@/components/schedule/ScheduleBoard";
 
 type SearchParams = { branchId?: string; week?: string };
 
@@ -89,7 +89,15 @@ export default async function SchedulePage({
         </div>
       )}
 
-      <ScheduleGrid shifts={shifts} weekStartIso={weekStart} />
+      {/* key: şube/hafta değişince board state'i (optimistic) sıfırlanır */}
+      <ScheduleBoard
+        key={`${branchId}-${weekStart}`}
+        initialShifts={shifts}
+        weekStartIso={weekStart}
+      />
+      <p className="text-xs text-gray-400">
+        İpucu: bir vardiya kartını başka güne sürükleyip bırakın.
+      </p>
     </div>
   );
 }

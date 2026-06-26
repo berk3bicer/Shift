@@ -54,3 +54,18 @@ export function formatTime(iso: string): string {
 export function shiftDay(iso: string): string {
   return iso.slice(0, 10);
 }
+
+// İki gün (yyyy-mm-dd) arası fark (gün). Sürükleyince kaç gün kayacağını verir.
+export function dayDeltaDays(fromDayIso: string, toDayIso: string): number {
+  const [fy, fm, fd] = fromDayIso.split("-").map(Number);
+  const [ty, tm, td] = toDayIso.split("-").map(Number);
+  return Math.round((Date.UTC(ty, tm - 1, td) - Date.UTC(fy, fm - 1, fd)) / 86_400_000);
+}
+
+// Bir ISO datetime'ın TARİH kısmını ±N gün kaydırır, SAATİ aynen korur (duvar saati).
+// "2026-06-15T09:00:00Z" + 2 → "2026-06-17T09:00:00Z".
+export function shiftIsoByDays(iso: string, deltaDays: number): string {
+  const datePart = iso.slice(0, 10);
+  const rest = iso.slice(10); // "THH:mm:ss" + varsa Z/offset
+  return `${addDaysIso(datePart, deltaDays)}${rest}`;
+}

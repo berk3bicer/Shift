@@ -190,3 +190,26 @@ export interface OvertimeSummaryDto {
   totalOvertimeHours: number;
   grandTotalHours: number;
 }
+
+export interface OvertimeWeekSnapshotDto {
+  weekStart: string;
+  weekEnd: string;
+  totalHours: number;
+  normalHours: number;
+  overtimeHours: number;
+}
+
+export interface OvertimeRecordDto {
+  id: string;
+  userId: string;
+  userFullName: string | null;
+  periodStart: string;
+  periodEnd: string;
+  totalHours: number;
+  normalHours: number;
+  overtimeHours: number;
+  isLocked: boolean;
+  lockedAt: string | null;
+  unlockedAt: string | null;
+  weeks?: OvertimeWeekSnapshotDto[]; // Sadece detayda gelir (jsonb)
+}

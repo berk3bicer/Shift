@@ -323,3 +323,42 @@ export async function updateOvertimeSettings(payload: {
     throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Ayarlar güncellenemedi (${res.status}).`);
   }
 }
+
+// ── Bordro (Payroll / OvertimeRecord) ──
+export async function closePeriod(payload: {
+  userId: string;
+  periodStart: string; // ISO date only
+  periodEnd: string; // ISO date only
+}): Promise<void> {
+  if (isMockMode) {
+    console.log(`[MOCK] Closed period for user ${payload.userId}`);
+    await new Promise(r => setTimeout(r, 400));
+    return;
+  }
+
+  const res = await fetch(`/api/proxy/api/overtime/close`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Dönem kapatılamadı (${res.status}).`);
+  }
+}
+
+export async function unlockRecord(id: string): Promise<void> {
+  if (isMockMode) {
+    console.log(`[MOCK] Unlocked record ${id}`);
+    await new Promise(r => setTimeout(r, 400));
+    return;
+  }
+
+  const res = await fetch(`/api/proxy/api/overtime/records/${id}/unlock`, {
+    method: "POST"
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Kilit açılamadı (${res.status}).`);
+  }
+}

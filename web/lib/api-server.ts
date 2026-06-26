@@ -1,6 +1,6 @@
 import "server-only";
 import { getToken } from "./session";
-import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskDto, TimeOffRequestDto, TimeClockDto, OvertimeSettingsDto, OvertimeSummaryDto } from "./types";
+import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskDto, TimeOffRequestDto, TimeClockDto, OvertimeSettingsDto, OvertimeSummaryDto, OvertimeRecordDto } from "./types";
 
 // SUNUCU tarafı API istemcisi. Server component / route handler buradan .NET'i DOĞRUDAN
 // çağırır (server-to-server → CORS YOK; backend'e dokunmadan). Token httpOnly cookie'den.
@@ -83,6 +83,12 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
         { userId: "s2", userFullName: "Ayşe Demir", periodStart: "2026-06-01T00:00:00.000Z", periodEnd: "2026-06-30T23:59:59.000Z", totalNormalHours: 180, totalOvertimeHours: 25, grandTotalHours: 205 },
       ] as any;
     }
+    if (path.includes("/api/overtime/records")) {
+      return [
+        { id: "or1", userId: "s1", userFullName: "Ahmet Yılmaz", periodStart: "2026-05-01T00:00:00.000Z", periodEnd: "2026-05-31T23:59:59.000Z", totalHours: 190, normalHours: 180, overtimeHours: 10, isLocked: true, lockedAt: "2026-06-01T10:00:00.000Z", unlockedAt: null },
+        { id: "or2", userId: "s2", userFullName: "Ayşe Demir", periodStart: "2026-05-01T00:00:00.000Z", periodEnd: "2026-05-31T23:59:59.000Z", totalHours: 210, normalHours: 180, overtimeHours: 30, isLocked: false, lockedAt: "2026-06-01T10:00:00.000Z", unlockedAt: "2026-06-02T15:30:00.000Z" }
+      ] as any;
+    }
     return [] as any; // default return array to prevent map errors
   }
 
@@ -155,4 +161,12 @@ export const getOvertimeSummary = (userId?: string, from?: string, to?: string) 
   if (from) qs.set("from", from);
   if (to) qs.set("to", to);
   return apiFetch<OvertimeSummaryDto[]>(`/api/overtime/summary?${qs.toString()}`);
+};
+
+export const getOvertimeRecords = (userId?: string, from?: string, to?: string) => {
+  const qs = new URLSearchParams();
+  if (userId) qs.set("userId", userId);
+  if (from) qs.set("from", from);
+  if (to) qs.set("to", to);
+  return apiFetch<OvertimeRecordDto[]>(`/api/overtime/records?${qs.toString()}`);
 };

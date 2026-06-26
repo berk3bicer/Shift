@@ -169,3 +169,22 @@ export interface TimeClockDto {
   isLate: boolean;
   workedMinutes: number | null; // checkOutTime doluysa hesaplanır
 }
+
+// ── Mesai Hesaplama (Overtime) ──
+export interface OvertimeSettingsDto {
+  weeklyOvertimeThresholdHours: number;
+  overtimeMultiplier: number;
+  nightMultiplier: number;
+  weekendMultiplier: number;
+  holidayMultiplier: number;
+}
+
+export interface OvertimeSummaryDto {
+  userId: string;
+  userFullName: string | null;
+  periodStart: string; // ISO
+  periodEnd: string; // ISO
+  totalNormalHours: number;
+  totalOvertimeHours: number;
+  grandTotalHours: number;
+}

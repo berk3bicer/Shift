@@ -32,6 +32,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <Link href="/availability" className="hover:text-gray-900 transition-colors">Müsaitlik</Link>
             <Link href="/timeoff" className="hover:text-gray-900 transition-colors">İzinler</Link>
             <Link href="/timeclock" className="hover:text-gray-900 transition-colors">Puantaj</Link>
+            <Link href="/reports" className="hover:text-gray-900 transition-colors">Raporlar</Link>
+            <Link href="/settings" className="hover:text-gray-900 transition-colors">Ayarlar</Link>
           </nav>
         </div>
         <div className="flex items-center gap-3">

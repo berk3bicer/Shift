@@ -296,3 +296,28 @@ export async function clockOut(): Promise<void> {
     throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Çıkış yapılamadı (${res.status}).`);
   }
 }
+
+// ── Mesai Hesaplama (Overtime) ──
+export async function updateOvertimeSettings(payload: {
+  weeklyOvertimeThresholdHours: number;
+  overtimeMultiplier: number;
+  nightMultiplier: number;
+  weekendMultiplier: number;
+  holidayMultiplier: number;
+}): Promise<void> {
+  if (isMockMode) {
+    console.log(`[MOCK] Updated Overtime Settings`, payload);
+    await new Promise(r => setTimeout(r, 400));
+    return;
+  }
+
+  const res = await fetch(`/api/proxy/api/overtime-settings`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Ayarlar güncellenemedi (${res.status}).`);
+  }
+}

@@ -16,18 +16,30 @@ export default function TimeClockBoard({
   currentUserId: string;
 }) {
   const router = useRouter();
+  const [clocks, setClocks] = useState<TimeClockDto[]>(initialClocks);
   const [loading, setLoading] = useState<"in" | "out" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Check if current user has an open record
-  const myOpenRecord = initialClocks.find(c => c.userId === currentUserId && c.checkOutTime === null);
+  const myOpenRecord = clocks.find(c => c.userId === currentUserId && c.checkOutTime === null);
 
   async function handleClockIn() {
     setError(null);
     setLoading("in");
     try {
       await clockIn(branchId);
-      router.refresh(); // Refresh page to get new data from server
+      // Optimistic update for mock mode
+      const newClock: TimeClockDto = {
+        id: "mock-new-" + Date.now(),
+        userId: currentUserId,
+        userFullName: currentUserId === "s2" ? "Ayşe Demir" : "Demo Kullanıcı",
+        branchId,
+        checkInTime: new Date().toISOString(),
+        checkOutTime: null,
+        isLate: false,
+        workedMinutes: null,
+      };
+      setClocks(prev => [newClock, ...prev]);
     } catch (err) {
       setError(err instanceof ApiClientError ? err.message : "Giriş yapılamadı.");
     } finally {
@@ -40,7 +52,17 @@ export default function TimeClockBoard({
     setLoading("out");
     try {
       await clockOut();
-      router.refresh(); // Refresh page to get new data from server
+      // Optimistic update for mock mode
+      setClocks(prev => prev.map(c => {
+        if (c.userId === currentUserId && c.checkOutTime === null) {
+          return {
+            ...c,
+            checkOutTime: new Date().toISOString(),
+            workedMinutes: 480 // Fake worked minutes
+          };
+        }
+        return c;
+      }));
     } catch (err) {
       setError(err instanceof ApiClientError ? err.message : "Çıkış yapılamadı.");
     } finally {
@@ -91,13 +113,13 @@ export default function TimeClockBoard({
           <h2 className="text-sm font-bold text-slate-800">Günlük Puantaj Kayıtları</h2>
         </div>
         
-        {initialClocks.length === 0 ? (
+        {clocks.length === 0 ? (
           <div className="p-8 text-center text-sm text-slate-500">
             Henüz giriş-çıkış kaydı bulunmuyor.
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
-            {initialClocks.map(clock => (
+            {clocks.map(clock => (
               <div key={clock.id} className="flex items-center justify-between px-6 py-4 hover:bg-slate-50/50 transition-colors">
                 <div className="flex items-center gap-4">
                   <div className={`flex h-10 w-10 items-center justify-center rounded-full ${clock.checkOutTime ? "bg-slate-100 text-slate-500" : "bg-emerald-100 text-emerald-600 ring-2 ring-emerald-500/20"}`}>

@@ -41,6 +41,15 @@ const PLAN = [
   [["zeynep", 10, 18], ["burak", 11, 19], ["mehmet", 14, 22]],
 ];
 
+// Kanban görevleri (status: 0=Yapılacak, 1=Devam, 2=Tamamlandı; priority 0-3; category 0-5).
+const TASKS = [
+  { title: "Akşam kapanış temizliği", priority: 2, category: 0, assign: "elif", status: 1 },
+  { title: "Süt/badem sütü stok kontrolü", priority: 1, category: 3, assign: "zeynep", status: 1 },
+  { title: "Espresso makinesi bakımı", priority: 3, category: 4, assign: "mehmet", status: 2 },
+  { title: "Yeni menü eğitimi", priority: 1, category: 5, assign: null, status: 0 },
+  { title: "Vitrin düzenleme", priority: 0, category: 1, assign: "ayse", status: 0 },
+];
+
 const addDaysIso = (iso, n) => {
   const [y, m, d] = iso.split("-").map(Number);
   return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
@@ -141,7 +150,38 @@ async function main() {
     }
   }
   console.log(`✓ vardiyalar: +${created} eklendi, ${skipped} zaten vardı`);
-  console.log(`\nBitti. Demo haftası: ${WEEK_START} → çizelgede 'Kadıköy Şubesi' + week=${WEEK_START}`);
+
+  // 6) Görevler / Kanban (idempotent: başlığa göre; hedef sütuna taşı)
+  const existingTasks = (await api("GET", `/api/tasks?branchId=${kadikoy.id}`)).data;
+  const taskByTitle = new Map(existingTasks.map((t) => [t.title, t]));
+  let tCreated = 0, tSkipped = 0;
+  for (const t of TASKS) {
+    let task = taskByTitle.get(t.title);
+    if (!task) {
+      const r = await api("POST", "/api/tasks", {
+        branchId: kadikoy.id,
+        title: t.title,
+        description: null,
+        dueDate: null,
+        priority: t.priority,
+        category: t.category,
+        assignedUserId: t.assign ? userIdByKey[t.assign] : null,
+        assignedPositionId: null,
+      });
+      if (!r.ok) throw new Error(`Görev '${t.title}' eklenemedi: ${r.status} ${JSON.stringify(r.data)}`);
+      task = { id: r.data.taskId, status: 0 }; // yeni görev ToDo'da doğar
+      tCreated++;
+    } else {
+      tSkipped++;
+    }
+    // Hedef sütuna taşı (gerekirse). 400 = "zaten o durumda" → yut.
+    if (task.status !== t.status) {
+      await api("POST", `/api/tasks/${task.id}/move`, { newStatus: t.status });
+    }
+  }
+  console.log(`✓ görevler: +${tCreated} eklendi, ${tSkipped} zaten vardı`);
+
+  console.log(`\nBitti. Demo: çizelge 'Kadıköy Şubesi' week=${WEEK_START} + Görevler panosu`);
 }
 
 main().catch((e) => { console.error("HATA:", e.message); process.exit(1); });

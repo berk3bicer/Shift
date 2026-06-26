@@ -45,6 +45,45 @@ export async function updateShift(
   return { warnings: Array.isArray(data?.warnings) ? data.warnings : [] };
 }
 
+// ── Kanban görev ──
+
+// Görevi başka kolona taşı (status değişir). Backend serbest hareket + Done yan etkileri.
+// Sonuç warnings taşımaz; hata (nadir 400 / ağ) → throw → hook geri alır.
+export async function moveTask(id: string, newStatus: number): Promise<void> {
+  const res = await fetch(`/api/proxy/api/tasks/${id}/move`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ newStatus }),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Taşınamadı (${res.status}).`);
+  }
+}
+
+// Yeni görev oluştur (her zaman ToDo'da doğar). Dönüş: { taskId }.
+export async function createTask(payload: {
+  branchId: string;
+  title: string;
+  description: string | null;
+  priority: number;
+  category: number;
+  assignedUserId: string | null;
+  assignedPositionId: string | null;
+}): Promise<{ taskId: string }> {
+  const res = await fetch(`/api/proxy/api/tasks`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...payload, dueDate: null }),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Oluşturulamadı (${res.status}).`);
+  }
+  const data = await res.json();
+  return { taskId: data.taskId };
+}
+
 // Yeni vardiya oluştur. userId null = açık vardiya. Dönüş: { shiftId, warnings }.
 // Çakışma → 4xx throw (modal'da gösterilir).
 export async function createShift(payload: {

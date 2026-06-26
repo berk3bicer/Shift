@@ -64,6 +64,46 @@ export interface StaffDto {
   isActive: boolean;
 }
 
+// ── Görev / Kanban (backend TaskItem) ──
+export enum TaskItemStatus {
+  ToDo = 0, // Yapılacak
+  InProgress = 1, // Devam Ediyor
+  Done = 2, // Tamamlandı
+}
+
+export enum TaskPriority {
+  Low = 0,
+  Medium = 1,
+  High = 2,
+  Urgent = 3,
+}
+
+export enum TaskCategory {
+  Cleaning = 0,
+  Service = 1,
+  Kitchen = 2,
+  Supply = 3,
+  Technical = 4,
+  Training = 5,
+}
+
+export interface TaskDto {
+  id: string;
+  branchId: string;
+  title: string;
+  description: string | null;
+  dueDate: string | null;
+  priority: number;
+  category: number;
+  status: number;
+  assignedUserId: string | null;
+  assignedUserName: string | null;
+  assignedPositionId: string | null;
+  assignedPositionName: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+}
+
 // Backend GlobalExceptionHandler'ın ProblemDetails çıktısı.
 export interface ProblemDetails {
   status: number;

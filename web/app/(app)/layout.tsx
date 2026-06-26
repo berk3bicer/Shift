@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getMe } from "@/lib/api-server";
 import { ApiError } from "@/lib/api-server";
@@ -20,9 +21,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-3">
-        <div className="flex items-baseline gap-2">
-          <span className="text-lg font-semibold text-gray-900">Shift</span>
-          <span className="text-sm text-gray-400">Yönetici</span>
+        <div className="flex items-center gap-6">
+          <div className="flex items-baseline gap-2">
+            <span className="text-lg font-semibold text-gray-900">Shift</span>
+            <span className="text-sm text-gray-400">Yönetici</span>
+          </div>
+          <nav className="flex gap-4 text-sm text-gray-600">
+            <Link href="/schedule" className="hover:text-gray-900">Çizelge</Link>
+            <Link href="/tasks" className="hover:text-gray-900">Görevler</Link>
+          </nav>
         </div>
         <div className="flex items-center gap-3">
           <span className="text-sm text-gray-600">

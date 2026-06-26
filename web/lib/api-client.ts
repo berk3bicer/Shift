@@ -211,6 +211,7 @@ export async function deleteAvailability(id: string): Promise<void> {
   if (!res.ok) {
     const problem = await res.json().catch(() => null);
     throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Silinemedi (${res.status}).`);
+  }
 }
 
 // ── İzin (Time Off) ──

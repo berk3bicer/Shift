@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getBranches, getShifts, getStaff, ApiError } from "@/lib/api-server";
+import { getBranches, getShifts, getStaff, getPositions, ApiError } from "@/lib/api-server";
 import { mondayOf, addDaysIso, rangeForWeek } from "@/lib/date";
 import ScheduleBoard from "@/components/schedule/ScheduleBoard";
 
@@ -36,10 +36,12 @@ export default async function SchedulePage({
   const { startIso, endIso } = rangeForWeek(weekStart);
   let shifts;
   let staff;
+  let positions;
   try {
-    [shifts, staff] = await Promise.all([
+    [shifts, staff, positions] = await Promise.all([
       getShifts(branchId, startIso, endIso),
       getStaff(),
+      getPositions(),
     ]);
   } catch (e) {
     if (e instanceof ApiError && e.status === 401) redirect("/login");
@@ -98,7 +100,9 @@ export default async function SchedulePage({
         key={`${branchId}-${weekStart}`}
         initialShifts={shifts}
         weekStartIso={weekStart}
+        branchId={branchId}
         staff={staff}
+        positions={positions}
       />
       <p className="text-xs text-gray-400">
         İpucu: kartı <strong>sürükle</strong> → başka güne taşı · karta <strong>tıkla</strong> → kişi ata.

@@ -29,8 +29,9 @@ async function forward(req: NextRequest, ctx: { params: Promise<{ path: string[]
   });
 
   // Yalnız gövde + content-type yansıtılır. Set-Cookie/token ASLA kopyalanmaz.
+  // 204/304 (ve boş gövde) için body NULL olmalı — yoksa Response ctor patlar (→500).
   const text = await upstream.text();
-  return new NextResponse(text, {
+  return new NextResponse(text === "" ? null : text, {
     status: upstream.status,
     headers: { "content-type": upstream.headers.get("content-type") ?? "application/json" },
   });

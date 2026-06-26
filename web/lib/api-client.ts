@@ -44,3 +44,57 @@ export async function updateShift(
   const data = await res.json().catch(() => ({}));
   return { warnings: Array.isArray(data?.warnings) ? data.warnings : [] };
 }
+
+// Yeni vardiya oluştur. userId null = açık vardiya. Dönüş: { shiftId, warnings }.
+// Çakışma → 4xx throw (modal'da gösterilir).
+export async function createShift(payload: {
+  branchId: string;
+  positionId: string;
+  userId: string | null;
+  startTime: string;
+  endTime: string;
+  notes: string | null;
+}): Promise<{ shiftId: string; warnings: string[] }> {
+  const res = await fetch(`/api/proxy/api/shifts`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Oluşturulamadı (${res.status}).`);
+  }
+  const data = await res.json();
+  return { shiftId: data.shiftId, warnings: Array.isArray(data?.warnings) ? data.warnings : [] };
+}
+
+// Vardiya sil (HARD delete — geri alınamaz). 204 döner.
+export async function deleteShift(id: string): Promise<void> {
+  const res = await fetch(`/api/proxy/api/shifts/${id}`, { method: "DELETE" });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Silinemedi (${res.status}).`);
+  }
+}
+
+// Haftanın TÜM Draft vardiyalarını yayınla. Backend kişi başına tek özet bildirim atar.
+export async function publishWeek(
+  branchId: string,
+  rangeStartIso: string,
+  rangeEndIso: string,
+): Promise<{ publishedCount: number; notifiedUserCount: number }> {
+  const res = await fetch(`/api/proxy/api/shifts/publish-week`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ branchId, rangeStart: rangeStartIso, rangeEnd: rangeEndIso }),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Yayınlanamadı (${res.status}).`);
+  }
+  const data = await res.json();
+  return {
+    publishedCount: data.publishedCount ?? 0,
+    notifiedUserCount: data.notifiedUserCount ?? 0,
+  };
+}

@@ -1,6 +1,6 @@
 import "server-only";
 import { getToken } from "./session";
-import type { BranchDto, MeResponse, ProblemDetails, ShiftDto, StaffDto } from "./types";
+import type { BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto } from "./types";
 
 // SUNUCU tarafı API istemcisi. Server component / route handler buradan .NET'i DOĞRUDAN
 // çağırır (server-to-server → CORS YOK; backend'e dokunmadan). Token httpOnly cookie'den.
@@ -51,6 +51,8 @@ export const getMe = () => apiFetch<MeResponse>("/api/auth/me");
 export const getBranches = () => apiFetch<BranchDto[]>("/api/branches");
 
 export const getStaff = () => apiFetch<StaffDto[]>("/api/staff");
+
+export const getPositions = () => apiFetch<PositionDto[]>("/api/positions");
 
 export function getShifts(branchId: string, rangeStartIso: string, rangeEndIso: string) {
   const qs = new URLSearchParams({

@@ -44,6 +44,15 @@ export interface ShiftDto {
   notes: string | null;
 }
 
+// Pozisyon (GET /api/positions). Oluştur modal'ının dropdown'u + renk/ad lookup.
+export interface PositionDto {
+  id: string;
+  name: string;
+  colorCode: string | null;
+  hourlyRate: number | null;
+  isActive: boolean;
+}
+
 // Ekip üyesi (GET /api/staff). Atama dropdown'unu besler.
 export interface StaffDto {
   id: string;

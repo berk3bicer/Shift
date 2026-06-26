@@ -5,6 +5,7 @@ import type { StaffDto, TaskDto } from "@/lib/types";
 import { TaskItemStatus } from "@/lib/types";
 import { PRIORITY_LABEL, CATEGORY_LABEL } from "@/lib/taskMeta";
 import { createTask, ApiClientError } from "@/lib/api-client";
+import { X } from "lucide-react";
 
 // Yeni görev modal'ı. Görev her zaman ToDo (Yapılacak) sütununda doğar.
 export default function TaskModal({
@@ -67,83 +68,93 @@ export default function TaskModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm transition-opacity" onClick={onClose}>
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={onSubmit}
-        className="w-full max-w-md space-y-4 rounded-xl bg-white p-6 shadow-xl"
+        className="w-full max-w-md space-y-6 rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-slate-900/5 animate-in fade-in zoom-in-95 duration-200"
       >
-        <h2 className="text-base font-semibold text-gray-900">Yeni Görev</h2>
-
-        {error && <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
-
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700">Başlık</label>
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-            placeholder="Örn. Akşam kapanış temizliği"
-          />
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold tracking-tight text-slate-900">Yeni Görev Oluştur</h2>
+          <button type="button" onClick={onClose} className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700">Açıklama</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={2}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-          />
-        </div>
+        {error && <div className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-800 border border-red-200">{error}</div>}
 
-        <div className="flex gap-3">
-          <div className="flex-1 space-y-1">
-            <label className="text-sm font-medium text-gray-700">Öncelik</label>
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-slate-700">Başlık</label>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+              placeholder="Örn. Akşam kapanış temizliği"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-slate-700">Açıklama (Opsiyonel)</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              placeholder="Görevle ilgili detaylar..."
+              className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all resize-none"
+            />
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-1 space-y-1.5">
+              <label className="text-sm font-semibold text-slate-700">Öncelik</label>
+              <select
+                value={priority}
+                onChange={(e) => setPriority(Number(e.target.value))}
+                className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all cursor-pointer"
+              >
+                {PRIORITY_LABEL.map((l, i) => (
+                  <option key={i} value={i}>{l}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex-1 space-y-1.5">
+              <label className="text-sm font-semibold text-slate-700">Kategori</label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(Number(e.target.value))}
+                className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all cursor-pointer"
+              >
+                {CATEGORY_LABEL.map((l, i) => (
+                  <option key={i} value={i}>{l}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-slate-700">Atanacak Kişi</label>
             <select
-              value={priority}
-              onChange={(e) => setPriority(Number(e.target.value))}
-              className="w-full rounded-md border border-gray-300 px-2 py-2 text-sm"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all cursor-pointer"
             >
-              {PRIORITY_LABEL.map((l, i) => (
-                <option key={i} value={i}>{l}</option>
+              <option value="">Atanmamış (Ortak Havuz)</option>
+              {staff.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.fullName}{m.positionName ? ` — ${m.positionName}` : ""}
+                </option>
               ))}
             </select>
           </div>
-          <div className="flex-1 space-y-1">
-            <label className="text-sm font-medium text-gray-700">Kategori</label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(Number(e.target.value))}
-              className="w-full rounded-md border border-gray-300 px-2 py-2 text-sm"
-            >
-              {CATEGORY_LABEL.map((l, i) => (
-                <option key={i} value={i}>{l}</option>
-              ))}
-            </select>
-          </div>
         </div>
 
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700">Kişi</label>
-          <select
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-2 py-2 text-sm"
-          >
-            <option value="">Atanmamış (havuz)</option>
-            {staff.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.fullName}{m.positionName ? ` — ${m.positionName}` : ""}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex justify-end gap-2 pt-2">
-          <button type="button" onClick={onClose} className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100">Vazgeç</button>
-          <button type="submit" disabled={saving} className="rounded-md bg-gray-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-60">
-            {saving ? "Ekleniyor…" : "Ekle"}
+        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors">
+            Vazgeç
+          </button>
+          <button type="submit" disabled={saving} className="rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+            {saving ? "Ekleniyor..." : "Görevi Ekle"}
           </button>
         </div>
       </form>

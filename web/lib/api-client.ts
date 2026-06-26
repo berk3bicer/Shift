@@ -304,6 +304,8 @@ export async function updateOvertimeSettings(payload: {
   nightMultiplier: number;
   weekendMultiplier: number;
   holidayMultiplier: number;
+  earlyClockInToleranceMinutes: number;
+  lateClockOutToleranceMinutes: number;
 }): Promise<void> {
   if (isMockMode) {
     console.log(`[MOCK] Updated Overtime Settings`, payload);

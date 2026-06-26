@@ -127,6 +127,37 @@ export default function OvertimeSettingsForm({
               />
             </div>
           </div>
+
+          <div className="pt-6 border-t border-slate-100">
+            <h3 className="text-sm font-bold text-slate-800 mb-4">Giriş / Çıkış Toleransları (Grace Period)</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">Erken Giriş Toleransı (Dakika)</label>
+                <p className="text-xs text-slate-500">Vardiya başlamadan X dakika önce girilirse, ekstra mesai yazılmaz.</p>
+                <input
+                  type="number"
+                  step="1"
+                  min="0"
+                  value={formData.earlyClockInToleranceMinutes || 0}
+                  onChange={e => setFormData({ ...formData, earlyClockInToleranceMinutes: Number(e.target.value) })}
+                  className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:ring-1 focus:ring-slate-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">Geç Çıkış Toleransı (Dakika)</label>
+                <p className="text-xs text-slate-500">Vardiya bitiminden sonra X dakika geç çıkılırsa, normal süreye yuvarlanır.</p>
+                <input
+                  type="number"
+                  step="1"
+                  min="0"
+                  value={formData.lateClockOutToleranceMinutes || 0}
+                  onChange={e => setFormData({ ...formData, lateClockOutToleranceMinutes: Number(e.target.value) })}
+                  className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:ring-1 focus:ring-slate-500"
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="border-t border-slate-100 bg-slate-50/50 px-6 py-4 flex justify-end">

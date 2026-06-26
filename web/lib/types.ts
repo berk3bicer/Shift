@@ -177,6 +177,8 @@ export interface OvertimeSettingsDto {
   nightMultiplier: number;
   weekendMultiplier: number;
   holidayMultiplier: number;
+  earlyClockInToleranceMinutes: number; // Erken giriş toleransı (örn: 15 dk)
+  lateClockOutToleranceMinutes: number; // Geç çıkış toleransı (örn: 15 dk)
 }
 
 export interface OvertimeSummaryDto {

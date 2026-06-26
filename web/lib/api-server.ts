@@ -73,6 +73,8 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
         nightMultiplier: 1.0,
         weekendMultiplier: 1.0,
         holidayMultiplier: 1.0,
+        earlyClockInToleranceMinutes: 15,
+        lateClockOutToleranceMinutes: 15,
       } as any;
     }
     if (path.includes("/api/overtime/summary")) {

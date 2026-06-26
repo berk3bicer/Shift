@@ -12,22 +12,23 @@ export class ApiClientError extends Error {
   }
 }
 
-// Vardiyayı başka güne taşı: tarih değişir, saat-of-day korunur. PUT FULL update ister
-// (patch değil) → ShiftDto'daki diğer alanları aynen geri gönderiyoruz, sadece saatler yeni.
-// Dönüş: backend Warnings[] (İş Kanunu limitleri vb. — engellemez). 4xx → throw (çakışma).
-export async function updateShiftDay(
+// Vardiyayı günceller (gün-taşıma VEYA kişi-atama). PUT FULL update ister (patch değil)
+// → ShiftDto'nun tüm alanlarını geri gönderir, yalnız overrides'taki alan(lar)ı değiştirir.
+// userId null verilebilir (açık vardiya / atama kaldır). Dönüş: backend Warnings[]
+// (İş Kanunu limitleri — engellemez). 4xx → throw (çakışma → çağıran geri alır).
+export async function updateShift(
   shift: ShiftDto,
-  newStartIso: string,
-  newEndIso: string,
+  overrides: { startTime?: string; endTime?: string; userId?: string | null },
 ): Promise<{ warnings: string[] }> {
   const res = await fetch(`/api/proxy/api/shifts/${shift.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       positionId: shift.positionId,
-      userId: shift.userId,
-      startTime: newStartIso,
-      endTime: newEndIso,
+      // userId override'ı null OLABİLİR → 'in' kontrolüyle ayır (undefined=değişme).
+      userId: "userId" in overrides ? overrides.userId : shift.userId,
+      startTime: overrides.startTime ?? shift.startTime,
+      endTime: overrides.endTime ?? shift.endTime,
       notes: shift.notes,
     }),
   });

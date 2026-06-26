@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getBranches, getShifts, ApiError } from "@/lib/api-server";
+import { getBranches, getShifts, getStaff, ApiError } from "@/lib/api-server";
 import { mondayOf, addDaysIso, rangeForWeek } from "@/lib/date";
 import ScheduleBoard from "@/components/schedule/ScheduleBoard";
 
@@ -35,8 +35,12 @@ export default async function SchedulePage({
 
   const { startIso, endIso } = rangeForWeek(weekStart);
   let shifts;
+  let staff;
   try {
-    shifts = await getShifts(branchId, startIso, endIso);
+    [shifts, staff] = await Promise.all([
+      getShifts(branchId, startIso, endIso),
+      getStaff(),
+    ]);
   } catch (e) {
     if (e instanceof ApiError && e.status === 401) redirect("/login");
     throw e;
@@ -94,9 +98,10 @@ export default async function SchedulePage({
         key={`${branchId}-${weekStart}`}
         initialShifts={shifts}
         weekStartIso={weekStart}
+        staff={staff}
       />
       <p className="text-xs text-gray-400">
-        İpucu: bir vardiya kartını başka güne sürükleyip bırakın.
+        İpucu: kartı <strong>sürükle</strong> → başka güne taşı · karta <strong>tıkla</strong> → kişi ata.
       </p>
     </div>
   );

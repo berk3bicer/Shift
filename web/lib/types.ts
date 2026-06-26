@@ -44,6 +44,17 @@ export interface ShiftDto {
   notes: string | null;
 }
 
+// Ekip üyesi (GET /api/staff). Atama dropdown'unu besler.
+export interface StaffDto {
+  id: string;
+  fullName: string;
+  email: string;
+  positionId: string | null;
+  positionName: string | null;
+  roles: number[];
+  isActive: boolean;
+}
+
 // Backend GlobalExceptionHandler'ın ProblemDetails çıktısı.
 export interface ProblemDetails {
   status: number;

@@ -277,5 +277,32 @@ export interface ShiftNoteDto {
   createdAt: string; // Gerçek yazıldığı UTC anı
 }
 
+// -----------------------------------------------------------------------------
+// İletişim ve Duyuru (Announcements) Modülü (Gün 18)
+// -----------------------------------------------------------------------------
+
+export interface AnnouncementDto {
+  id: string;
+  title: string;
+  content: string;
+  targetBranchId: string | null; // null = tüm şubeler
+  targetRole: number | null; // null = tüm roller
+  createdByUserId: string | null;
+  createdByUserFullName: string | null;
+  createdAt: string;
+}
+
+export interface NotificationDto {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: number; // 0 = Info, 1 = AnnouncementPosted, 2 = ShiftPublished vs.
+  relatedEntityId: string | null; // Tıklayınca gidilecek hedef (Örn: announcement id)
+  isRead: boolean;
+  createdAt: string;
+}
+
+
 
 

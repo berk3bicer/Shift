@@ -242,6 +242,42 @@ export async function deleteShiftNote(id: string): Promise<void> {
   }
 }
 
+// ── İletişim ve Duyuru (Announcements) ──
+
+export async function createAnnouncement(payload: {
+  branchId: string;
+  title: string;
+  content: string;
+  targetRole: number | null;
+}): Promise<{ announcementId: string }> {
+  if (isMockMode) {
+    console.log("[MOCK] Announcement created", payload);
+    await new Promise(r => setTimeout(r, 300));
+    return { announcementId: "mock-ann-" + Date.now() };
+  }
+
+  const res = await fetch(`/api/proxy/api/announcements`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Duyuru paylaşılamadı (${res.status}).`);
+  }
+  const data = await res.json();
+  return { announcementId: data.announcementId };
+}
+
+export async function markNotificationAsRead(id: string): Promise<void> {
+  if (isMockMode) {
+    console.log(`[MOCK] Notification ${id} marked as read`);
+    return;
+  }
+  const res = await fetch(`/api/proxy/api/notifications/${id}/read`, { method: "PUT" });
+  if (!res.ok) throw new Error("Bildirim okundu işaretlenemedi.");
+}
+
 // Yeni vardiya oluştur. userId null = açık vardiya. Dönüş: { shiftId, warnings }.
 // Çakışma → 4xx throw (modal'da gösterilir).
 export async function createShift(payload: {

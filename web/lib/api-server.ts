@@ -1,6 +1,6 @@
 import "server-only";
 import { getToken } from "./session";
-import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskItemDto, TimeOffRequestDto, TimeClockDto, OvertimeSettingsDto, OvertimeSummaryDto, OvertimeRecordDto, ChecklistDto, ChecklistRunDto, ShiftNoteDto } from "./types";
+import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskItemDto, TimeOffRequestDto, TimeClockDto, OvertimeSettingsDto, OvertimeSummaryDto, OvertimeRecordDto, ChecklistDto, ChecklistRunDto, ShiftNoteDto, AnnouncementDto, NotificationDto } from "./types";
 
 // SUNUCU tarafı API istemcisi. Server component / route handler buradan .NET'i DOĞRUDAN
 // çağırır (server-to-server → CORS YOK; backend'e dokunmadan). Token httpOnly cookie'den.
@@ -53,6 +53,54 @@ const mockShiftNotes = [
     createdByUserId: "s2",
     createdByUserFullName: "Ayşe Demir",
     createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString() // 1 saat önce
+  }
+];
+
+// Mock Announcements
+const mockAnnouncements = [
+  {
+    id: "ann-1",
+    title: "Aylık Şube Toplantısı",
+    content: "Bu pazar sabahı saat 09:00'da genel değerlendirme toplantısı yapılacaktır. Katılım zorunludur.",
+    targetBranchId: "b1",
+    targetRole: null, // Herkese
+    createdByUserId: "admin",
+    createdByUserFullName: "Sistem Yöneticisi",
+    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() // 1 gün önce
+  },
+  {
+    id: "ann-2",
+    title: "Yeni Menü Eğitimi",
+    content: "Yaz menüsü geçişi için mutfak ekibine cuma günü eğitim verilecektir.",
+    targetBranchId: "b1",
+    targetRole: 2, // Sadece mutfak vs. (Mock)
+    createdByUserId: "s1",
+    createdByUserFullName: "Ahmet Yılmaz",
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() // 2 gün önce
+  }
+];
+
+// Mock Notifications
+const mockNotifications = [
+  {
+    id: "not-1",
+    userId: "s2", // Geçerli kullanıcı (Örn: Ayşe)
+    title: "Yeni Duyuru: Aylık Şube Toplantısı",
+    message: "Sistem Yöneticisi yeni bir duyuru paylaştı.",
+    type: 1, // AnnouncementPosted
+    relatedEntityId: "ann-1",
+    isRead: false,
+    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: "not-2",
+    userId: "s2",
+    title: "Vardiya Yayınlandı",
+    message: "Gelecek haftanın vardiya planı onaylandı.",
+    type: 2, // ShiftPublished
+    relatedEntityId: null,
+    isRead: true,
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
   }
 ];
 
@@ -148,6 +196,12 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
     if (path.includes("/api/shiftnotes")) {
       return mockShiftNotes as any;
     }
+    if (path.includes("/api/announcements")) {
+      return mockAnnouncements as any;
+    }
+    if (path.includes("/api/notifications")) {
+      return mockNotifications as any;
+    }
     
     return [] as any; // default return array to prevent map errors
   }
@@ -198,6 +252,12 @@ export const getChecklistRuns = (branchId: string, runDate: string) =>
 
 export const getShiftNotes = (branchId: string, noteDate: string) => 
   apiFetch<ShiftNoteDto[]>(`/api/shiftnotes?branchId=${branchId}&noteDate=${noteDate}`);
+
+export const getAnnouncements = (branchId: string) => 
+  apiFetch<AnnouncementDto[]>(`/api/announcements?branchId=${branchId}`);
+
+export const getNotifications = () => 
+  apiFetch<NotificationDto[]>(`/api/notifications`);
 
 export function getShifts(branchId: string, rangeStartIso: string, rangeEndIso: string) {
   const qs = new URLSearchParams({

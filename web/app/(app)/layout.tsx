@@ -1,18 +1,21 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getMe } from "@/lib/api-server";
+import { getMe, getNotifications } from "@/lib/api-server";
 import { ApiError } from "@/lib/api-server";
 import LogoutButton from "@/components/LogoutButton";
+import NotificationBell from "@/components/NotificationBell";
 
 // Korumalı uygulama düzeni. Sunucuda /me ile kullanıcıyı çözer (token geçersizse
 // 401 → login'e). Üst bar: marka + kullanıcı + çıkış.
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   let name: string | null = null;
   let role = "";
+  let notifications = [];
   try {
     const me = await getMe();
     name = me.name;
     role = me.roles[0] ?? "";
+    notifications = await getNotifications();
   } catch (e) {
     if (e instanceof ApiError && e.status === 401) redirect("/login");
     throw e;
@@ -49,6 +52,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               </button>
               <div className="absolute left-0 mt-2 w-40 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                 <div className="py-1">
+                  <Link href="/announcements" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Duyurular</Link>
                   <Link href="/shift-notes" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Vardiya Defteri</Link>
                   <Link href="/tasks" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Görevler</Link>
                   <Link href="/checklists" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Listeler</Link>
@@ -71,10 +75,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <Link href="/settings" className="hover:text-gray-900 transition-colors">Ayarlar</Link>
           </nav>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-600">
-            {name}
-            {role && <span className="ml-1 text-gray-400">({role})</span>}
+        <div className="flex items-center gap-4">
+          <NotificationBell initialNotifications={notifications} />
+          <div className="h-6 w-px bg-gray-200"></div>
+          <span className="text-sm text-gray-600 flex items-center gap-2">
+            <div className="h-8 w-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xs">
+              {name ? name.charAt(0) : "?"}
+            </div>
+            <div className="flex flex-col">
+              <span className="font-semibold">{name}</span>
+              {role && <span className="text-[10px] text-gray-400">{role}</span>}
+            </div>
           </span>
           <LogoutButton />
         </div>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { OvertimeRecordDto, StaffDto } from "@/lib/types";
 import { closePeriod, unlockRecord, ApiClientError } from "@/lib/api-client";
-import { Lock, Unlock, Calculator, FileCheck2, AlertTriangle, UserRound, ArrowRight } from "lucide-react";
+import { Lock, Unlock, Calculator, FileCheck2, AlertTriangle, UserRound, ArrowRight, Download } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function PayrollBoard({
@@ -126,6 +126,62 @@ export default function PayrollBoard({
     }
   }
 
+  // RFC4180 CSV Escape Function
+  function escapeCsvField(field: any): string {
+    if (field === null || field === undefined) return "";
+    const str = String(field);
+    if (str.includes(",") || str.includes('"') || str.includes("\n") || str.includes("\r")) {
+      return `"${str.replace(/"/g, '""')}"`;
+    }
+    return str;
+  }
+
+  function handleExportCsv() {
+    // Only export locked records for the selected period
+    const lockedRecords = gridData.filter(row => row.record?.isLocked);
+    
+    if (lockedRecords.length === 0) {
+      setError("Dışa aktarılacak kilitli bordro kaydı bulunmuyor.");
+      return;
+    }
+
+    // CSV Header
+    const headers = ["Personel Adı", "Dönem Başlangıç", "Dönem Bitiş", "Normal Saat", "Fazla Mesai", "Toplam Saat"];
+    const rows = [headers.join(",")];
+
+    // CSV Rows
+    lockedRecords.forEach(row => {
+      const record = row.record!;
+      const rowData = [
+        escapeCsvField(record.userFullName),
+        escapeCsvField(new Date(record.periodStart).toLocaleDateString('tr-TR')),
+        escapeCsvField(new Date(record.periodEnd).toLocaleDateString('tr-TR')),
+        escapeCsvField(record.normalHours),
+        escapeCsvField(record.overtimeHours),
+        escapeCsvField(record.totalHours)
+      ];
+      rows.push(rowData.join(","));
+    });
+
+    const csvContent = rows.join("\r\n");
+    
+    // Add UTF-8 BOM for Excel compatibility
+    const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+    const blob = new Blob([bom, csvContent], { type: "text/csv;charset=utf-8;" });
+    
+    // Trigger download
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `bordro_${selectedMonth}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    setSuccess("Bordro başarıyla dışa aktarıldı (CSV).");
+    setTimeout(() => setSuccess(null), 3000);
+  }
+
   return (
     <div className="space-y-6">
       {/* Header and Controls */}
@@ -159,6 +215,16 @@ export default function PayrollBoard({
               <FileCheck2 className="h-4 w-4" />
             )}
             {isAllLocked ? "Tümü Kilitli" : "Tümünü Kapat (Approve All)"}
+          </button>
+          
+          <button
+            onClick={handleExportCsv}
+            disabled={!gridData.some(r => r.record?.isLocked)}
+            className="flex items-center gap-2 rounded-lg bg-slate-800 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            title="Sadece kilitli kayıtları dışa aktarır"
+          >
+            <Download className="h-4 w-4" />
+            Dışa Aktar (CSV)
           </button>
         </div>
       </div>

@@ -263,4 +263,19 @@ export interface ChecklistRunDto {
   items: ChecklistRunItemDto[];
 }
 
+// -----------------------------------------------------------------------------
+// Vardiya Defteri / Günlük Log (Shift Notes) Modülü (Gün 17)
+// -----------------------------------------------------------------------------
+
+export interface ShiftNoteDto {
+  id: string;
+  branchId: string;
+  noteDate: string; // "YYYY-MM-DD" Operasyonel ait olduğu gün
+  content: string;
+  createdByUserId: string | null;
+  createdByUserFullName: string | null;
+  createdAt: string; // Gerçek yazıldığı UTC anı
+}
+
+
 

@@ -1,6 +1,6 @@
 import "server-only";
 import { getToken } from "./session";
-import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskItemDto, TimeOffRequestDto, TimeClockDto, OvertimeSettingsDto, OvertimeSummaryDto, OvertimeRecordDto, ChecklistDto, ChecklistRunDto } from "./types";
+import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskItemDto, TimeOffRequestDto, TimeClockDto, OvertimeSettingsDto, OvertimeSummaryDto, OvertimeRecordDto, ChecklistDto, ChecklistRunDto, ShiftNoteDto } from "./types";
 
 // SUNUCU tarafı API istemcisi. Server component / route handler buradan .NET'i DOĞRUDAN
 // çağırır (server-to-server → CORS YOK; backend'e dokunmadan). Token httpOnly cookie'den.
@@ -34,6 +34,27 @@ const mockChecklists = [
 
 let mockChecklistRuns: any[] = [];
 
+// Mock Shift Notes
+const mockShiftNotes = [
+  {
+    id: "sn-1",
+    branchId: "b1",
+    noteDate: new Date().toISOString().split("T")[0],
+    content: "Sabah kahve makinesi arıza verdi, servis çağrıldı ama gelmedi. Öğleden sonra tekrar aranması gerekiyor.",
+    createdByUserId: "s1",
+    createdByUserFullName: "Ahmet Yılmaz",
+    createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString() // 4 saat önce
+  },
+  {
+    id: "sn-2",
+    branchId: "b1",
+    noteDate: new Date().toISOString().split("T")[0],
+    content: "Kasa 1'de 50 TL açık çıktı, gün sonu raporuna eklendi.",
+    createdByUserId: "s2",
+    createdByUserFullName: "Ayşe Demir",
+    createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString() // 1 saat önce
+  }
+];
 
 export class ApiError extends Error {
   constructor(
@@ -124,6 +145,9 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
     if (path.includes("/api/checklistruns")) {
       return mockChecklistRuns as any;
     }
+    if (path.includes("/api/shiftnotes")) {
+      return mockShiftNotes as any;
+    }
     
     return [] as any; // default return array to prevent map errors
   }
@@ -171,6 +195,9 @@ export const getChecklists = () => apiFetch<ChecklistDto[]>("/api/checklists");
 
 export const getChecklistRuns = (branchId: string, runDate: string) => 
   apiFetch<ChecklistRunDto[]>(`/api/checklistruns?branchId=${branchId}&runDate=${runDate}`);
+
+export const getShiftNotes = (branchId: string, noteDate: string) => 
+  apiFetch<ShiftNoteDto[]>(`/api/shiftnotes?branchId=${branchId}&noteDate=${noteDate}`);
 
 export function getShifts(branchId: string, rangeStartIso: string, rangeEndIso: string) {
   const qs = new URLSearchParams({

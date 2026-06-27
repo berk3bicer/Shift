@@ -188,6 +188,46 @@ export async function createChecklist(payload: {
   return { checklistId: data.checklistId };
 }
 
+// ── Vardiya Defteri / Günlük Log (Shift Notes) ──
+
+export async function createShiftNote(payload: {
+  branchId: string;
+  noteDate: string;
+  content: string;
+}): Promise<{ noteId: string }> {
+  if (isMockMode) {
+    console.log("[MOCK] Shift note created", payload);
+    await new Promise(r => setTimeout(r, 300));
+    return { noteId: "mock-sn-" + Date.now() };
+  }
+
+  const res = await fetch(`/api/proxy/api/shiftnotes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Not eklenemedi (${res.status}).`);
+  }
+  const data = await res.json();
+  return { noteId: data.noteId };
+}
+
+export async function deleteShiftNote(id: string): Promise<void> {
+  if (isMockMode) {
+    console.log(`[MOCK] Shift note ${id} deleted`);
+    await new Promise(r => setTimeout(r, 200));
+    return;
+  }
+
+  const res = await fetch(`/api/proxy/api/shiftnotes/${id}`, { method: "DELETE" });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Not silinemedi (${res.status}).`);
+  }
+}
+
 // Yeni vardiya oluştur. userId null = açık vardiya. Dönüş: { shiftId, warnings }.
 // Çakışma → 4xx throw (modal'da gösterilir).
 export async function createShift(payload: {

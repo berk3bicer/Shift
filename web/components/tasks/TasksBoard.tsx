@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import type { TaskItemDto, BranchDto, PositionDto, StaffDto, TaskItemStatus } from "@/lib/types";
-import { moveTask, createTask, deleteTask } from "@/lib/api-client";
-import { Plus, Trash2, GripVertical, CheckCircle2 } from "lucide-react";
+import { moveTask, createTask, deleteTask, uploadPhoto } from "@/lib/api-client";
+import { Plus, Trash2, GripVertical, CheckCircle2, Camera, Image as ImageIcon, Loader2, MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function TasksBoard({
@@ -22,6 +22,7 @@ export default function TasksBoard({
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadingTaskId, setUploadingTaskId] = useState<string | null>(null);
 
   // Drag & Drop Handlers
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
@@ -71,6 +72,23 @@ export default function TasksBoard({
       setTasks(previousTasks);
       setError(err.message || "Görev silinirken hata oluştu.");
       setTimeout(() => setError(null), 3000);
+    }
+  };
+
+  const handlePhotoUpload = async (taskId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingTaskId(taskId);
+    try {
+      const url = await uploadPhoto(file, "task", taskId);
+      setTasks(prev => prev.map(t => t.id === taskId ? { ...t, photoUrl: url } : t));
+    } catch (err) {
+      setError("Fotoğraf yüklenemedi.");
+      setTimeout(() => setError(null), 3000);
+    } finally {
+      setUploadingTaskId(null);
+      e.target.value = '';
     }
   };
 
@@ -192,26 +210,56 @@ export default function TasksBoard({
                       <p className="text-sm text-slate-500 mb-4 line-clamp-2 leading-relaxed">{task.description}</p>
                     )}
                     
-                    <div className="flex flex-wrap items-center justify-between gap-2 mt-4 pt-4 border-t border-slate-100">
-                      <div className="flex items-center gap-2">
-                        <span className={`px-2 py-0.5 rounded text-[11px] font-bold tracking-wide uppercase ${prio.color}`}>
-                          {prio.label}
-                        </span>
-                        
-                        {(task.assignedUserName || task.assignedPositionName) && (
-                          <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-indigo-700 bg-indigo-50 border border-indigo-100/50 px-2 py-0.5 rounded">
-                            {task.assignedUserName || task.assignedPositionName}
-                          </div>
+                    <div className="flex flex-wrap items-center gap-2 mb-4">
+                      <span className={`px-2 py-0.5 rounded text-[11px] font-bold tracking-wide uppercase ${prio.color}`}>
+                        {prio.label}
+                      </span>
+                    </div>
+
+                    {/* Fotoğraf Önizlemesi */}
+                    {task.photoUrl && (
+                      <div className="mb-4 relative group rounded-lg overflow-hidden border border-slate-200">
+                        <img src={task.photoUrl} alt="Görev Kanıtı" className="w-full h-24 object-cover" />
+                        <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <ImageIcon className="h-5 w-5 text-white shadow-sm" />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mt-4 flex items-center justify-between text-xs font-semibold text-slate-500 pt-3 border-t border-slate-100">
+                      <div className="flex items-center gap-1.5">
+                        {task.assignedUserName ? (
+                          <>
+                            <div className="h-5 w-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-[10px]">
+                              {task.assignedUserName.charAt(0)}
+                            </div>
+                            <span className="text-slate-700">{task.assignedUserName}</span>
+                          </>
+                        ) : task.assignedPositionName ? (
+                          <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">
+                            Rol: {task.assignedPositionName}
+                          </span>
+                        ) : (
+                          <span className="text-slate-400">Atanmadı</span>
                         )}
                       </div>
-
-                      <div className="flex items-center gap-1">
-                        {isDone && task.completedByUserId && (
-                          <span className="text-xs font-medium text-emerald-600 flex items-center gap-1 mr-2">
-                            <CheckCircle2 className="h-3.5 w-3.5" />
-                            Bitirildi
-                          </span>
+                      
+                      <div className="flex items-center gap-2">
+                        {/* Fotoğraf Yükleme Butonu */}
+                        {uploadingTaskId === task.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin text-indigo-500" />
+                        ) : (
+                          <label className="cursor-pointer text-slate-400 hover:text-indigo-600 transition-colors" title="Kanıt Fotoğrafı Yükle">
+                            <Camera className="h-4 w-4" />
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              className="hidden" 
+                              onChange={(e) => handlePhotoUpload(task.id, e)} 
+                            />
+                          </label>
                         )}
+                        
                         <button
                           onClick={(e) => {
                             e.stopPropagation();

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import type { ChecklistDto, ChecklistRunDto, ChecklistRunItemDto, BranchDto } from "@/lib/types";
-import { startChecklistRun, checkChecklistItem, createChecklist, deleteChecklist } from "@/lib/api-client";
-import { Play, CheckSquare, Square, CheckCircle2, Clock, Plus, X, ListPlus, Trash2 } from "lucide-react";
+import { startChecklistRun, checkChecklistItem, createChecklist, deleteChecklist, updateChecklist, uploadPhoto } from "@/lib/api-client";
+import { Play, CheckSquare, Square, CheckCircle2, Clock, Plus, X, ListPlus, Trash2, Edit2, Camera, Image as ImageIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function ChecklistsBoard({
@@ -25,9 +25,10 @@ export default function ChecklistsBoard({
   const [error, setError] = useState<string | null>(null);
   const [isStarting, setIsStarting] = useState<string | null>(null);
 
-  // Template Creation State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadingRunItemId, setUploadingRunItemId] = useState<string | null>(null);
   const [tplName, setTplName] = useState("");
   const [tplType, setTplType] = useState<number>(0);
   const [tplItems, setTplItems] = useState<{ id: string; text: string }[]>([
@@ -129,36 +130,72 @@ export default function ChecklistsBoard({
         type: tplType,
         items: validItems.map((v, idx) => ({ text: v.text, orderIndex: idx }))
       };
-      const res = await createChecklist(payload);
+
+      if (editingId) {
+        // Update
+        await updateChecklist(editingId, payload);
+        const updatedTpl: ChecklistDto = {
+          id: editingId,
+          name: tplName,
+          type: tplType,
+          isActive: true,
+          items: payload.items.map(i => ({
+            id: "mock-ci-" + Math.random(),
+            checklistId: editingId,
+            text: i.text,
+            orderIndex: i.orderIndex
+          }))
+        };
+        setLocalChecklists(prev => prev.map(c => c.id === editingId ? updatedTpl : c));
+      } else {
+        // Create
+        const res = await createChecklist(payload);
+        const newTpl: ChecklistDto = {
+          id: res.checklistId,
+          name: tplName,
+          type: tplType,
+          isActive: true,
+          items: payload.items.map(i => ({
+            id: "mock-ci-" + Math.random(),
+            checklistId: res.checklistId,
+            text: i.text,
+            orderIndex: i.orderIndex
+          }))
+        };
+        setLocalChecklists(prev => [...prev, newTpl]);
+      }
       
-      // Optimistic UI for Template
-      const newTpl: ChecklistDto = {
-        id: res.checklistId,
-        name: tplName,
-        type: tplType,
-        isActive: true,
-        items: payload.items.map(i => ({
-          id: "mock-ci-" + Math.random(),
-          checklistId: res.checklistId,
-          text: i.text,
-          orderIndex: i.orderIndex
-        }))
-      };
-      
-      setLocalChecklists(prev => [...prev, newTpl]);
-      setIsModalOpen(false);
-      setTplName("");
-      setTplType(0);
-      setTplItems([{ id: "1", text: "" }]);
+      handleCloseModal();
 
       if (process.env.NEXT_PUBLIC_USE_MOCK !== "true") {
         router.refresh();
       }
     } catch (err: any) {
-      setError(err.message || "Şablon oluşturulamadı");
+      setError(err.message || "İşlem başarısız oldu");
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const openCreateModal = () => {
+    setEditingId(null);
+    setTplName("");
+    setTplType(0);
+    setTplItems([{ id: "1", text: "" }]);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (checklist: ChecklistDto) => {
+    setEditingId(checklist.id);
+    setTplName(checklist.name);
+    setTplType(checklist.type);
+    setTplItems(checklist.items.map(i => ({ id: Math.random().toString(), text: i.text })));
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingId(null);
   };
 
   const handleDeleteTemplate = async (id: string) => {
@@ -179,6 +216,26 @@ export default function ChecklistsBoard({
     }
   };
 
+  const handlePhotoUpload = async (runId: string, item: ChecklistRunItemDto, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingRunItemId(item.id);
+    try {
+      const url = await uploadPhoto(file, "checklist", item.id);
+      setRuns(prev => prev.map(r => r.id === runId ? {
+        ...r, 
+        items: r.items.map(i => i.id === item.id ? { ...i, photoUrl: url } : i)
+      } : r));
+    } catch (err) {
+      setError("Fotoğraf yüklenemedi.");
+      setTimeout(() => setError(null), 3000);
+    } finally {
+      setUploadingRunItemId(null);
+      e.target.value = '';
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -189,7 +246,7 @@ export default function ChecklistsBoard({
           </p>
         </div>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={openCreateModal}
           className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-colors"
         >
           <ListPlus className="h-4 w-4" />
@@ -225,13 +282,22 @@ export default function ChecklistsBoard({
                     <h3 className="font-bold text-slate-900">{checklist.name}</h3>
                     <p className="text-sm text-slate-500 mt-1">{checklist.items.length} Madde</p>
                   </div>
-                  <button
-                    onClick={() => handleDeleteTemplate(checklist.id)}
-                    className="text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-rose-50"
-                    title="Şablonu Sil"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => openEditModal(checklist)}
+                      className="text-slate-400 hover:text-indigo-600 p-1.5 rounded hover:bg-indigo-50"
+                      title="Şablonu Düzenle"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteTemplate(checklist.id)}
+                      className="text-slate-400 hover:text-rose-500 p-1.5 rounded hover:bg-rose-50"
+                      title="Şablonu Sil"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
                 
                 <button
@@ -311,29 +377,60 @@ export default function ChecklistsBoard({
                   {/* Items */}
                   <div className="p-2 space-y-1 bg-slate-50/50 flex-1">
                     {run.items.map(item => (
-                      <button
+                      <div
                         key={item.id}
-                        onClick={() => handleToggleCheck(run.id, item)}
-                        className={`w-full flex items-start gap-3 p-3 rounded-lg text-left transition-colors ${
+                        className={`w-full flex flex-col p-3 rounded-lg transition-colors ${
                           item.isChecked 
-                            ? "bg-slate-100/50 text-slate-500" 
+                            ? "bg-slate-100/50" 
                             : "bg-white hover:bg-slate-50 border border-slate-100 shadow-sm"
                         }`}
                       >
-                        <div className={`mt-0.5 flex-shrink-0 ${item.isChecked ? 'text-emerald-500' : 'text-slate-300'}`}>
-                          {item.isChecked ? <CheckSquare className="h-5 w-5" /> : <Square className="h-5 w-5" />}
+                        <div className="flex items-start gap-3 w-full">
+                          <button onClick={() => handleToggleCheck(run.id, item)} className={`mt-0.5 flex-shrink-0 ${item.isChecked ? 'text-emerald-500' : 'text-slate-300'}`}>
+                            {item.isChecked ? <CheckSquare className="h-5 w-5" /> : <Square className="h-5 w-5" />}
+                          </button>
+                          
+                          <div className="flex-1 flex justify-between items-start gap-2">
+                            <div>
+                              <span className={`text-sm font-medium ${item.isChecked ? 'line-through text-slate-500 opacity-70' : 'text-slate-700'}`}>
+                                {item.text}
+                              </span>
+                              {item.isChecked && item.checkedByUserFullName && (
+                                <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-wide font-semibold">
+                                  {item.checkedByUserFullName} onayladı
+                                </p>
+                              )}
+                            </div>
+
+                            {/* Fotoğraf Yükleme İkonu */}
+                            <div className="flex-shrink-0 flex flex-col items-center">
+                              {uploadingRunItemId === item.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin text-indigo-500" />
+                              ) : (
+                                <label className="cursor-pointer text-slate-300 hover:text-indigo-600 transition-colors" title="Kanıt Fotoğrafı Yükle">
+                                  <Camera className="h-4 w-4" />
+                                  <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    className="hidden" 
+                                    onChange={(e) => handlePhotoUpload(run.id, item, e)} 
+                                  />
+                                </label>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <span className={`text-sm font-medium ${item.isChecked ? 'line-through opacity-70' : 'text-slate-700'}`}>
-                            {item.text}
-                          </span>
-                          {item.isChecked && item.checkedByUserFullName && (
-                            <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-wide font-semibold">
-                              {item.checkedByUserFullName} onayladı
-                            </p>
-                          )}
-                        </div>
-                      </button>
+
+                        {/* Fotoğraf Önizlemesi */}
+                        {item.photoUrl && (
+                          <div className="ml-8 mt-3 relative group rounded-lg overflow-hidden border border-slate-200 w-32">
+                            <img src={item.photoUrl} alt="Kontrol Kanıtı" className="w-full h-20 object-cover" />
+                            <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <ImageIcon className="h-4 w-4 text-white shadow-sm" />
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -349,8 +446,8 @@ export default function ChecklistsBoard({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-900">Yeni Şablon Oluştur</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+              <h2 className="text-xl font-bold text-slate-900">{editingId ? "Şablonu Düzenle" : "Yeni Şablon Oluştur"}</h2>
+              <button type="button" onClick={handleCloseModal} className="text-slate-400 hover:text-slate-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -428,7 +525,7 @@ export default function ChecklistsBoard({
               <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={handleCloseModal}
                   className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-200 transition-colors"
                 >
                   İptal

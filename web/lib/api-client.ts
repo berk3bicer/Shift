@@ -188,6 +188,28 @@ export async function createChecklist(payload: {
   return { checklistId: data.checklistId };
 }
 
+export async function updateChecklist(id: string, payload: {
+  name: string;
+  type: number;
+  items: { text: string; orderIndex: number }[];
+}): Promise<void> {
+  if (isMockMode) {
+    console.log(`[MOCK] Checklist ${id} updated`, payload);
+    await new Promise(r => setTimeout(r, 300));
+    return;
+  }
+
+  const res = await fetch(`/api/proxy/api/checklists/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Liste güncellenemedi (${res.status}).`);
+  }
+}
+
 export async function deleteChecklist(id: string): Promise<void> {
   if (isMockMode) {
     console.log(`[MOCK] Checklist ${id} deleted`);
@@ -276,6 +298,18 @@ export async function markNotificationAsRead(id: string): Promise<void> {
   }
   const res = await fetch(`/api/proxy/api/notifications/${id}/read`, { method: "PUT" });
   if (!res.ok) throw new Error("Bildirim okundu işaretlenemedi.");
+}
+
+// ── Dosya Yükleme / Fotoğraf Eki (Mock Presigned URL) ──
+
+export async function uploadPhoto(file: File, entityType: "task" | "checklist", entityId: string): Promise<string> {
+  // Gerçekte backend'den presigned URL alıp O URL'e PUT yapılırdı.
+  // Mock modda yerel bir blob url döneceğiz veya gecikme simüle edeceğiz.
+  console.log(`[MOCK] Uploading photo for ${entityType} ${entityId}...`);
+  await new Promise(r => setTimeout(r, 800)); // Simüle edilmiş upload süresi
+  
+  // Yerel önizleme için URL (sadece o anki sekme için geçerli)
+  return URL.createObjectURL(file);
 }
 
 // Yeni vardiya oluştur. userId null = açık vardiya. Dönüş: { shiftId, warnings }.

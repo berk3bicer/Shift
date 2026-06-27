@@ -210,6 +210,7 @@ export interface TaskItemDto {
   startedAt: string | null;
   completedAt: string | null;
   completedByUserId: string | null;
+  photoUrl?: string; // (Gün 20) Fotoğraf eki mock URL'si
 }
 
 // -----------------------------------------------------------------------------
@@ -246,6 +247,7 @@ export interface ChecklistRunItemDto {
   checkedAt: string | null;
   checkedByUserId: string | null;
   checkedByUserFullName: string | null;
+  photoUrl?: string; // (Gün 20) Fotoğraf eki mock URL'si
 }
 
 export interface ChecklistRunDto {

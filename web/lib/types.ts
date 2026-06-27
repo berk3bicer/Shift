@@ -210,6 +210,8 @@ export interface OvertimeRecordDto {
   overtimeHours: number;
   appliedHourlyRate: number | null;
   overtimeMultiplier: number | null;
+  nightPremium: number | null;
+  weekendPremium: number | null;
   grossAmount: number | null;
   isLocked: boolean;
   lockedAt: string | null;

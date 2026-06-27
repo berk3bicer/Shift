@@ -65,7 +65,10 @@ export default function PayrollBoard({
         const normalH = 180;
         const overtimeH = Math.floor(Math.random() * 20);
         
-        const grossAmount = rate ? (normalH * rate) + (overtimeH * rate * 1.5) : null;
+        const nightP = rate ? Math.floor(Math.random() * 500) : null;
+        const weekendP = rate ? Math.floor(Math.random() * 400) : null;
+
+        const grossAmount = rate ? (normalH * rate) + (overtimeH * rate * 1.5) + (nightP || 0) + (weekendP || 0) : null;
 
         await closePeriod({
           userId: row.staff.id,
@@ -85,6 +88,8 @@ export default function PayrollBoard({
           overtimeHours: overtimeH, // Fake overtime
           appliedHourlyRate: rate,
           overtimeMultiplier: rate ? 1.5 : null,
+          nightPremium: nightP,
+          weekendPremium: weekendP,
           grossAmount: grossAmount,
           isLocked: true,
           lockedAt: new Date().toISOString(),
@@ -159,7 +164,7 @@ export default function PayrollBoard({
     }
 
     // CSV Header
-    const headers = ["Personel Adı", "Dönem Başlangıç", "Dönem Bitiş", "Normal Saat", "Fazla Mesai", "Toplam Saat", "Brüt Tutar"];
+    const headers = ["Personel Adı", "Dönem Başlangıç", "Dönem Bitiş", "Normal Saat", "Fazla Mesai", "Toplam Saat", "Gece Primi", "Hafta Sonu Primi", "Brüt Tutar"];
     const rows = [headers.join(",")];
 
     // CSV Rows
@@ -172,6 +177,8 @@ export default function PayrollBoard({
         escapeCsvField(record.normalHours),
         escapeCsvField(record.overtimeHours),
         escapeCsvField(record.totalHours),
+        escapeCsvField(record.nightPremium !== null && record.nightPremium > 0 ? record.nightPremium.toFixed(2) : ""),
+        escapeCsvField(record.weekendPremium !== null && record.weekendPremium > 0 ? record.weekendPremium.toFixed(2) : ""),
         escapeCsvField(record.grossAmount !== null ? record.grossAmount.toFixed(2) : "")
       ];
       rows.push(rowData.join(","));

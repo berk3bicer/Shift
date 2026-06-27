@@ -185,7 +185,7 @@ export default function AnnouncementsBoard({
                     required
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 min-h-[120px] resize-none"
+                    className="w-full rounded-xl border border-slate-300 bg-white text-slate-900 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 min-h-[120px] resize-none placeholder:text-slate-400"
                     placeholder="Duyuru içeriğini buraya yazın..."
                   />
                 </div>

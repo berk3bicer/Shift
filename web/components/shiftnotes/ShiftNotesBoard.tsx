@@ -116,7 +116,7 @@ export default function ShiftNotesBoard({
             value={newContent}
             onChange={(e) => setNewContent(e.target.value)}
             placeholder="Bir sonraki vardiya veya ekip arkadaşlarınız için not bırakın..."
-            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 min-h-[100px] resize-none"
+            className="w-full rounded-lg border border-slate-300 bg-white text-slate-900 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 min-h-[100px] resize-none placeholder:text-slate-400"
             required
           />
           <div className="flex justify-between items-center">

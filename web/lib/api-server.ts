@@ -85,8 +85,8 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
     }
     if (path.includes("/api/overtime/records")) {
       return [
-        { id: "or1", userId: "s1", userFullName: "Ahmet Yılmaz", periodStart: "2026-05-01T00:00:00.000Z", periodEnd: "2026-05-31T23:59:59.000Z", totalHours: 190, normalHours: 180, overtimeHours: 10, isLocked: true, lockedAt: "2026-06-01T10:00:00.000Z", unlockedAt: null },
-        { id: "or2", userId: "s2", userFullName: "Ayşe Demir", periodStart: "2026-05-01T00:00:00.000Z", periodEnd: "2026-05-31T23:59:59.000Z", totalHours: 210, normalHours: 180, overtimeHours: 30, isLocked: false, lockedAt: "2026-06-01T10:00:00.000Z", unlockedAt: "2026-06-02T15:30:00.000Z" }
+        { id: "or1", userId: "s1", userFullName: "Ahmet Yılmaz", periodStart: "2026-05-01T00:00:00.000Z", periodEnd: "2026-05-31T23:59:59.000Z", totalHours: 190, normalHours: 180, overtimeHours: 10, appliedHourlyRate: 200, overtimeMultiplier: 1.5, grossAmount: 39000, isLocked: true, lockedAt: "2026-06-01T10:00:00.000Z", unlockedAt: null },
+        { id: "or2", userId: "s2", userFullName: "Ayşe Demir", periodStart: "2026-05-01T00:00:00.000Z", periodEnd: "2026-05-31T23:59:59.000Z", totalHours: 210, normalHours: 180, overtimeHours: 30, appliedHourlyRate: null, overtimeMultiplier: null, grossAmount: null, isLocked: false, lockedAt: "2026-06-01T10:00:00.000Z", unlockedAt: "2026-06-02T15:30:00.000Z" }
       ] as any;
     }
     return [] as any; // default return array to prevent map errors

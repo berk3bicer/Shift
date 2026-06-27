@@ -57,6 +57,16 @@ export default function PayrollBoard({
       const newRecords: OvertimeRecordDto[] = [];
 
       for (const row of toClose) {
+        // Fake rate logic: give Ahmet 200, Ayşe null, others random
+        const isAhmet = row.staff.fullName.includes("Ahmet");
+        const isAyse = row.staff.fullName.includes("Ayşe");
+        const rate = isAyse ? null : (isAhmet ? 200 : 150);
+        
+        const normalH = 180;
+        const overtimeH = Math.floor(Math.random() * 20);
+        
+        const grossAmount = rate ? (normalH * rate) + (overtimeH * rate * 1.5) : null;
+
         await closePeriod({
           userId: row.staff.id,
           periodStart: periodStartIso,
@@ -70,9 +80,12 @@ export default function PayrollBoard({
           userFullName: row.staff.fullName,
           periodStart: periodStartIso,
           periodEnd: periodEndIso,
-          totalHours: 180 + Math.floor(Math.random() * 20), // Fake hours
-          normalHours: 180,
-          overtimeHours: Math.floor(Math.random() * 20), // Fake overtime
+          totalHours: normalH + overtimeH, // Fake hours
+          normalHours: normalH,
+          overtimeHours: overtimeH, // Fake overtime
+          appliedHourlyRate: rate,
+          overtimeMultiplier: rate ? 1.5 : null,
+          grossAmount: grossAmount,
           isLocked: true,
           lockedAt: new Date().toISOString(),
           unlockedAt: null
@@ -146,7 +159,7 @@ export default function PayrollBoard({
     }
 
     // CSV Header
-    const headers = ["Personel Adı", "Dönem Başlangıç", "Dönem Bitiş", "Normal Saat", "Fazla Mesai", "Toplam Saat"];
+    const headers = ["Personel Adı", "Dönem Başlangıç", "Dönem Bitiş", "Normal Saat", "Fazla Mesai", "Toplam Saat", "Brüt Tutar"];
     const rows = [headers.join(",")];
 
     // CSV Rows
@@ -158,7 +171,8 @@ export default function PayrollBoard({
         escapeCsvField(new Date(record.periodEnd).toLocaleDateString('tr-TR')),
         escapeCsvField(record.normalHours),
         escapeCsvField(record.overtimeHours),
-        escapeCsvField(record.totalHours)
+        escapeCsvField(record.totalHours),
+        escapeCsvField(record.grossAmount !== null ? record.grossAmount.toFixed(2) : "")
       ];
       rows.push(rowData.join(","));
     });
@@ -252,6 +266,7 @@ export default function PayrollBoard({
                 <th className="px-6 py-4 text-right">Normal Saat</th>
                 <th className="px-6 py-4 text-right">Fazla Mesai</th>
                 <th className="px-6 py-4 text-right font-bold text-slate-900">Toplam Saat</th>
+                <th className="px-6 py-4 text-right">Brüt Tutar</th>
                 <th className="px-6 py-4 text-center">Durum</th>
                 <th className="px-6 py-4 text-right">İşlem</th>
               </tr>
@@ -286,6 +301,19 @@ export default function PayrollBoard({
                   </td>
                   <td className="px-6 py-4 text-right font-bold text-slate-900">
                     {row.record ? `${row.record.totalHours}s` : <span className="text-slate-300">-</span>}
+                  </td>
+                  <td className="px-6 py-4 text-right font-medium">
+                    {row.record ? (
+                      row.record.grossAmount !== null ? (
+                        <span className="text-slate-900">{row.record.grossAmount.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-xs text-rose-500 font-semibold" title="Personele saatlik ücret tanımlanmamış">
+                          <AlertTriangle className="h-3 w-3" /> Ücret Yok
+                        </span>
+                      )
+                    ) : (
+                      <span className="text-slate-300">-</span>
+                    )}
                   </td>
                   <td className="px-6 py-4 text-center">
                     {!row.record ? (
@@ -326,7 +354,7 @@ export default function PayrollBoard({
                 <td className="px-6 py-4 text-right font-bold text-slate-700">{totalNormal}s</td>
                 <td className="px-6 py-4 text-right font-bold text-amber-700">{totalOvertime}s</td>
                 <td className="px-6 py-4 text-right font-bold text-slate-900 text-lg">{totalGrand}s</td>
-                <td colSpan={2}></td>
+                <td colSpan={3}></td>
               </tr>
             </tfoot>
           </table>

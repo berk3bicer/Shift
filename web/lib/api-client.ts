@@ -115,6 +115,54 @@ export async function deleteTask(id: string): Promise<void> {
   }
 }
 
+// ── Kontrol Listeleri (Checklists) ──
+
+export async function startChecklistRun(payload: {
+  branchId: string;
+  checklistId: string;
+  runDate: string; // YYYY-MM-DD
+}): Promise<{ runId: string }> {
+  if (isMockMode) {
+    console.log("[MOCK] Checklist run started", payload);
+    await new Promise(r => setTimeout(r, 400));
+    return { runId: "mock-run-" + Date.now() };
+  }
+
+  const res = await fetch(`/api/proxy/api/checklistruns`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Başlatılamadı (${res.status}).`);
+  }
+  const data = await res.json();
+  return { runId: data.runId };
+}
+
+export async function checkChecklistItem(
+  runId: string,
+  itemId: string,
+  isChecked: boolean
+): Promise<void> {
+  if (isMockMode) {
+    console.log(`[MOCK] Item ${itemId} in run ${runId} isChecked: ${isChecked}`);
+    await new Promise(r => setTimeout(r, 200));
+    return;
+  }
+
+  const res = await fetch(`/api/proxy/api/checklistruns/${runId}/items/${itemId}/check-item`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ isChecked }),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `İşaretlenemedi (${res.status}).`);
+  }
+}
+
 // Yeni vardiya oluştur. userId null = açık vardiya. Dönüş: { shiftId, warnings }.
 // Çakışma → 4xx throw (modal'da gösterilir).
 export async function createShift(payload: {

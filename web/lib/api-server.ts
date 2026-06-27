@@ -1,10 +1,39 @@
 import "server-only";
 import { getToken } from "./session";
-import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskItemDto, TimeOffRequestDto, TimeClockDto, OvertimeSettingsDto, OvertimeSummaryDto, OvertimeRecordDto } from "./types";
+import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskItemDto, TimeOffRequestDto, TimeClockDto, OvertimeSettingsDto, OvertimeSummaryDto, OvertimeRecordDto, ChecklistDto, ChecklistRunDto } from "./types";
 
 // SUNUCU tarafı API istemcisi. Server component / route handler buradan .NET'i DOĞRUDAN
 // çağırır (server-to-server → CORS YOK; backend'e dokunmadan). Token httpOnly cookie'den.
 const BASE_URL = process.env.API_BASE_URL ?? "http://localhost:5203";
+
+// Mock Checklists
+const mockChecklists = [
+  {
+    id: "cl-1",
+    name: "Sabah Açılış Listesi",
+    type: 0,
+    isActive: true,
+    items: [
+      { id: "ci-1", checklistId: "cl-1", text: "Kahve makinesi ısıtıldı", orderIndex: 0 },
+      { id: "ci-2", checklistId: "cl-1", text: "Vitrin düzenlendi", orderIndex: 1 },
+      { id: "ci-3", checklistId: "cl-1", text: "Zemin temizliği yapıldı", orderIndex: 2 }
+    ]
+  },
+  {
+    id: "cl-2",
+    name: "Akşam Kapanış Listesi",
+    type: 1,
+    isActive: true,
+    items: [
+      { id: "ci-4", checklistId: "cl-2", text: "Kasa sayımı yapıldı", orderIndex: 0 },
+      { id: "ci-5", checklistId: "cl-2", text: "Işıklar kapatıldı", orderIndex: 1 },
+      { id: "ci-6", checklistId: "cl-2", text: "Çöpler atıldı", orderIndex: 2 }
+    ]
+  }
+];
+
+let mockChecklistRuns: any[] = [];
+
 
 export class ApiError extends Error {
   constructor(
@@ -89,8 +118,11 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
         { id: "or2", userId: "s2", userFullName: "Ayşe Demir", periodStart: "2026-05-01T00:00:00.000Z", periodEnd: "2026-05-31T23:59:59.000Z", totalHours: 210, normalHours: 180, overtimeHours: 30, appliedHourlyRate: null, overtimeMultiplier: null, nightPremium: null, weekendPremium: null, grossAmount: null, isLocked: false, lockedAt: "2026-06-01T10:00:00.000Z", unlockedAt: "2026-06-02T15:30:00.000Z" }
       ] as any;
     }
-    if (path.includes("/api/tasks")) {
-      return mockTasks as any;
+    if (path.includes("/api/checklists")) {
+      return mockChecklists as any;
+    }
+    if (path.includes("/api/checklistruns")) {
+      return mockChecklistRuns as any;
     }
     
     return [] as any; // default return array to prevent map errors
@@ -134,6 +166,11 @@ export const getPositions = () => apiFetch<PositionDto[]>("/api/positions");
 
 export const getTasks = (branchId: string) =>
   apiFetch<TaskItemDto[]>(`/api/tasks?branchId=${branchId}`);
+
+export const getChecklists = () => apiFetch<ChecklistDto[]>("/api/checklists");
+
+export const getChecklistRuns = (branchId: string, runDate: string) => 
+  apiFetch<ChecklistRunDto[]>(`/api/checklistruns?branchId=${branchId}&runDate=${runDate}`);
 
 export function getShifts(branchId: string, rangeStartIso: string, rangeEndIso: string) {
   const qs = new URLSearchParams({

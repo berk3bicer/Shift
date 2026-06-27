@@ -212,3 +212,55 @@ export interface TaskItemDto {
   completedByUserId: string | null;
 }
 
+// -----------------------------------------------------------------------------
+// Kontrol Listeleri (Checklists) Modülü (Gün 16)
+// -----------------------------------------------------------------------------
+
+export enum ChecklistType {
+  Opening = 0, // Açılış
+  Closing = 1, // Kapanış
+  Custom = 2   // Diğer
+}
+
+export interface ChecklistItemDto {
+  id: string;
+  checklistId: string;
+  text: string;
+  orderIndex: number;
+}
+
+export interface ChecklistDto {
+  id: string;
+  name: string;
+  type: ChecklistType;
+  isActive: boolean;
+  items: ChecklistItemDto[];
+}
+
+export interface ChecklistRunItemDto {
+  id: string;
+  checklistRunId: string;
+  text: string; // Snapshot
+  orderIndex: number;
+  isChecked: boolean;
+  checkedAt: string | null;
+  checkedByUserId: string | null;
+  checkedByUserFullName: string | null;
+}
+
+export interface ChecklistRunDto {
+  id: string;
+  branchId: string;
+  checklistId: string;
+  checklistName: string;
+  runDate: string; // "YYYY-MM-DD"
+  startedAt: string;
+  startedByUserId: string | null;
+  startedByUserFullName: string | null;
+  completedAt: string | null;
+  completedByUserId: string | null;
+  completedByUserFullName: string | null;
+  items: ChecklistRunItemDto[];
+}
+
+

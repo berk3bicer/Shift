@@ -1,4 +1,5 @@
 import { getChecklists, getChecklistRuns, getBranches } from "@/lib/api-server";
+import { selectBranch } from "@/lib/branch";
 import ChecklistsBoard from "@/components/checklists/ChecklistsBoard";
 import { redirect } from "next/navigation";
 
@@ -12,7 +13,7 @@ export default async function ChecklistsPage() {
     return <div className="p-4 text-rose-500">Önce bir şube eklemelisiniz.</div>;
   }
   
-  const branch = branches[0];
+  const branch = (await selectBranch(branches))!;
 
   // Bugünün tarihi
   const today = new Date().toISOString().split("T")[0];

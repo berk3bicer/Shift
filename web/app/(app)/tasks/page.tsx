@@ -1,4 +1,5 @@
 import { getTasks, getBranches, getPositions, getStaff } from "@/lib/api-server";
+import { selectBranch } from "@/lib/branch";
 import TasksBoard from "@/components/tasks/TasksBoard";
 import { redirect } from "next/navigation";
 
@@ -13,7 +14,7 @@ export default async function TasksPage() {
     return <div className="p-4 text-rose-500">Önce bir şube eklemelisiniz.</div>;
   }
   
-  const branch = branches[0];
+  const branch = (await selectBranch(branches))!;
 
   // Verileri paralel çek
   const [tasks, positions, staff] = await Promise.all([

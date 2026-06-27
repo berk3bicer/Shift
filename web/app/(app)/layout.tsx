@@ -1,21 +1,27 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getMe, getNotifications } from "@/lib/api-server";
-import { ApiError } from "@/lib/api-server";
+import { getMe, getNotifications, getBranches, ApiError } from "@/lib/api-server";
+import { selectBranch } from "@/lib/branch";
 import LogoutButton from "@/components/LogoutButton";
 import NotificationBell from "@/components/NotificationBell";
+import BranchSwitcher from "@/components/BranchSwitcher";
+import type { BranchDto } from "@/lib/types";
 
 // Korumalı uygulama düzeni. Sunucuda /me ile kullanıcıyı çözer (token geçersizse
-// 401 → login'e). Üst bar: marka + kullanıcı + çıkış.
+// 401 → login'e). Üst bar: marka + nav + şube seçici + kullanıcı + çıkış.
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   let name: string | null = null;
   let role = "";
   let notifications = [];
+  let branches: BranchDto[] = [];
+  let currentBranchId = "";
   try {
     const me = await getMe();
     name = me.name;
     role = me.roles[0] ?? "";
     notifications = await getNotifications();
+    branches = await getBranches();
+    currentBranchId = (await selectBranch(branches))?.id ?? "";
   } catch (e) {
     if (e instanceof ApiError && e.status === 401) redirect("/login");
     throw e;
@@ -76,6 +82,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </nav>
         </div>
         <div className="flex items-center gap-4">
+          <BranchSwitcher branches={branches} currentId={currentBranchId} />
           <NotificationBell initialNotifications={notifications} />
           <div className="h-6 w-px bg-gray-200"></div>
           <span className="text-sm text-gray-600 flex items-center gap-2">

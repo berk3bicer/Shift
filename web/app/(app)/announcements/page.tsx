@@ -1,4 +1,5 @@
 import { getAnnouncements, getBranches, getMe } from "@/lib/api-server";
+import { selectBranch } from "@/lib/branch";
 import AnnouncementsBoard from "@/components/announcements/AnnouncementsBoard";
 
 export const metadata = {
@@ -11,7 +12,7 @@ export default async function AnnouncementsPage() {
     return <div className="p-4 text-rose-500">Önce bir şube eklemelisiniz.</div>;
   }
   
-  const branch = branches[0];
+  const branch = (await selectBranch(branches))!;
   const me = await getMe();
 
   const initialAnnouncements = await getAnnouncements(branch.id);

@@ -1,4 +1,5 @@
 import { getShiftNotes, getBranches, getMe } from "@/lib/api-server";
+import { selectBranch } from "@/lib/branch";
 import ShiftNotesBoard from "@/components/shiftnotes/ShiftNotesBoard";
 
 export const metadata = {
@@ -15,7 +16,7 @@ export default async function ShiftNotesPage({
     return <div className="p-4 text-rose-500">Önce bir şube eklemelisiniz.</div>;
   }
   
-  const branch = branches[0];
+  const branch = (await selectBranch(branches))!;
   const me = await getMe();
 
   const sp = await searchParams;

@@ -163,6 +163,31 @@ export async function checkChecklistItem(
   }
 }
 
+// Şablon (Template) oluştur
+export async function createChecklist(payload: {
+  name: string;
+  type: number;
+  items: { text: string; orderIndex: number }[];
+}): Promise<{ checklistId: string }> {
+  if (isMockMode) {
+    console.log("[MOCK] Checklist template created", payload);
+    await new Promise(r => setTimeout(r, 400));
+    return { checklistId: "mock-cl-" + Date.now() };
+  }
+
+  const res = await fetch(`/api/proxy/api/checklists`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Şablon oluşturulamadı (${res.status}).`);
+  }
+  const data = await res.json();
+  return { checklistId: data.checklistId };
+}
+
 // Yeni vardiya oluştur. userId null = açık vardiya. Dönüş: { shiftId, warnings }.
 // Çakışma → 4xx throw (modal'da gösterilir).
 export async function createShift(payload: {

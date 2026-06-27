@@ -68,7 +68,7 @@ export default function DashboardBoard({
                         <div>
                           <p className="font-bold text-slate-900">{staff?.fullName || "Açık Vardiya"}</p>
                           <div className="flex items-center gap-2 text-xs font-medium mt-0.5">
-                            <span className={`px-2 py-0.5 rounded-full ${pos?.defaultColor || 'bg-gray-500 text-white'}`}>
+                            <span className="px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: pos?.colorCode || '#64748b' }}>
                               {pos?.name || "Bilinmiyor"}
                             </span>
                           </div>

@@ -6,104 +6,6 @@ import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetail
 // çağırır (server-to-server → CORS YOK; backend'e dokunmadan). Token httpOnly cookie'den.
 const BASE_URL = process.env.API_BASE_URL ?? "http://localhost:5203";
 
-// Mock Checklists
-const mockChecklists = [
-  {
-    id: "cl-1",
-    name: "Sabah Açılış Listesi",
-    type: 0,
-    isActive: true,
-    items: [
-      { id: "ci-1", checklistId: "cl-1", text: "Kahve makinesi ısıtıldı", orderIndex: 0 },
-      { id: "ci-2", checklistId: "cl-1", text: "Vitrin düzenlendi", orderIndex: 1 },
-      { id: "ci-3", checklistId: "cl-1", text: "Zemin temizliği yapıldı", orderIndex: 2 }
-    ]
-  },
-  {
-    id: "cl-2",
-    name: "Akşam Kapanış Listesi",
-    type: 1,
-    isActive: true,
-    items: [
-      { id: "ci-4", checklistId: "cl-2", text: "Kasa sayımı yapıldı", orderIndex: 0 },
-      { id: "ci-5", checklistId: "cl-2", text: "Işıklar kapatıldı", orderIndex: 1 },
-      { id: "ci-6", checklistId: "cl-2", text: "Çöpler atıldı", orderIndex: 2 }
-    ]
-  }
-];
-
-let mockChecklistRuns: any[] = [];
-
-// Mock Shift Notes
-const mockShiftNotes = [
-  {
-    id: "sn-1",
-    branchId: "b1",
-    noteDate: new Date().toISOString().split("T")[0],
-    content: "Sabah kahve makinesi arıza verdi, servis çağrıldı ama gelmedi. Öğleden sonra tekrar aranması gerekiyor.",
-    createdByUserId: "s1",
-    createdByUserFullName: "Ahmet Yılmaz",
-    createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString() // 4 saat önce
-  },
-  {
-    id: "sn-2",
-    branchId: "b1",
-    noteDate: new Date().toISOString().split("T")[0],
-    content: "Kasa 1'de 50 TL açık çıktı, gün sonu raporuna eklendi.",
-    createdByUserId: "s2",
-    createdByUserFullName: "Ayşe Demir",
-    createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString() // 1 saat önce
-  }
-];
-
-// Mock Announcements
-const mockAnnouncements = [
-  {
-    id: "ann-1",
-    title: "Aylık Şube Toplantısı",
-    content: "Bu pazar sabahı saat 09:00'da genel değerlendirme toplantısı yapılacaktır. Katılım zorunludur.",
-    targetBranchId: "b1",
-    targetRole: null, // Herkese
-    createdByUserId: "admin",
-    createdByUserFullName: "Sistem Yöneticisi",
-    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() // 1 gün önce
-  },
-  {
-    id: "ann-2",
-    title: "Yeni Menü Eğitimi",
-    content: "Yaz menüsü geçişi için mutfak ekibine cuma günü eğitim verilecektir.",
-    targetBranchId: "b1",
-    targetRole: 2, // Sadece mutfak vs. (Mock)
-    createdByUserId: "s1",
-    createdByUserFullName: "Ahmet Yılmaz",
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() // 2 gün önce
-  }
-];
-
-// Mock Notifications
-const mockNotifications = [
-  {
-    id: "not-1",
-    userId: "s2", // Geçerli kullanıcı (Örn: Ayşe)
-    title: "Yeni Duyuru: Aylık Şube Toplantısı",
-    message: "Sistem Yöneticisi yeni bir duyuru paylaştı.",
-    type: 1, // AnnouncementPosted
-    relatedEntityId: "ann-1",
-    isRead: false,
-    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "not-2",
-    userId: "s2",
-    title: "Vardiya Yayınlandı",
-    message: "Gelecek haftanın vardiya planı onaylandı.",
-    type: 2, // ShiftPublished
-    relatedEntityId: null,
-    isRead: true,
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-  }
-];
-
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -116,96 +18,6 @@ export class ApiError extends Error {
 
 // Token'lı temel istek. Oturum yoksa 401 fırlatır (çağıran login'e yönlendirir).
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  // MOCK DATA FALLBACK FOR UI TESTING
-  const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK === "true"; 
-
-  if (isMockMode) {
-    console.log(`[MOCK] Intercepted ${path}`);
-    if (path.includes("/api/auth/me")) return { id: "user1", email: "admin@shift.com", roles: ["Admin"], branchId: "b1", name: "Test Admin" } as any;
-    if (path.includes("/api/branches")) return [{ id: "b1", name: "Kadıköy Merkez Şubesi" }] as any;
-    if (path.includes("/api/positions")) return [{ id: "p1", name: "Barista", defaultColor: "bg-amber-500 text-white" }, { id: "p2", name: "Garson", defaultColor: "bg-blue-500 text-white" }] as any;
-    if (path.includes("/api/staff")) return [
-      { id: "s1", fullName: "Ahmet Yılmaz", positionName: "Barista", email: "ahmet@shift.com", branchId: "b1", role: 1 },
-      { id: "s2", fullName: "Ayşe Demir", positionName: "Garson", email: "ayse@shift.com", branchId: "b1", role: 1 }
-    ] as any;
-    if (path.includes("/api/tasks")) return [
-      { id: "t1", branchId: "b1", title: "Kahve makinesini temizle", description: "Gün sonu temizliği", priority: 2, category: 0, status: 0, assignedUserName: "Ahmet Yılmaz", assignedUserId: "s1" },
-      { id: "t2", branchId: "b1", title: "Stok sayımı", description: "Süt ve kahve", priority: 1, category: 1, status: 1, assignedUserName: "Ayşe Demir", assignedUserId: "s2" },
-      { id: "t3", branchId: "b1", title: "Masa 4 adisyon", description: "", priority: 0, category: 2, status: 2 }
-    ] as any;
-    if (path.includes("/api/shifts")) {
-      const today = new Date();
-      const start = new Date(today.setHours(9, 0, 0, 0));
-      const end = new Date(today.setHours(17, 0, 0, 0));
-      return [
-        { id: "shift1", branchId: "b1", positionId: "p1", userId: "s1", startTime: start.toISOString(), endTime: end.toISOString(), notes: "Sabah vardiyası", status: 1 },
-        { id: "shift2", branchId: "b1", positionId: "p2", userId: "s2", startTime: start.toISOString(), endTime: end.toISOString(), notes: "", status: 0 }
-      ] as any;
-    }
-    if (path.includes("/api/availability")) return [
-      { id: "a1", userId: "s1", userFullName: "Ahmet Yılmaz", dayOfWeek: 2, startTime: "13:00", endTime: "18:00", reason: "Okul" },
-      { id: "a2", userId: "s1", userFullName: "Ahmet Yılmaz", dayOfWeek: 4, startTime: "09:00", endTime: "12:00", reason: "Kurs" },
-    ] as any;
-    if (path.includes("/api/timeoffrequests")) {
-      const today = new Date();
-      const nextWeek = new Date(today); nextWeek.setDate(today.getDate() + 7);
-      return [
-        { id: "to1", userId: "s1", userFullName: "Ahmet Yılmaz", startDate: today.toISOString().split("T")[0], endDate: nextWeek.toISOString().split("T")[0], type: 0, status: 0, note: "Yıllık izin", decidedByUserId: null, decidedByUserFullName: null },
-        { id: "to2", userId: "s2", userFullName: "Ayşe Demir", startDate: today.toISOString().split("T")[0], endDate: today.toISOString().split("T")[0], type: 1, status: 1, note: "Hastane randevusu", decidedByUserId: "user1", decidedByUserFullName: "Test Admin" },
-      ] as any;
-    }
-    if (path.includes("/api/timeclocks")) {
-      const today = new Date();
-      const morning = new Date(today.setHours(9, 15, 0, 0));
-      const evening = new Date(today.setHours(17, 10, 0, 0));
-      const justNow = new Date();
-      return [
-        { id: "tc1", userId: "s1", userFullName: "Ahmet Yılmaz", branchId: "b1", checkInTime: morning.toISOString(), checkOutTime: evening.toISOString(), isLate: true, workedMinutes: 475 },
-        { id: "tc2", userId: "s2", userFullName: "Ayşe Demir", branchId: "b1", checkInTime: justNow.toISOString(), checkOutTime: null, isLate: false, workedMinutes: null },
-      ] as any;
-    }
-    if (path.includes("/api/overtime-settings")) {
-      return {
-        weeklyOvertimeThresholdHours: 45,
-        overtimeMultiplier: 1.5,
-        nightMultiplier: 1.0,
-        weekendMultiplier: 1.0,
-        holidayMultiplier: 1.0,
-        earlyClockInToleranceMinutes: 15,
-        lateClockOutToleranceMinutes: 15,
-      } as any;
-    }
-    if (path.includes("/api/overtime/summary")) {
-      return [
-        { userId: "s1", userFullName: "Ahmet Yılmaz", periodStart: "2026-06-01T00:00:00.000Z", periodEnd: "2026-06-30T23:59:59.000Z", totalNormalHours: 160, totalOvertimeHours: 12, grandTotalHours: 172 },
-        { userId: "s2", userFullName: "Ayşe Demir", periodStart: "2026-06-01T00:00:00.000Z", periodEnd: "2026-06-30T23:59:59.000Z", totalNormalHours: 180, totalOvertimeHours: 25, grandTotalHours: 205 },
-      ] as any;
-    }
-    if (path.includes("/api/overtime/records")) {
-      return [
-        { id: "or1", userId: "s1", userFullName: "Ahmet Yılmaz", periodStart: "2026-05-01T00:00:00.000Z", periodEnd: "2026-05-31T23:59:59.000Z", totalHours: 190, normalHours: 180, overtimeHours: 10, appliedHourlyRate: 200, overtimeMultiplier: 1.5, nightPremium: 500, weekendPremium: 400, grossAmount: 39900, isLocked: true, lockedAt: "2026-06-01T10:00:00.000Z", unlockedAt: null },
-        { id: "or2", userId: "s2", userFullName: "Ayşe Demir", periodStart: "2026-05-01T00:00:00.000Z", periodEnd: "2026-05-31T23:59:59.000Z", totalHours: 210, normalHours: 180, overtimeHours: 30, appliedHourlyRate: null, overtimeMultiplier: null, nightPremium: null, weekendPremium: null, grossAmount: null, isLocked: false, lockedAt: "2026-06-01T10:00:00.000Z", unlockedAt: "2026-06-02T15:30:00.000Z" }
-      ] as any;
-    }
-    if (path.includes("/api/checklists")) {
-      return mockChecklists as any;
-    }
-    if (path.includes("/api/checklistruns")) {
-      return mockChecklistRuns as any;
-    }
-    if (path.includes("/api/shiftnotes")) {
-      return mockShiftNotes as any;
-    }
-    if (path.includes("/api/announcements")) {
-      return mockAnnouncements as any;
-    }
-    if (path.includes("/api/notifications")) {
-      return mockNotifications as any;
-    }
-    
-    return [] as any; // default return array to prevent map errors
-  }
-
   const token = await getToken();
   if (!token) throw new ApiError(401, null, "Oturum yok.");
 
@@ -247,16 +59,16 @@ export const getTasks = (branchId: string) =>
 
 export const getChecklists = () => apiFetch<ChecklistDto[]>("/api/checklists");
 
-export const getChecklistRuns = (branchId: string, runDate: string) => 
+export const getChecklistRuns = (branchId: string, runDate: string) =>
   apiFetch<ChecklistRunDto[]>(`/api/checklistruns?branchId=${branchId}&runDate=${runDate}`);
 
-export const getShiftNotes = (branchId: string, noteDate: string) => 
+export const getShiftNotes = (branchId: string, noteDate: string) =>
   apiFetch<ShiftNoteDto[]>(`/api/shiftnotes?branchId=${branchId}&noteDate=${noteDate}`);
 
-export const getAnnouncements = (branchId: string) => 
+export const getAnnouncements = (branchId: string) =>
   apiFetch<AnnouncementDto[]>(`/api/announcements?branchId=${branchId}`);
 
-export const getNotifications = () => 
+export const getNotifications = () =>
   apiFetch<NotificationDto[]>(`/api/notifications`);
 
 export function getShifts(branchId: string, rangeStartIso: string, rangeEndIso: string) {
@@ -268,9 +80,10 @@ export function getShifts(branchId: string, rangeStartIso: string, rangeEndIso: 
   return apiFetch<ShiftDto[]>(`/api/shifts?${qs.toString()}`);
 }
 
+// Backend controller'ı AvailabilitiesController → route api/availabilities (çoğul).
 export const getAvailabilities = (userId?: string) => {
   const qs = userId ? `?userId=${userId}` : "";
-  return apiFetch<AvailabilityDto[]>(`/api/availability${qs}`);
+  return apiFetch<AvailabilityDto[]>(`/api/availabilities${qs}`);
 };
 
 export const getTimeOffRequests = () => apiFetch<TimeOffRequestDto[]>("/api/timeoffrequests");

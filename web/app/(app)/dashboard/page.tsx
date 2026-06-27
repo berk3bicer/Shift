@@ -42,7 +42,7 @@ export default async function DashboardPage() {
       recentNotes={notes}
       staffList={staff}
       positions={positions}
-      userName={me.name}
+      userName={me.name ?? ""}
       todayStr={todayIso}
     />
   );

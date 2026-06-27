@@ -31,7 +31,7 @@ export default async function ShiftNotesPage({
       initialNotes={initialNotes} 
       branch={branch}
       noteDate={noteDate}
-      currentUserId={me.id}
+      currentUserId={me.userId}
       currentUserRoles={me.roles}
     />
   );

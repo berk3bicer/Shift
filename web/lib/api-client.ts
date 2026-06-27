@@ -12,19 +12,19 @@ export class ApiClientError extends Error {
   }
 }
 
-const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK === "true";
+// Ortak hata fırlatıcı — !ok ise ProblemDetails'i çözüp ApiClientError atar.
+async function ensureOk(res: Response, fallback: string): Promise<void> {
+  if (res.ok) return;
+  const problem = await res.json().catch(() => null);
+  throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `${fallback} (${res.status}).`);
+}
 
-// Vardiyayı günceller
+// ── Vardiya (Shift) ──
+
 export async function updateShift(
   shift: ShiftDto,
   overrides: { startTime?: string; endTime?: string; userId?: string | null },
 ): Promise<{ warnings: string[] }> {
-  if (isMockMode) {
-    console.log("[MOCK] Shift updated");
-    await new Promise(r => setTimeout(r, 400));
-    return { warnings: [] };
-  }
-
   const res = await fetch(`/api/proxy/api/shifts/${shift.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -36,42 +36,60 @@ export async function updateShift(
       notes: shift.notes,
     }),
   });
-
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(
-      res.status,
-      problem?.detail ?? problem?.title ?? `İşlem başarısız (${res.status}).`,
-    );
-  }
-
+  await ensureOk(res, "İşlem başarısız");
   const data = await res.json().catch(() => ({}));
   return { warnings: Array.isArray(data?.warnings) ? data.warnings : [] };
 }
 
+export async function createShift(payload: {
+  branchId: string;
+  positionId: string;
+  userId: string | null;
+  startTime: string;
+  endTime: string;
+  notes: string | null;
+}): Promise<{ shiftId: string; warnings: string[] }> {
+  const res = await fetch(`/api/proxy/api/shifts`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  await ensureOk(res, "Oluşturulamadı");
+  const data = await res.json();
+  return { shiftId: data.shiftId, warnings: Array.isArray(data?.warnings) ? data.warnings : [] };
+}
+
+export async function deleteShift(id: string): Promise<void> {
+  const res = await fetch(`/api/proxy/api/shifts/${id}`, { method: "DELETE" });
+  await ensureOk(res, "Silinemedi");
+}
+
+export async function publishWeek(
+  branchId: string,
+  rangeStartIso: string,
+  rangeEndIso: string,
+): Promise<{ publishedCount: number; notifiedUserCount: number }> {
+  const res = await fetch(`/api/proxy/api/shifts/publish-week`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ branchId, rangeStart: rangeStartIso, rangeEnd: rangeEndIso }),
+  });
+  await ensureOk(res, "Yayınlanamadı");
+  const data = await res.json();
+  return { publishedCount: data.publishedCount ?? 0, notifiedUserCount: data.notifiedUserCount ?? 0 };
+}
+
 // ── Kanban görev ──
-
-// Görevi başka kolona taşı (status değişir). Backend serbest hareket + Done yan etkileri.
-// Sonuç warnings taşımaz; hata (nadir 400 / ağ) → throw → hook geri alır.
-export async function moveTask(id: string, newStatus: "ToDo" | "InProgress" | "Done"): Promise<void> {
-  if (isMockMode) {
-    console.log(`[MOCK] Task ${id} moved to status ${newStatus}`);
-    await new Promise(r => setTimeout(r, 300)); // Simulate network latency
-    return;
-  }
-
+// Backend MoveTaskCommand TaskItemStatus enum'unu int olarak alır (0/1/2). newStatus number.
+export async function moveTask(id: string, newStatus: number): Promise<void> {
   const res = await fetch(`/api/proxy/api/tasks/${id}/move`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ newStatus }),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Taşınamadı (${res.status}).`);
-  }
+  await ensureOk(res, "Taşınamadı");
 }
 
-// Yeni görev oluştur (her zaman ToDo'da doğar). Dönüş: { taskId }.
 export async function createTask(payload: {
   branchId: string;
   title: string;
@@ -81,38 +99,19 @@ export async function createTask(payload: {
   assignedUserId: string | null;
   assignedPositionId: string | null;
 }): Promise<{ taskId: string }> {
-  if (isMockMode) {
-    console.log("[MOCK] Task created", payload);
-    await new Promise(r => setTimeout(r, 500)); // Simulate network latency
-    return { taskId: "mock-task-" + Date.now() };
-  }
-
   const res = await fetch(`/api/proxy/api/tasks`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ ...payload, dueDate: null }),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Oluşturulamadı (${res.status}).`);
-  }
+  await ensureOk(res, "Oluşturulamadı");
   const data = await res.json();
   return { taskId: data.taskId };
 }
 
-// Görevi sil
 export async function deleteTask(id: string): Promise<void> {
-  if (isMockMode) {
-    console.log(`[MOCK] Task ${id} deleted`);
-    await new Promise(r => setTimeout(r, 300));
-    return;
-  }
-
   const res = await fetch(`/api/proxy/api/tasks/${id}`, { method: "DELETE" });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Silinemedi (${res.status}).`);
-  }
+  await ensureOk(res, "Silinemedi");
 }
 
 // ── Kontrol Listeleri (Checklists) ──
@@ -122,68 +121,41 @@ export async function startChecklistRun(payload: {
   checklistId: string;
   runDate: string; // YYYY-MM-DD
 }): Promise<{ runId: string }> {
-  if (isMockMode) {
-    console.log("[MOCK] Checklist run started", payload);
-    await new Promise(r => setTimeout(r, 400));
-    return { runId: "mock-run-" + Date.now() };
-  }
-
   const res = await fetch(`/api/proxy/api/checklistruns`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Başlatılamadı (${res.status}).`);
-  }
+  await ensureOk(res, "Başlatılamadı");
   const data = await res.json();
   return { runId: data.runId };
 }
 
+// Backend route: checklistruns/{runId}/items/{itemId}/check  (check-item DEĞİL).
 export async function checkChecklistItem(
   runId: string,
   itemId: string,
-  isChecked: boolean
+  isChecked: boolean,
 ): Promise<void> {
-  if (isMockMode) {
-    console.log(`[MOCK] Item ${itemId} in run ${runId} isChecked: ${isChecked}`);
-    await new Promise(r => setTimeout(r, 200));
-    return;
-  }
-
-  const res = await fetch(`/api/proxy/api/checklistruns/${runId}/items/${itemId}/check-item`, {
+  const res = await fetch(`/api/proxy/api/checklistruns/${runId}/items/${itemId}/check`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ isChecked }),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `İşaretlenemedi (${res.status}).`);
-  }
+  await ensureOk(res, "İşaretlenemedi");
 }
 
-// Şablon (Template) oluştur
 export async function createChecklist(payload: {
   name: string;
   type: number;
   items: { text: string; orderIndex: number }[];
 }): Promise<{ checklistId: string }> {
-  if (isMockMode) {
-    console.log("[MOCK] Checklist template created", payload);
-    await new Promise(r => setTimeout(r, 400));
-    return { checklistId: "mock-cl-" + Date.now() };
-  }
-
   const res = await fetch(`/api/proxy/api/checklists`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Şablon oluşturulamadı (${res.status}).`);
-  }
+  await ensureOk(res, "Şablon oluşturulamadı");
   const data = await res.json();
   return { checklistId: data.checklistId };
 }
@@ -193,75 +165,39 @@ export async function updateChecklist(id: string, payload: {
   type: number;
   items: { text: string; orderIndex: number }[];
 }): Promise<void> {
-  if (isMockMode) {
-    console.log(`[MOCK] Checklist ${id} updated`, payload);
-    await new Promise(r => setTimeout(r, 300));
-    return;
-  }
-
   const res = await fetch(`/api/proxy/api/checklists/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Liste güncellenemedi (${res.status}).`);
-  }
+  await ensureOk(res, "Liste güncellenemedi");
 }
 
 export async function deleteChecklist(id: string): Promise<void> {
-  if (isMockMode) {
-    console.log(`[MOCK] Checklist ${id} deleted`);
-    await new Promise(r => setTimeout(r, 200));
-    return;
-  }
-
   const res = await fetch(`/api/proxy/api/checklists/${id}`, { method: "DELETE" });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Liste silinemedi (${res.status}).`);
-  }
+  await ensureOk(res, "Liste silinemedi");
 }
 
-// ── Vardiya Defteri / Günlük Log (Shift Notes) ──
+// ── Vardiya Defteri (Shift Notes) ──
 
 export async function createShiftNote(payload: {
   branchId: string;
   noteDate: string;
   content: string;
 }): Promise<{ noteId: string }> {
-  if (isMockMode) {
-    console.log("[MOCK] Shift note created", payload);
-    await new Promise(r => setTimeout(r, 300));
-    return { noteId: "mock-sn-" + Date.now() };
-  }
-
   const res = await fetch(`/api/proxy/api/shiftnotes`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Not eklenemedi (${res.status}).`);
-  }
+  await ensureOk(res, "Not eklenemedi");
   const data = await res.json();
   return { noteId: data.noteId };
 }
 
 export async function deleteShiftNote(id: string): Promise<void> {
-  if (isMockMode) {
-    console.log(`[MOCK] Shift note ${id} deleted`);
-    await new Promise(r => setTimeout(r, 200));
-    return;
-  }
-
   const res = await fetch(`/api/proxy/api/shiftnotes/${id}`, { method: "DELETE" });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Not silinemedi (${res.status}).`);
-  }
+  await ensureOk(res, "Not silinemedi");
 }
 
 // ── İletişim ve Duyuru (Announcements) ──
@@ -272,119 +208,22 @@ export async function createAnnouncement(payload: {
   content: string;
   targetRole: number | null;
 }): Promise<{ announcementId: string }> {
-  if (isMockMode) {
-    console.log("[MOCK] Announcement created", payload);
-    await new Promise(r => setTimeout(r, 300));
-    return { announcementId: "mock-ann-" + Date.now() };
-  }
-
   const res = await fetch(`/api/proxy/api/announcements`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Duyuru paylaşılamadı (${res.status}).`);
-  }
+  await ensureOk(res, "Duyuru paylaşılamadı");
   const data = await res.json();
   return { announcementId: data.announcementId };
 }
 
 export async function markNotificationAsRead(id: string): Promise<void> {
-  if (isMockMode) {
-    console.log(`[MOCK] Notification ${id} marked as read`);
-    return;
-  }
   const res = await fetch(`/api/proxy/api/notifications/${id}/read`, { method: "PUT" });
-  if (!res.ok) throw new Error("Bildirim okundu işaretlenemedi.");
+  await ensureOk(res, "Bildirim okundu işaretlenemedi");
 }
 
-// ── Dosya Yükleme / Fotoğraf Eki (Mock Presigned URL) ──
-
-export async function uploadPhoto(file: File, entityType: "task" | "checklist", entityId: string): Promise<string> {
-  // Gerçekte backend'den presigned URL alıp O URL'e PUT yapılırdı.
-  // Mock modda yerel bir blob url döneceğiz veya gecikme simüle edeceğiz.
-  console.log(`[MOCK] Uploading photo for ${entityType} ${entityId}...`);
-  await new Promise(r => setTimeout(r, 800)); // Simüle edilmiş upload süresi
-  
-  // Yerel önizleme için URL (sadece o anki sekme için geçerli)
-  return URL.createObjectURL(file);
-}
-
-// Yeni vardiya oluştur. userId null = açık vardiya. Dönüş: { shiftId, warnings }.
-// Çakışma → 4xx throw (modal'da gösterilir).
-export async function createShift(payload: {
-  branchId: string;
-  positionId: string;
-  userId: string | null;
-  startTime: string;
-  endTime: string;
-  notes: string | null;
-}): Promise<{ shiftId: string; warnings: string[] }> {
-  if (isMockMode) {
-    console.log("[MOCK] Shift created", payload);
-    await new Promise(r => setTimeout(r, 500));
-    return { shiftId: "mock-shift-" + Date.now(), warnings: [] };
-  }
-
-  const res = await fetch(`/api/proxy/api/shifts`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Oluşturulamadı (${res.status}).`);
-  }
-  const data = await res.json();
-  return { shiftId: data.shiftId, warnings: Array.isArray(data?.warnings) ? data.warnings : [] };
-}
-
-// Vardiya sil (HARD delete — geri alınamaz). 204 döner.
-export async function deleteShift(id: string): Promise<void> {
-  if (isMockMode) {
-    console.log(`[MOCK] Shift ${id} deleted`);
-    await new Promise(r => setTimeout(r, 300));
-    return;
-  }
-
-  const res = await fetch(`/api/proxy/api/shifts/${id}`, { method: "DELETE" });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Silinemedi (${res.status}).`);
-  }
-}
-
-// Haftanın TÜM Draft vardiyalarını yayınla. Backend kişi başına tek özet bildirim atar.
-export async function publishWeek(
-  branchId: string,
-  rangeStartIso: string,
-  rangeEndIso: string,
-): Promise<{ publishedCount: number; notifiedUserCount: number }> {
-  if (isMockMode) {
-    console.log(`[MOCK] Week published`);
-    await new Promise(r => setTimeout(r, 600));
-    return { publishedCount: 5, notifiedUserCount: 2 };
-  }
-
-  const res = await fetch(`/api/proxy/api/shifts/publish-week`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ branchId, rangeStart: rangeStartIso, rangeEnd: rangeEndIso }),
-  });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Yayınlanamadı (${res.status}).`);
-  }
-  const data = await res.json();
-  return {
-    publishedCount: data.publishedCount ?? 0,
-    notifiedUserCount: data.notifiedUserCount ?? 0,
-  };
-}
-
-// ── Müsaitlik (Availability) ──
+// ── Müsaitlik (Availability) — route api/availabilities (çoğul) ──
 
 export async function createAvailability(payload: {
   userId: string;
@@ -393,62 +232,36 @@ export async function createAvailability(payload: {
   endTime: string;
   reason: string | null;
 }): Promise<{ id: string }> {
-  if (isMockMode) {
-    console.log("[MOCK] Availability created", payload);
-    await new Promise(r => setTimeout(r, 400));
-    return { id: "mock-avail-" + Date.now() };
-  }
-
-  const res = await fetch(`/api/proxy/api/availability`, {
+  const res = await fetch(`/api/proxy/api/availabilities`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Eklenemedi (${res.status}).`);
-  }
+  await ensureOk(res, "Eklenemedi");
   const data = await res.json();
   return { id: data.id };
 }
 
 export async function deleteAvailability(id: string): Promise<void> {
-  if (isMockMode) {
-    console.log(`[MOCK] Availability ${id} deleted`);
-    await new Promise(r => setTimeout(r, 300));
-    return;
-  }
-
-  const res = await fetch(`/api/proxy/api/availability/${id}`, { method: "DELETE" });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Silinemedi (${res.status}).`);
-  }
+  const res = await fetch(`/api/proxy/api/availabilities/${id}`, { method: "DELETE" });
+  await ensureOk(res, "Silinemedi");
 }
 
 // ── İzin (Time Off) ──
+
 export async function createTimeOffRequest(payload: {
   userId: string;
-  startDate: string; // YYYY-MM-DD
-  endDate: string; // YYYY-MM-DD
+  startDate: string;
+  endDate: string;
   type: number;
   note: string | null;
 }): Promise<{ id: string }> {
-  if (isMockMode) {
-    console.log("[MOCK] Time Off created", payload);
-    await new Promise(r => setTimeout(r, 400));
-    return { id: "mock-to-" + Date.now() };
-  }
-
   const res = await fetch(`/api/proxy/api/timeoffrequests`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Talep oluşturulamadı (${res.status}).`);
-  }
+  await ensureOk(res, "Talep oluşturulamadı");
   const data = await res.json();
   return { id: data.id };
 }
@@ -456,60 +269,35 @@ export async function createTimeOffRequest(payload: {
 export async function decideTimeOffRequest(
   id: string,
   decision: "Approve" | "Reject",
-  note?: string
+  note?: string,
 ): Promise<void> {
-  if (isMockMode) {
-    console.log(`[MOCK] Time Off ${id} decided as ${decision} with note: ${note}`);
-    await new Promise(r => setTimeout(r, 400));
-    return;
-  }
-
   const path = decision === "Approve" ? "approve" : "reject";
   const res = await fetch(`/api/proxy/api/timeoffrequests/${id}/${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ note }),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Karar işlenemedi (${res.status}).`);
-  }
+  await ensureOk(res, "Karar işlenemedi");
 }
 
 // ── Giriş-Çıkış (Time Clock) ──
-export async function clockIn(branchId: string): Promise<void> {
-  if (isMockMode) {
-    console.log(`[MOCK] Clocked in at branch ${branchId}`);
-    await new Promise(r => setTimeout(r, 400));
-    return;
-  }
 
+export async function clockIn(branchId: string): Promise<void> {
   const res = await fetch(`/api/proxy/api/timeclocks/clock-in`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ branchId }),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Giriş yapılamadı (${res.status}).`);
-  }
+  await ensureOk(res, "Giriş yapılamadı");
 }
 
 export async function clockOut(): Promise<void> {
-  if (isMockMode) {
-    console.log(`[MOCK] Clocked out`);
-    await new Promise(r => setTimeout(r, 400));
-    return;
-  }
-
   const res = await fetch(`/api/proxy/api/timeclocks/clock-out`, { method: "POST" });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Çıkış yapılamadı (${res.status}).`);
-  }
+  await ensureOk(res, "Çıkış yapılamadı");
 }
 
-// ── Mesai Hesaplama (Overtime) ──
+// ── Mesai Ayarları (Overtime) ──
+
 export async function updateOvertimeSettings(payload: {
   weeklyOvertimeThresholdHours: number;
   overtimeMultiplier: number;
@@ -519,58 +307,65 @@ export async function updateOvertimeSettings(payload: {
   earlyClockInToleranceMinutes: number;
   lateClockOutToleranceMinutes: number;
 }): Promise<void> {
-  if (isMockMode) {
-    console.log(`[MOCK] Updated Overtime Settings`, payload);
-    await new Promise(r => setTimeout(r, 400));
-    return;
-  }
-
   const res = await fetch(`/api/proxy/api/overtime-settings`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Ayarlar güncellenemedi (${res.status}).`);
-  }
+  await ensureOk(res, "Ayarlar güncellenemedi");
 }
 
 // ── Bordro (Payroll / OvertimeRecord) ──
+
 export async function closePeriod(payload: {
   userId: string;
-  periodStart: string; // ISO date only
-  periodEnd: string; // ISO date only
+  periodStart: string;
+  periodEnd: string;
 }): Promise<void> {
-  if (isMockMode) {
-    console.log(`[MOCK] Closed period for user ${payload.userId}`);
-    await new Promise(r => setTimeout(r, 400));
-    return;
-  }
-
   const res = await fetch(`/api/proxy/api/overtime/close`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Dönem kapatılamadı (${res.status}).`);
-  }
+  await ensureOk(res, "Dönem kapatılamadı");
 }
 
 export async function unlockRecord(id: string): Promise<void> {
-  if (isMockMode) {
-    console.log(`[MOCK] Unlocked record ${id}`);
-    await new Promise(r => setTimeout(r, 400));
-    return;
-  }
+  const res = await fetch(`/api/proxy/api/overtime/records/${id}/unlock`, { method: "POST" });
+  await ensureOk(res, "Kilit açılamadı");
+}
 
-  const res = await fetch(`/api/proxy/api/overtime/records/${id}/unlock`, {
-    method: "POST"
+// ── Fotoğraf eki (presigned URL akışı) ──
+// AttachmentOwnerType: Task=0, ChecklistRunItem=1.
+// 1) upload-url al → 2) dosyayı (proxy üzerinden) yükle → 3) confirm ile kalıcı kaydet.
+// Anlık önizleme için objectURL döner (reload'da List+downloadUrl ile gelir — Adım C).
+export async function uploadPhoto(
+  file: File,
+  entityType: "task" | "checklist",
+  entityId: string,
+): Promise<string> {
+  const ownerType = entityType === "task" ? 0 : 1;
+
+  const urlRes = await fetch(`/api/proxy/api/attachments/upload-url`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ownerType, ownerId: entityId, contentType: file.type, fileName: file.name }),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Kilit açılamadı (${res.status}).`);
-  }
+  await ensureOk(urlRes, "Yükleme adresi alınamadı");
+  const { key, uploadUrl, method } = await urlRes.json();
+
+  // Mock presigned URL backend'in kendi ucuna işaret eder (localhost:5203) → CORS'tan
+  // kaçınmak için proxy üzerinden gönder (mutlak adresi /api/proxy önekine çevir).
+  const proxied = uploadUrl.replace(/^https?:\/\/[^/]+/, "/api/proxy");
+  const putRes = await fetch(proxied, { method: method ?? "PUT", headers: { "Content-Type": file.type }, body: file });
+  if (!putRes.ok) throw new ApiClientError(putRes.status, "Dosya yüklenemedi.");
+
+  const confirmRes = await fetch(`/api/proxy/api/attachments`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ownerType, ownerId: entityId, storageKey: key, contentType: file.type, fileName: file.name }),
+  });
+  await ensureOk(confirmRes, "Fotoğraf kaydedilemedi");
+
+  return URL.createObjectURL(file);
 }

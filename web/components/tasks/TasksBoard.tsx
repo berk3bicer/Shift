@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { TaskItemDto, BranchDto, PositionDto, StaffDto, TaskItemStatus } from "@/lib/types";
+import type { TaskItemDto, BranchDto, PositionDto, StaffDto } from "@/lib/types";
 import { moveTask, createTask, deleteTask, uploadPhoto } from "@/lib/api-client";
 import { Plus, Trash2, GripVertical, Camera, Image as ImageIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -39,7 +39,7 @@ export default function TasksBoard({
     e.preventDefault(); // Necessary to allow dropping
   };
 
-  const handleDrop = async (e: React.DragEvent, newStatus: TaskItemStatus) => {
+  const handleDrop = async (e: React.DragEvent, newStatus: number) => {
     e.preventDefault();
     const taskId = e.dataTransfer.getData("text/plain");
     const task = tasks.find((t) => t.id === taskId);
@@ -128,10 +128,10 @@ export default function TasksBoard({
     }
   };
 
-  const columns: { id: TaskItemStatus; label: string; bgColor: string }[] = [
-    { id: "ToDo", label: "Yapılacak", bgColor: "bg-slate-100" },
-    { id: "InProgress", label: "Devam Ediyor", bgColor: "bg-blue-50/50" },
-    { id: "Done", label: "Tamamlandı", bgColor: "bg-emerald-50/50" },
+  const columns: { id: number; label: string; bgColor: string }[] = [
+    { id: 0, label: "Yapılacak", bgColor: "bg-slate-100" },
+    { id: 1, label: "Devam Ediyor", bgColor: "bg-blue-50/50" },
+    { id: 2, label: "Tamamlandı", bgColor: "bg-emerald-50/50" },
   ];
 
   const getPriorityLabel = (p: number) => {
@@ -187,7 +187,7 @@ export default function TasksBoard({
             <div className="flex-1 p-3 overflow-y-auto space-y-3 relative">
               {tasks.filter(t => t.status === col.id).map(task => {
                 const prio = getPriorityLabel(task.priority);
-                const isDone = task.status === "Done";
+                const isDone = task.status === 2;
                 return (
                   <div
                     key={task.id}

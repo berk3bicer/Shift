@@ -193,9 +193,9 @@ export interface TaskItemDto {
   id: string;
   title: string;
   description: string | null;
-  status: TaskItemStatus;
-  priority: TaskPriority;
-  category: TaskCategory;
+  status: number; // backend numeric enum (0=ToDo,1=InProgress,2=Done)
+  priority: number; // 0=Düşük,1=Orta,2=Yüksek,3=Acil
+  category: number; // 0=Temizlik..5=Eğitim
   
   // Atama (XOR)
   assignedUserId: string | null;

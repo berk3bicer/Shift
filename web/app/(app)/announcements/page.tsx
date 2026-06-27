@@ -23,7 +23,7 @@ export default async function AnnouncementsPage() {
     <AnnouncementsBoard 
       initialAnnouncements={initialAnnouncements} 
       branch={branch}
-      currentUserId={me.id}
+      currentUserId={me.userId}
       canAnnounce={canAnnounce}
     />
   );

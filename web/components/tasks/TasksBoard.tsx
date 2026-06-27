@@ -3,8 +3,9 @@
 import { useState } from "react";
 import type { TaskItemDto, BranchDto, PositionDto, StaffDto, TaskItemStatus } from "@/lib/types";
 import { moveTask, createTask, deleteTask, uploadPhoto } from "@/lib/api-client";
-import { Plus, Trash2, GripVertical, CheckCircle2, Camera, Image as ImageIcon, Loader2, MessageSquare } from "lucide-react";
+import { Plus, Trash2, GripVertical, Camera, Image as ImageIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function TasksBoard({
   initialTasks,
@@ -83,7 +84,7 @@ export default function TasksBoard({
     try {
       const url = await uploadPhoto(file, "task", taskId);
       setTasks(prev => prev.map(t => t.id === taskId ? { ...t, photoUrl: url } : t));
-    } catch (err) {
+    } catch {
       setError("Fotoğraf yüklenemedi.");
       setTimeout(() => setError(null), 3000);
     } finally {

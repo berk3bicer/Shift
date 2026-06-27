@@ -227,7 +227,7 @@ export default function ChecklistsBoard({
         ...r, 
         items: r.items.map(i => i.id === item.id ? { ...i, photoUrl: url } : i)
       } : r));
-    } catch (err) {
+    } catch {
       setError("Fotoğraf yüklenemedi.");
       setTimeout(() => setError(null), 3000);
     } finally {

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import type { ChecklistDto, ChecklistRunDto, ChecklistRunItemDto, BranchDto } from "@/lib/types";
-import { startChecklistRun, checkChecklistItem, createChecklist } from "@/lib/api-client";
-import { Play, CheckSquare, Square, CheckCircle2, Clock, Plus, X, ListPlus } from "lucide-react";
+import { startChecklistRun, checkChecklistItem, createChecklist, deleteChecklist } from "@/lib/api-client";
+import { Play, CheckSquare, Square, CheckCircle2, Clock, Plus, X, ListPlus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function ChecklistsBoard({
@@ -161,6 +161,24 @@ export default function ChecklistsBoard({
     }
   };
 
+  const handleDeleteTemplate = async (id: string) => {
+    if (!window.confirm("Bu şablonu silmek istediğinize emin misiniz? (Geçmiş çalıştırmalar etkilenmez)")) return;
+
+    const previousChecklists = [...localChecklists];
+    setLocalChecklists(prev => prev.filter(c => c.id !== id));
+
+    try {
+      await deleteChecklist(id);
+      if (process.env.NEXT_PUBLIC_USE_MOCK !== "true") {
+        router.refresh();
+      }
+    } catch (err: any) {
+      setError(err.message || "Şablon silinemedi");
+      setTimeout(() => setError(null), 3000);
+      setLocalChecklists(previousChecklists);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -201,10 +219,19 @@ export default function ChecklistsBoard({
             const hasRunToday = runs.some(r => r.checklistId === checklist.id);
 
             return (
-              <div key={checklist.id} className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col gap-4">
-                <div>
-                  <h3 className="font-bold text-slate-900">{checklist.name}</h3>
-                  <p className="text-sm text-slate-500 mt-1">{checklist.items.length} Madde</p>
+              <div key={checklist.id} className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col gap-4 relative group">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-bold text-slate-900">{checklist.name}</h3>
+                    <p className="text-sm text-slate-500 mt-1">{checklist.items.length} Madde</p>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteTemplate(checklist.id)}
+                    className="text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-rose-50"
+                    title="Şablonu Sil"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
                 
                 <button

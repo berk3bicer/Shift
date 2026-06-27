@@ -26,16 +26,48 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <span className="text-lg font-semibold text-gray-900">Shift</span>
             <span className="text-sm text-gray-400">Yönetici</span>
           </div>
-          <nav className="flex gap-4 text-sm text-gray-600">
+          <nav className="flex gap-6 text-sm text-gray-600 font-medium">
+            <Link href="/dashboard" className="hover:text-gray-900 transition-colors">Ana Sayfa</Link>
             <Link href="/schedule" className="hover:text-gray-900 transition-colors">Çizelge</Link>
-            <Link href="/shift-notes" className="hover:text-gray-900 transition-colors">Vardiya Defteri</Link>
-            <Link href="/tasks" className="hover:text-gray-900 transition-colors">Görevler</Link>
-            <Link href="/checklists" className="hover:text-gray-900 transition-colors">Listeler</Link>
-            <Link href="/availability" className="hover:text-gray-900 transition-colors">Müsaitlik</Link>
-            <Link href="/timeoff" className="hover:text-gray-900 transition-colors">İzinler</Link>
-            <Link href="/timeclock" className="hover:text-gray-900 transition-colors">Puantaj</Link>
-            <Link href="/payroll" className="hover:text-gray-900 transition-colors font-medium">Bordro</Link>
-            <Link href="/reports" className="hover:text-gray-900 transition-colors">Raporlar</Link>
+            
+            <div className="group relative">
+              <button className="flex items-center gap-1 hover:text-gray-900 transition-colors focus:outline-none">
+                Ekip & Puantaj
+              </button>
+              <div className="absolute left-0 mt-2 w-40 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                <div className="py-1">
+                  <Link href="/timeclock" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Puantaj</Link>
+                  <Link href="/timeoff" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">İzinler</Link>
+                  <Link href="/availability" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Müsaitlik</Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="group relative">
+              <button className="flex items-center gap-1 hover:text-gray-900 transition-colors focus:outline-none">
+                Operasyon
+              </button>
+              <div className="absolute left-0 mt-2 w-40 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                <div className="py-1">
+                  <Link href="/shift-notes" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Vardiya Defteri</Link>
+                  <Link href="/tasks" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Görevler</Link>
+                  <Link href="/checklists" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Listeler</Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="group relative">
+              <button className="flex items-center gap-1 hover:text-gray-900 transition-colors focus:outline-none">
+                Finans
+              </button>
+              <div className="absolute left-0 mt-2 w-40 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                <div className="py-1">
+                  <Link href="/payroll" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Bordro</Link>
+                  <Link href="/reports" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Raporlar</Link>
+                </div>
+              </div>
+            </div>
+
             <Link href="/settings" className="hover:text-gray-900 transition-colors">Ayarlar</Link>
           </nav>
         </div>

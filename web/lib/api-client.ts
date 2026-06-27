@@ -188,6 +188,20 @@ export async function createChecklist(payload: {
   return { checklistId: data.checklistId };
 }
 
+export async function deleteChecklist(id: string): Promise<void> {
+  if (isMockMode) {
+    console.log(`[MOCK] Checklist ${id} deleted`);
+    await new Promise(r => setTimeout(r, 200));
+    return;
+  }
+
+  const res = await fetch(`/api/proxy/api/checklists/${id}`, { method: "DELETE" });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Liste silinemedi (${res.status}).`);
+  }
+}
+
 // ── Vardiya Defteri / Günlük Log (Shift Notes) ──
 
 export async function createShiftNote(payload: {

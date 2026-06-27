@@ -53,7 +53,7 @@ export async function updateShift(
 
 // Görevi başka kolona taşı (status değişir). Backend serbest hareket + Done yan etkileri.
 // Sonuç warnings taşımaz; hata (nadir 400 / ağ) → throw → hook geri alır.
-export async function moveTask(id: string, newStatus: number): Promise<void> {
+export async function moveTask(id: string, newStatus: "ToDo" | "InProgress" | "Done"): Promise<void> {
   if (isMockMode) {
     console.log(`[MOCK] Task ${id} moved to status ${newStatus}`);
     await new Promise(r => setTimeout(r, 300)); // Simulate network latency
@@ -98,6 +98,21 @@ export async function createTask(payload: {
   }
   const data = await res.json();
   return { taskId: data.taskId };
+}
+
+// Görevi sil
+export async function deleteTask(id: string): Promise<void> {
+  if (isMockMode) {
+    console.log(`[MOCK] Task ${id} deleted`);
+    await new Promise(r => setTimeout(r, 300));
+    return;
+  }
+
+  const res = await fetch(`/api/proxy/api/tasks/${id}`, { method: "DELETE" });
+  if (!res.ok) {
+    const problem = await res.json().catch(() => null);
+    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Silinemedi (${res.status}).`);
+  }
 }
 
 // Yeni vardiya oluştur. userId null = açık vardiya. Dönüş: { shiftId, warnings }.

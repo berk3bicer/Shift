@@ -1,6 +1,6 @@
 import "server-only";
 import { getToken } from "./session";
-import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskDto, TimeOffRequestDto, TimeClockDto, OvertimeSettingsDto, OvertimeSummaryDto, OvertimeRecordDto } from "./types";
+import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskItemDto, TimeOffRequestDto, TimeClockDto, OvertimeSettingsDto, OvertimeSummaryDto, OvertimeRecordDto } from "./types";
 
 // SUNUCU tarafı API istemcisi. Server component / route handler buradan .NET'i DOĞRUDAN
 // çağırır (server-to-server → CORS YOK; backend'e dokunmadan). Token httpOnly cookie'den.
@@ -89,6 +89,10 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
         { id: "or2", userId: "s2", userFullName: "Ayşe Demir", periodStart: "2026-05-01T00:00:00.000Z", periodEnd: "2026-05-31T23:59:59.000Z", totalHours: 210, normalHours: 180, overtimeHours: 30, appliedHourlyRate: null, overtimeMultiplier: null, nightPremium: null, weekendPremium: null, grossAmount: null, isLocked: false, lockedAt: "2026-06-01T10:00:00.000Z", unlockedAt: "2026-06-02T15:30:00.000Z" }
       ] as any;
     }
+    if (path.includes("/api/tasks")) {
+      return mockTasks as any;
+    }
+    
     return [] as any; // default return array to prevent map errors
   }
 
@@ -129,7 +133,7 @@ export const getStaff = () => apiFetch<StaffDto[]>("/api/staff");
 export const getPositions = () => apiFetch<PositionDto[]>("/api/positions");
 
 export const getTasks = (branchId: string) =>
-  apiFetch<TaskDto[]>(`/api/tasks?branchId=${branchId}`);
+  apiFetch<TaskItemDto[]>(`/api/tasks?branchId=${branchId}`);
 
 export function getShifts(branchId: string, rangeStartIso: string, rangeEndIso: string) {
   const qs = new URLSearchParams({

@@ -64,45 +64,7 @@ export interface StaffDto {
   isActive: boolean;
 }
 
-// ── Görev / Kanban (backend TaskItem) ──
-export enum TaskItemStatus {
-  ToDo = 0, // Yapılacak
-  InProgress = 1, // Devam Ediyor
-  Done = 2, // Tamamlandı
-}
-
-export enum TaskPriority {
-  Low = 0,
-  Medium = 1,
-  High = 2,
-  Urgent = 3,
-}
-
-export enum TaskCategory {
-  Cleaning = 0,
-  Service = 1,
-  Kitchen = 2,
-  Supply = 3,
-  Technical = 4,
-  Training = 5,
-}
-
-export interface TaskDto {
-  id: string;
-  branchId: string;
-  title: string;
-  description: string | null;
-  dueDate: string | null;
-  priority: number;
-  category: number;
-  status: number;
-  assignedUserId: string | null;
-  assignedUserName: string | null;
-  assignedPositionId: string | null;
-  assignedPositionName: string | null;
-  startedAt: string | null;
-  completedAt: string | null;
-}
+// Removed old TaskDto
 
 export interface ProblemDetails {
   status: number;
@@ -218,3 +180,35 @@ export interface OvertimeRecordDto {
   unlockedAt: string | null;
   weeks?: OvertimeWeekSnapshotDto[]; // Sadece detayda gelir (jsonb)
 }
+
+// -----------------------------------------------------------------------------
+// Görevler (Tasks / Kanban) Modülü (Gün 15)
+// -----------------------------------------------------------------------------
+
+export type TaskItemStatus = "ToDo" | "InProgress" | "Done";
+export type TaskPriority = "Low" | "Medium" | "High";
+export type TaskCategory = "Kitchen" | "Service" | "Cleaning" | "Other";
+
+export interface TaskItemDto {
+  id: string;
+  title: string;
+  description: string | null;
+  status: TaskItemStatus;
+  priority: TaskPriority;
+  category: TaskCategory;
+  
+  // Atama (XOR)
+  assignedUserId: string | null;
+  assignedPositionId: string | null;
+  
+  // Projection için isimler
+  assignedUserName: string | null;
+  assignedPositionName: string | null;
+
+  // Zaman damgaları
+  createdAt: string;
+  startedAt: string | null;
+  completedAt: string | null;
+  completedByUserId: string | null;
+}
+

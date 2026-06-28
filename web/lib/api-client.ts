@@ -291,11 +291,13 @@ export async function decideTimeOffRequest(
 
 // ── Giriş-Çıkış (Time Clock) ──
 
-export async function clockIn(branchId: string): Promise<void> {
+// Backend ClockInCommand(BranchId, Method). ClockMethod: QR=0 (kendi telefonu),
+// PIN=1 (paylaşılan tablet). Giriş yapan KENDİ token'ıyla damgalanır.
+export async function clockIn(branchId: string, method: number = 0): Promise<void> {
   const res = await fetch(`/api/proxy/api/timeclocks/clock-in`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ branchId }),
+    body: JSON.stringify({ branchId, method }),
   });
   await ensureOk(res, "Giriş yapılamadı");
 }

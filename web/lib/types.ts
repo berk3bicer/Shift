@@ -129,6 +129,7 @@ export interface TimeClockDto {
   branchId: string;
   checkInTime: string; // ISO
   checkOutTime: string | null; // ISO (null = halen içeride/açık kayıt)
+  method: string; // "QR" | "PIN" (backend ClockMethod)
   isLate: boolean;
   workedMinutes: number | null; // checkOutTime doluysa hesaplanır
 }

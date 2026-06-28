@@ -4,10 +4,15 @@ import type { OvertimeSummaryDto } from "@/lib/types";
 import { FileBarChart, Clock, Calculator, UserRound } from "lucide-react";
 
 export default function OvertimeSummaryBoard({
-  summary,
+  summaries,
+  periodStart,
+  periodEnd,
 }: {
-  summary: OvertimeSummaryDto[];
+  summaries: OvertimeSummaryDto[];
+  periodStart: string;
+  periodEnd: string;
 }) {
+  const periodLabel = `${new Date(periodStart).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })} – ${new Date(periodEnd).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}`;
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -36,7 +41,7 @@ export default function OvertimeSummaryBoard({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {summary.map(s => (
+                {summaries.map(s => (
                   <tr key={s.userId} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -47,29 +52,27 @@ export default function OvertimeSummaryBoard({
                       </div>
                     </td>
                     <td className="px-6 py-4 text-xs font-medium text-slate-500">
-                      {new Date(s.periodStart).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })} 
-                      &nbsp;–&nbsp; 
-                      {new Date(s.periodEnd).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
+                      {periodLabel}
                     </td>
                     <td className="px-6 py-4 text-right font-medium text-slate-700">
-                      {s.totalNormalHours}s
+                      {s.normalHours}s
                     </td>
                     <td className="px-6 py-4 text-right">
-                      {s.totalOvertimeHours > 0 ? (
+                      {s.overtimeHours > 0 ? (
                         <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-bold text-amber-700 ring-1 ring-inset ring-amber-600/20">
-                          {s.totalOvertimeHours}s
+                          {s.overtimeHours}s
                         </span>
                       ) : (
                         <span className="text-slate-400">-</span>
                       )}
                     </td>
                     <td className="px-6 py-4 text-right font-bold text-slate-900">
-                      {s.grandTotalHours}s
+                      {s.totalHours}s
                     </td>
                   </tr>
                 ))}
-                
-                {summary.length === 0 && (
+
+                {summaries.length === 0 && (
                   <tr>
                     <td colSpan={5} className="px-6 py-12 text-center text-sm text-slate-500">
                       Bu döneme ait mesai kaydı bulunamadı.
@@ -104,15 +107,15 @@ export default function OvertimeSummaryBoard({
             <div className="space-y-4">
               <div className="flex justify-between items-center pb-4 border-b border-slate-100">
                 <span className="text-sm text-slate-600">Toplam Normal Süre</span>
-                <span className="font-semibold text-slate-900">{summary.reduce((acc, curr) => acc + curr.totalNormalHours, 0)}s</span>
+                <span className="font-semibold text-slate-900">{summaries.reduce((acc, curr) => acc + curr.normalHours, 0)}s</span>
               </div>
               <div className="flex justify-between items-center pb-4 border-b border-slate-100">
                 <span className="text-sm text-slate-600">Toplam Fazla Mesai</span>
-                <span className="font-bold text-amber-600">{summary.reduce((acc, curr) => acc + curr.totalOvertimeHours, 0)}s</span>
+                <span className="font-bold text-amber-600">{summaries.reduce((acc, curr) => acc + curr.overtimeHours, 0)}s</span>
               </div>
               <div className="flex justify-between items-center pt-2">
                 <span className="text-sm font-semibold text-slate-900">Genel Toplam</span>
-                <span className="text-lg font-bold text-slate-900">{summary.reduce((acc, curr) => acc + curr.grandTotalHours, 0)}s</span>
+                <span className="text-lg font-bold text-slate-900">{summaries.reduce((acc, curr) => acc + curr.totalHours, 0)}s</span>
               </div>
             </div>
           </div>

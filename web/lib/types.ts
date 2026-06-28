@@ -139,20 +139,26 @@ export interface OvertimeSettingsDto {
   weeklyOvertimeThresholdHours: number;
   overtimeMultiplier: number;
   nightMultiplier: number;
+  nightStart: string; // "HH:mm" — gece penceresi başı (backend zorunlu)
+  nightEnd: string;   // "HH:mm" — gece penceresi sonu (backend zorunlu)
   weekendMultiplier: number;
   holidayMultiplier: number;
-  earlyClockInToleranceMinutes: number; // Erken giriş toleransı (örn: 15 dk)
-  lateClockOutToleranceMinutes: number; // Geç çıkış toleransı (örn: 15 dk)
 }
 
+// Backend StaffOvertimeSummary ile birebir (tek personel, tek dönem; canlı hesap).
+// Dönem (from/to) yanıtta YOK — çağıran zaten bilir, sayfa prop olarak taşır.
 export interface OvertimeSummaryDto {
   userId: string;
   userFullName: string | null;
-  periodStart: string; // ISO
-  periodEnd: string; // ISO
-  totalNormalHours: number;
-  totalOvertimeHours: number;
-  grandTotalHours: number;
+  totalHours: number;
+  normalHours: number;
+  overtimeHours: number;
+  weeks: OvertimeWeekSnapshotDto[];
+  appliedHourlyRate: number | null;
+  overtimeMultiplier: number | null;
+  nightPremium: number | null;
+  weekendPremium: number | null;
+  grossAmount: number | null;
 }
 
 export interface OvertimeWeekSnapshotDto {

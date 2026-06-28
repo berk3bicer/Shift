@@ -309,14 +309,17 @@ export async function clockOut(): Promise<void> {
 
 // ── Mesai Ayarları (Overtime) ──
 
+// Backend UpdateOvertimeSettingsCommand nightStart/nightEnd'i ZORUNLU "HH:mm" string
+// bekler (validator TimeOnly.TryParse). Göndermezsek 400 alırdık. Tolerans alanları
+// backend'de YOK — kozmetik yalandı, kaldırıldı (bkz. gap listesi: tolerans=kapsam).
 export async function updateOvertimeSettings(payload: {
   weeklyOvertimeThresholdHours: number;
   overtimeMultiplier: number;
   nightMultiplier: number;
+  nightStart: string;
+  nightEnd: string;
   weekendMultiplier: number;
   holidayMultiplier: number;
-  earlyClockInToleranceMinutes: number;
-  lateClockOutToleranceMinutes: number;
 }): Promise<void> {
   const res = await fetch(`/api/proxy/api/overtime-settings`, {
     method: "PUT",
@@ -328,22 +331,50 @@ export async function updateOvertimeSettings(payload: {
 
 // ── Bordro (Payroll / OvertimeRecord) ──
 
+// Dönem kapat. Backend CloseOvertimePeriodCommand {UserId, From, To} bekler ve
+// From/To DateOnly'dir → "yyyy-MM-dd" gönder (ISO datetime DEĞİL; datetime DateOnly'ye
+// bind OLMAZ, sessizce 0001-01-01 çöp kayıt yazılırdı). Anahtarlar from/to olmalı.
 export async function closePeriod(payload: {
   userId: string;
-  periodStart: string;
-  periodEnd: string;
-}): Promise<void> {
+  from: string; // "2026-06-01"
+  to: string;   // "2026-06-30"
+}): Promise<{ recordId: string }> {
   const res = await fetch(`/api/proxy/api/overtime/close`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
   await ensureOk(res, "Dönem kapatılamadı");
+  return res.json();
 }
 
 export async function unlockRecord(id: string): Promise<void> {
   const res = await fetch(`/api/proxy/api/overtime/records/${id}/unlock`, { method: "POST" });
   await ensureOk(res, "Kilit açılamadı");
+}
+
+// Gerçek CSV export: backend /records/export ucundan indir (InvariantCulture, BOM,
+// sadece kilitli kayıtlar — Logo/Mikro/Paraşüt import için). Client-side CSV ÜRETME;
+// brüt/prim hesabı tek kaynaktan (backend snapshot) gelsin. Dosyayı blob ile indirir.
+export async function exportOvertimeCsv(from: string, to: string): Promise<void> {
+  const qs = new URLSearchParams({ from, to });
+  const res = await fetch(`/api/proxy/api/overtime/records/export?${qs.toString()}`);
+  await ensureOk(res, "CSV dışa aktarılamadı");
+
+  const blob = await res.blob();
+  // Dosya adını backend Content-Disposition'dan al (bordro_<from>_<to>.csv).
+  const disp = res.headers.get("Content-Disposition") ?? "";
+  const match = disp.match(/filename="?([^"]+)"?/);
+  const fileName = match?.[1] ?? `bordro_${from}_${to}.csv`;
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 // ── Fotoğraf eki (presigned URL akışı) ──

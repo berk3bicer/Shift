@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { OvertimeRecordDto, StaffDto } from "@/lib/types";
-import { closePeriod, unlockRecord, ApiClientError } from "@/lib/api-client";
+import { closePeriod, unlockRecord, exportOvertimeCsv, ApiClientError } from "@/lib/api-client";
 import { Lock, Unlock, Calculator, FileCheck2, AlertTriangle, UserRound, ArrowRight, Download } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -14,8 +14,11 @@ export default function PayrollBoard({
   staff: StaffDto[];
 }) {
   const router = useRouter();
-  const [records, setRecords] = useState<OvertimeRecordDto[]>(initialRecords);
-  
+  // records prop'tan DOĞRUDAN okunur (useState DEĞİL): router.refresh sonrası server
+  // bileşeni yeni initialRecords ile yeniden render eder; useState(initialRecords) ilk
+  // mount'tan sonra güncellenmez → bayatlardı. Kaynak tek: DB → prop.
+  const records = initialRecords;
+
   // Selected pay period (default to June 2026 for demo)
   const [selectedMonth, setSelectedMonth] = useState<string>("2026-06");
   
@@ -23,15 +26,18 @@ export default function PayrollBoard({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Calculate start and end ISO dates from YYYY-MM
+  // Dönem sınırları DATE-ONLY "yyyy-MM-dd" (backend DateOnly bekler — ISO datetime
+  // bind OLMAZ). from = ayın 1'i, to = ayın son günü.
   const year = parseInt(selectedMonth.split("-")[0]);
   const month = parseInt(selectedMonth.split("-")[1]) - 1; // 0-indexed
-  const periodStartIso = new Date(Date.UTC(year, month, 1, 0, 0, 0)).toISOString();
-  const periodEndIso = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59)).toISOString();
+  const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+  const periodStart = `${selectedMonth}-01`;
+  const periodEnd = `${selectedMonth}-${String(lastDay).padStart(2, "0")}`;
 
-  // Combine staff with their records for the selected period
+  // Personeli dönemin gerçek kaydıyla eşle. Backend periodStart "2026-06-01" döner;
+  // date-only string'le KARŞILAŞTIR (eskiden ISO datetime'la kıyaslanıp hiç eşleşmiyordu).
   const gridData = staff.map(s => {
-    const record = records.find(r => r.userId === s.id && r.periodStart === periodStartIso);
+    const record = records.find(r => r.userId === s.id && r.periodStart === periodStart);
     return {
       staff: s,
       record: record || null
@@ -50,61 +56,29 @@ export default function PayrollBoard({
     setSuccess(null);
     setLoading("bulk-close");
     try {
-      // In a real app, this would be one API call like /api/overtime/close-bulk
-      // Here we simulate it by looping over staff who aren't locked yet.
+      // Toplu kapanış ucu yok → kilitsiz personel için sırayla gerçek close çağır.
+      // Backend her kişiyi gerçek clock verisinden hesaplayıp snapshot dondurur;
+      // SAHTE veri ÜRETMEYİZ. Sonra router.refresh ile gerçek kayıtları geri okuruz
+      // (optimistic illüzyon yok — ekrandaki saat/brüt DB'den gelir).
       const toClose = gridData.filter(row => !row.record?.isLocked);
-      
-      const newRecords: OvertimeRecordDto[] = [];
 
-      for (const row of toClose) {
-        // Fake rate logic: give Ahmet 200, Ayşe null, others random
-        const isAhmet = row.staff.fullName.includes("Ahmet");
-        const isAyse = row.staff.fullName.includes("Ayşe");
-        const rate = isAyse ? null : (isAhmet ? 200 : 150);
-        
-        const normalH = 180;
-        const overtimeH = Math.floor(Math.random() * 20);
-        
-        const nightP = rate ? Math.floor(Math.random() * 500) : null;
-        const weekendP = rate ? Math.floor(Math.random() * 400) : null;
-
-        const grossAmount = rate ? (normalH * rate) + (overtimeH * rate * 1.5) + (nightP || 0) + (weekendP || 0) : null;
-
-        await closePeriod({
-          userId: row.staff.id,
-          periodStart: periodStartIso,
-          periodEnd: periodEndIso
-        });
-
-        // Generate optimistic record
-        newRecords.push({
-          id: "mock-or-" + Date.now() + row.staff.id,
-          userId: row.staff.id,
-          userFullName: row.staff.fullName,
-          periodStart: periodStartIso,
-          periodEnd: periodEndIso,
-          totalHours: normalH + overtimeH, // Fake hours
-          normalHours: normalH,
-          overtimeHours: overtimeH, // Fake overtime
-          appliedHourlyRate: rate,
-          overtimeMultiplier: rate ? 1.5 : null,
-          nightPremium: nightP,
-          weekendPremium: weekendP,
-          grossAmount: grossAmount,
-          isLocked: true,
-          lockedAt: new Date().toISOString(),
-          unlockedAt: null
-        });
+      if (toClose.length === 0) {
+        setSuccess("Bu dönemde kapatılacak kayıt yok (tümü kilitli).");
+        setTimeout(() => setSuccess(null), 3000);
+        return;
       }
 
-      setSuccess("Tüm personellerin dönemi başarıyla hesaplandı ve kilitlendi.");
-      
-      // Update local state
-      setRecords(prev => {
-        const filtered = prev.filter(p => !newRecords.some(n => n.userId === p.userId && n.periodStart === p.periodStart));
-        return [...newRecords, ...filtered];
-      });
-      
+      let closed = 0;
+      for (const row of toClose) {
+        await closePeriod({
+          userId: row.staff.id,
+          from: periodStart,
+          to: periodEnd,
+        });
+        closed++;
+      }
+
+      setSuccess(`${closed} personelin dönemi gerçek puantajdan hesaplandı ve kilitlendi.`);
       router.refresh();
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
@@ -123,19 +97,7 @@ export default function PayrollBoard({
     
     try {
       await unlockRecord(id);
-      
-      // Optimistic update for mock
-      setRecords(prev => prev.map(r => {
-        if (r.id === id) {
-          return {
-            ...r,
-            isLocked: false,
-            unlockedAt: new Date().toISOString()
-          };
-        }
-        return r;
-      }));
-      
+      // Optimistic illüzyon yok: kilidi gerçekten açtıktan sonra DB'den tazele.
       router.refresh();
     } catch (err) {
       setError(err instanceof ApiClientError ? err.message : "Kilit açılamadı.");
@@ -144,63 +106,25 @@ export default function PayrollBoard({
     }
   }
 
-  // RFC4180 CSV Escape Function
-  function escapeCsvField(field: any): string {
-    if (field === null || field === undefined) return "";
-    const str = String(field);
-    if (str.includes(",") || str.includes('"') || str.includes("\n") || str.includes("\r")) {
-      return `"${str.replace(/"/g, '""')}"`;
-    }
-    return str;
-  }
-
-  function handleExportCsv() {
-    // Only export locked records for the selected period
-    const lockedRecords = gridData.filter(row => row.record?.isLocked);
-    
-    if (lockedRecords.length === 0) {
+  // Gerçek CSV: backend /records/export ucundan indir. Client-side ÜRETME — brüt/prim
+  // hesabı tek kaynaktan (DB snapshot) gelir; backend zaten BOM + InvariantCulture
+  // + sadece-kilitli süzgeci uyguluyor (Logo/Mikro/Paraşüt import için).
+  async function handleExportCsv() {
+    setError(null);
+    if (!gridData.some(row => row.record?.isLocked)) {
       setError("Dışa aktarılacak kilitli bordro kaydı bulunmuyor.");
       return;
     }
-
-    // CSV Header
-    const headers = ["Personel Adı", "Dönem Başlangıç", "Dönem Bitiş", "Normal Saat", "Fazla Mesai", "Toplam Saat", "Gece Primi", "Hafta Sonu Primi", "Brüt Tutar"];
-    const rows = [headers.join(",")];
-
-    // CSV Rows
-    lockedRecords.forEach(row => {
-      const record = row.record!;
-      const rowData = [
-        escapeCsvField(record.userFullName),
-        escapeCsvField(new Date(record.periodStart).toLocaleDateString('tr-TR')),
-        escapeCsvField(new Date(record.periodEnd).toLocaleDateString('tr-TR')),
-        escapeCsvField(record.normalHours),
-        escapeCsvField(record.overtimeHours),
-        escapeCsvField(record.totalHours),
-        escapeCsvField(record.nightPremium !== null && record.nightPremium > 0 ? record.nightPremium.toFixed(2) : ""),
-        escapeCsvField(record.weekendPremium !== null && record.weekendPremium > 0 ? record.weekendPremium.toFixed(2) : ""),
-        escapeCsvField(record.grossAmount !== null ? record.grossAmount.toFixed(2) : "")
-      ];
-      rows.push(rowData.join(","));
-    });
-
-    const csvContent = rows.join("\r\n");
-    
-    // Add UTF-8 BOM for Excel compatibility
-    const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
-    const blob = new Blob([bom, csvContent], { type: "text/csv;charset=utf-8;" });
-    
-    // Trigger download
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", `bordro_${selectedMonth}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    setSuccess("Bordro başarıyla dışa aktarıldı (CSV).");
-    setTimeout(() => setSuccess(null), 3000);
+    setLoading("export");
+    try {
+      await exportOvertimeCsv(periodStart, periodEnd);
+      setSuccess("Bordro CSV indirildi (kilitli kayıtlar).");
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      setError(err instanceof ApiClientError ? err.message : "CSV dışa aktarılamadı.");
+    } finally {
+      setLoading(null);
+    }
   }
 
   return (
@@ -290,7 +214,7 @@ export default function PayrollBoard({
                     </div>
                   </td>
                   <td className="px-6 py-4 text-xs font-medium text-slate-500">
-                    {new Date(periodStartIso).toLocaleDateString('tr-TR', { month: 'short' })}
+                    {new Date(periodStart).toLocaleDateString('tr-TR', { month: 'short' })}
                   </td>
                   <td className="px-6 py-4 text-right font-medium text-slate-700">
                     {row.record ? `${row.record.normalHours}s` : <span className="text-slate-300">-</span>}

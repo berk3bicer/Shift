@@ -96,12 +96,10 @@ export const getTimeClocks = (branchId: string, mineOnly: boolean = false) => {
 
 export const getOvertimeSettings = () => apiFetch<OvertimeSettingsDto>("/api/overtime-settings");
 
-export const getOvertimeSummary = (userId?: string, from?: string, to?: string) => {
-  const qs = new URLSearchParams();
-  if (userId) qs.set("userId", userId);
-  if (from) qs.set("from", from);
-  if (to) qs.set("to", to);
-  return apiFetch<OvertimeSummaryDto[]>(`/api/overtime/summary?${qs.toString()}`);
+// Backend tek personelin özetini döner (userId ZORUNLU; boşsa 400). Tek obje.
+export const getOvertimeSummary = (userId: string, from: string, to: string) => {
+  const qs = new URLSearchParams({ userId, from, to });
+  return apiFetch<OvertimeSummaryDto>(`/api/overtime/summary?${qs.toString()}`);
 };
 
 export const getOvertimeRecords = (userId?: string, from?: string, to?: string) => {

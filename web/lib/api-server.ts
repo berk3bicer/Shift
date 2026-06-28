@@ -86,7 +86,7 @@ export const getAvailabilities = (userId?: string) => {
   return apiFetch<AvailabilityDto[]>(`/api/availabilities${qs}`);
 };
 
-export const getTimeOffRequests = () => apiFetch<TimeOffRequestDto[]>("/api/timeoffrequests");
+export const getTimeOffRequests = () => apiFetch<TimeOffRequestDto[]>("/api/timeoffrequests/pending");
 
 export const getTimeClocks = (branchId: string, mineOnly: boolean = false) => {
   const qs = new URLSearchParams();

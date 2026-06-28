@@ -115,7 +115,8 @@ export interface TimeOffRequestDto {
   endDate: string; // "YYYY-MM-DD"
   type: TimeOffType;
   status: TimeOffStatus;
-  note: string | null;
+  reason: string | null; // backend alanı 'Reason' (eski 'note' değil)
+  decisionNote: string | null;
   decidedByUserId: string | null;
   decidedByUserFullName: string | null;
 }

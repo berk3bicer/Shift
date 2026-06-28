@@ -158,10 +158,10 @@ export default function TimeOffBoard({
                   </div>
                 </div>
 
-                {req.note && (
+                {req.reason && (
                   <p className="text-sm text-slate-600">
                     <span className="font-semibold text-slate-700">Not: </span>
-                    {req.note}
+                    {req.reason}
                   </p>
                 )}
               </div>

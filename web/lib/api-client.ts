@@ -249,6 +249,9 @@ export async function deleteAvailability(id: string): Promise<void> {
 
 // ── İzin (Time Off) ──
 
+// Backend CreateTimeOffCommand(StartDate, EndDate, Type, Reason) — UserId YOK (token'dan).
+// FE 'note' → backend 'reason'. userId gövdede gönderilmez (backend yok sayar; talep
+// her zaman login olan kullanıcı içindir).
 export async function createTimeOffRequest(payload: {
   userId: string;
   startDate: string;
@@ -259,11 +262,16 @@ export async function createTimeOffRequest(payload: {
   const res = await fetch(`/api/proxy/api/timeoffrequests`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+      type: payload.type,
+      reason: payload.note,
+    }),
   });
   await ensureOk(res, "Talep oluşturulamadı");
   const data = await res.json();
-  return { id: data.id };
+  return { id: data.timeOffRequestId ?? data.id };
 }
 
 export async function decideTimeOffRequest(
@@ -271,11 +279,12 @@ export async function decideTimeOffRequest(
   decision: "Approve" | "Reject",
   note?: string,
 ): Promise<void> {
+  // Backend DecideTimeOffBody(DecisionNote) — FE 'note' → 'decisionNote'.
   const path = decision === "Approve" ? "approve" : "reject";
   const res = await fetch(`/api/proxy/api/timeoffrequests/${id}/${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ note }),
+    body: JSON.stringify({ decisionNote: note }),
   });
   await ensureOk(res, "Karar işlenemedi");
 }

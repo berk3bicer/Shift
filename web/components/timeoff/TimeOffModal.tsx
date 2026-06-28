@@ -49,7 +49,8 @@ export default function TimeOffModal({
         endDate,
         type,
         status: TimeOffStatus.Pending, // Yeni talepler her zaman Pending'dir
-        note: note.trim() || null,
+        reason: note.trim() || null,
+        decisionNote: null,
         decidedByUserId: null,
         decidedByUserFullName: null,
       };

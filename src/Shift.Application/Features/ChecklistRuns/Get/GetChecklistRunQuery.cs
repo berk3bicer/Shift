@@ -12,6 +12,9 @@ public record ChecklistRunDto(
     string ChecklistName,
     int Type,
     DateOnly RunDate,
+    // Çalıştırmanın başlatıldığı an (CreatedAt). Saat-of-day gösterimi için — runDate
+    // sadece günü taşır. Salt-okuma projeksiyon (yeni kolon yok).
+    DateTime StartedAt,
     Guid? StartedByUserId,
     string? StartedByUserName,
     DateTime? CompletedAt,
@@ -30,5 +33,16 @@ public record ChecklistRunItemDto(
     Guid? CheckedByUserId,
     string? CheckedByUserName,
     DateTime? CheckedAt,
-    string? Note
+    string? Note,
+    // Bu maddeye iliştirilmiş kanıt fotoğrafları (presigned indirme URL'li). Polimorfik
+    // Attachment'tan (OwnerType=ChecklistRunItem, OwnerId=item.Id) okunur → reload'da kalıcı.
+    IReadOnlyList<ChecklistItemAttachmentDto> Attachments
+);
+
+// Run item'a iliştirilmiş tek dosya (kanıt fotoğrafı) — FE görüntülemesi için minimal.
+public record ChecklistItemAttachmentDto(
+    Guid Id,
+    string? FileName,
+    string? ContentType,
+    string DownloadUrl       // presigned GET (süreli)
 );

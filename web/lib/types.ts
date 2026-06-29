@@ -231,31 +231,52 @@ export enum ChecklistType {
   Custom = 2   // Diğer
 }
 
+// Backend ChecklistItemDto: (id, text, sortOrder). orderIndex/checklistId YOK.
 export interface ChecklistItemDto {
   id: string;
-  checklistId: string;
   text: string;
-  orderIndex: number;
+  sortOrder: number;
 }
 
+// Backend ChecklistDto: (id, type, name, isActive, items). Alan adıyla eşleşir.
 export interface ChecklistDto {
   id: string;
-  name: string;
   type: ChecklistType;
+  name: string;
   isActive: boolean;
   items: ChecklistItemDto[];
 }
 
+// Run LİSTE ucu hafif özet döner (madde YOK). "Bugün açılış yapıldı mı?" sorusu için.
+// Maddeler ayrı detay ucunda (GetChecklistRun → ChecklistRunDto).
+export interface ChecklistRunSummaryDto {
+  id: string;
+  checklistName: string;
+  type: ChecklistType;
+  runDate: string;
+  completedAt: string | null;
+  checkedCount: number;
+  totalCount: number;
+}
+
+// Madde kanıt fotoğrafı (presigned indirme URL'li). Backend ChecklistItemAttachmentDto.
+export interface ChecklistItemAttachmentDto {
+  id: string;
+  fileName: string | null;
+  contentType: string | null;
+  downloadUrl: string;
+}
+
 export interface ChecklistRunItemDto {
   id: string;
-  checklistRunId: string;
   text: string; // Snapshot
-  orderIndex: number;
+  sortOrder: number;
   isChecked: boolean;
-  checkedAt: string | null;
   checkedByUserId: string | null;
-  checkedByUserFullName: string | null;
-  photoUrl?: string; // (Gün 20) Fotoğraf eki mock URL'si
+  checkedByUserName: string | null;
+  checkedAt: string | null;
+  note: string | null;
+  attachments: ChecklistItemAttachmentDto[]; // reload'da kalıcı kanıt fotoğrafları
 }
 
 export interface ChecklistRunDto {
@@ -263,13 +284,16 @@ export interface ChecklistRunDto {
   branchId: string;
   checklistId: string;
   checklistName: string;
+  type: ChecklistType;
   runDate: string; // "YYYY-MM-DD"
-  startedAt: string;
+  startedAt: string; // ISO datetime (backend CreatedAt)
   startedByUserId: string | null;
-  startedByUserFullName: string | null;
+  startedByUserName: string | null;
   completedAt: string | null;
   completedByUserId: string | null;
-  completedByUserFullName: string | null;
+  completedByUserName: string | null;
+  checkedCount: number;
+  totalCount: number;
   items: ChecklistRunItemDto[];
 }
 

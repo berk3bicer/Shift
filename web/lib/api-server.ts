@@ -1,6 +1,6 @@
 import "server-only";
 import { getToken } from "./session";
-import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskItemDto, TimeOffRequestDto, TimeClockDto, OvertimeSettingsDto, OvertimeSummaryDto, OvertimeRecordDto, ChecklistDto, ChecklistRunDto, ShiftNoteDto, AnnouncementDto, NotificationDto } from "./types";
+import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskItemDto, TimeOffRequestDto, TimeClockDto, OvertimeSettingsDto, OvertimeSummaryDto, OvertimeRecordDto, ChecklistDto, ChecklistRunDto, ChecklistRunSummaryDto, ShiftNoteDto, AnnouncementDto, NotificationDto } from "./types";
 
 // SUNUCU tarafı API istemcisi. Server component / route handler buradan .NET'i DOĞRUDAN
 // çağırır (server-to-server → CORS YOK; backend'e dokunmadan). Token httpOnly cookie'den.
@@ -59,8 +59,15 @@ export const getTasks = (branchId: string) =>
 
 export const getChecklists = () => apiFetch<ChecklistDto[]>("/api/checklists");
 
-export const getChecklistRuns = (branchId: string, runDate: string) =>
-  apiFetch<ChecklistRunDto[]>(`/api/checklistruns?branchId=${branchId}&runDate=${runDate}`);
+// Backend tek gün filtresini fromDate=toDate ile yapar (runDate param'ı YOK SAYILIYORDU).
+// Liste hafif özet döner (madde yok) → maddeler için getChecklistRun detayına gidilir.
+export const getChecklistRuns = (branchId: string, date: string) =>
+  apiFetch<ChecklistRunSummaryDto[]>(
+    `/api/checklistruns?branchId=${branchId}&fromDate=${date}&toDate=${date}`);
+
+// Tek çalıştırmanın tam detayı (maddeler + kim/ne zaman + kanıt fotoğrafları).
+export const getChecklistRun = (runId: string) =>
+  apiFetch<ChecklistRunDto>(`/api/checklistruns/${runId}`);
 
 export const getShiftNotes = (branchId: string, noteDate: string) =>
   apiFetch<ShiftNoteDto[]>(`/api/shiftnotes?branchId=${branchId}&noteDate=${noteDate}`);

@@ -145,10 +145,12 @@ export async function checkChecklistItem(
   await ensureOk(res, "İşaretlenemedi");
 }
 
+// Backend CreateChecklistCommand.Items = string[] (madde metinleri; sıra=indeks).
+// FE eskiden [{text,orderIndex}] yolluyordu → 400 ("could not be converted to String").
 export async function createChecklist(payload: {
   name: string;
   type: number;
-  items: { text: string; orderIndex: number }[];
+  items: string[];
 }): Promise<{ checklistId: string }> {
   const res = await fetch(`/api/proxy/api/checklists`, {
     method: "POST",
@@ -163,7 +165,7 @@ export async function createChecklist(payload: {
 export async function updateChecklist(id: string, payload: {
   name: string;
   type: number;
-  items: { text: string; orderIndex: number }[];
+  items: string[];
 }): Promise<void> {
   const res = await fetch(`/api/proxy/api/checklists/${id}`, {
     method: "PUT",

@@ -104,7 +104,7 @@ export default function DashboardBoard({
                   <div key={note.id} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative">
                     <div className="flex justify-between items-start mb-2">
                       <span className="text-xs font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded">
-                        {note.createdByUserFullName}
+                        {note.createdByUserName ?? "Bilinmeyen"}
                       </span>
                       <span className="text-[11px] font-semibold text-slate-400">
                         {new Date(note.createdAt).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}

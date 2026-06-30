@@ -207,7 +207,7 @@ export async function deleteShiftNote(id: string): Promise<void> {
 export async function createAnnouncement(payload: {
   branchId: string;
   title: string;
-  content: string;
+  body: string;
   targetRole: number | null;
 }): Promise<{ announcementId: string }> {
   const res = await fetch(`/api/proxy/api/announcements`, {
@@ -221,7 +221,7 @@ export async function createAnnouncement(payload: {
 }
 
 export async function markNotificationAsRead(id: string): Promise<void> {
-  const res = await fetch(`/api/proxy/api/notifications/${id}/read`, { method: "PUT" });
+  const res = await fetch(`/api/proxy/api/notifications/${id}/read`, { method: "POST" });
   await ensureOk(res, "Bildirim okundu işaretlenemedi");
 }
 

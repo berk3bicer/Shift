@@ -43,7 +43,7 @@ export default function ShiftNotesBoard({
       noteDate,
       content: newContent.trim(),
       createdByUserId: currentUserId,
-      createdByUserFullName: "Siz (Mevcut Kullanıcı)", // Mock ad
+      createdByUserName: "Siz (Mevcut Kullanıcı)", // optimistic geçici ad; refresh'te gerçek ad gelir
       createdAt: new Date().toISOString()
     };
 
@@ -153,11 +153,11 @@ export default function ShiftNotesBoard({
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex items-center gap-3">
                     <div className={`h-8 w-8 rounded-full flex items-center justify-center font-bold text-xs ${isMine ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-700'}`}>
-                      {note.createdByUserFullName ? note.createdByUserFullName.charAt(0) : '?'}
+                      {note.createdByUserName ? note.createdByUserName.charAt(0) : '?'}
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-slate-900">
-                        {note.createdByUserFullName}
+                        {note.createdByUserName ?? "Bilinmeyen kullanıcı"}
                       </h4>
                       <div className="flex items-center gap-1 text-xs text-slate-500 mt-0.5">
                         <Clock className="h-3 w-3" />

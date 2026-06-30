@@ -70,7 +70,8 @@ export const getChecklistRun = (runId: string) =>
   apiFetch<ChecklistRunDto>(`/api/checklistruns/${runId}`);
 
 export const getShiftNotes = (branchId: string, noteDate: string) =>
-  apiFetch<ShiftNoteDto[]>(`/api/shiftnotes?branchId=${branchId}&noteDate=${noteDate}`);
+  // Backend gün filtresini fromDate/toDate aralığıyla yapar; tek günü iki uca da veriyoruz.
+  apiFetch<ShiftNoteDto[]>(`/api/shiftnotes?branchId=${branchId}&fromDate=${noteDate}&toDate=${noteDate}`);
 
 export const getAnnouncements = (branchId: string) =>
   apiFetch<AnnouncementDto[]>(`/api/announcements?branchId=${branchId}`);

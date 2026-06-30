@@ -307,7 +307,7 @@ export interface ShiftNoteDto {
   noteDate: string; // "YYYY-MM-DD" Operasyonel ait olduğu gün
   content: string;
   createdByUserId: string | null;
-  createdByUserFullName: string | null;
+  createdByUserName: string | null; // backend DTO alanı (yazar silinmişse null)
   createdAt: string; // Gerçek yazıldığı UTC anı
 }
 
@@ -315,23 +315,25 @@ export interface ShiftNoteDto {
 // İletişim ve Duyuru (Announcements) Modülü (Gün 18)
 // -----------------------------------------------------------------------------
 
+// Alan adları backend AnnouncementDto ile birebir (camelCase): body/branchId/createdByUserName.
 export interface AnnouncementDto {
   id: string;
   title: string;
-  content: string;
-  targetBranchId: string | null; // null = tüm şubeler
+  body: string;
+  branchId: string | null; // null = tüm şubeler
   targetRole: number | null; // null = tüm roller
   createdByUserId: string | null;
-  createdByUserFullName: string | null;
+  createdByUserName: string | null;
   createdAt: string;
 }
 
+// Backend NotificationListItem ile birebir: tek Message alanı (ayrı title YOK), userId
+// taşınmaz (token'dan çözülür). Type değerleri NotificationType enum'ı (int):
+// 0=ShiftPublished, 1=LateClockIn, 2=TaskAssigned, 3=TaskCompleted, 4=AnnouncementPosted.
 export interface NotificationDto {
   id: string;
-  userId: string;
-  title: string;
   message: string;
-  type: number; // 0 = Info, 1 = AnnouncementPosted, 2 = ShiftPublished vs.
+  type: number;
   relatedEntityId: string | null; // Tıklayınca gidilecek hedef (Örn: announcement id)
   isRead: boolean;
   createdAt: string;

@@ -6,6 +6,16 @@ import type { NotificationDto } from "@/lib/types";
 import { markNotificationAsRead } from "@/lib/api-client";
 import { useRouter } from "next/navigation";
 
+// Backend NotificationType enum'ı (int) → kullanıcıya gösterilecek başlık + tıklama hedefi.
+// 0=ShiftPublished, 1=LateClockIn, 2=TaskAssigned, 3=TaskCompleted, 4=AnnouncementPosted.
+const NOTIFICATION_META: Record<number, { label: string; href: string }> = {
+  0: { label: "Vardiya Programı", href: "/schedule" },
+  1: { label: "Geç Giriş", href: "/timeclock" },
+  2: { label: "Görev Atandı", href: "/tasks" },
+  3: { label: "Görev Tamamlandı", href: "/tasks" },
+  4: { label: "Yeni Duyuru", href: "/announcements" },
+};
+
 export default function NotificationBell({ initialNotifications }: { initialNotifications: NotificationDto[] }) {
   const router = useRouter();
   const [notifications, setNotifications] = useState<NotificationDto[]>(initialNotifications);
@@ -29,11 +39,10 @@ export default function NotificationBell({ initialNotifications }: { initialNoti
     }
     
     setIsOpen(false);
-    
-    if (notif.type === 1) {
-      router.push("/announcements");
-    } else if (notif.type === 2) {
-      router.push("/schedule");
+
+    const target = NOTIFICATION_META[notif.type]?.href;
+    if (target) {
+      router.push(target);
     }
   };
 
@@ -81,7 +90,7 @@ export default function NotificationBell({ initialNotifications }: { initialNoti
                     )}
                     <div className={!notif.isRead ? 'ml-0' : 'ml-5'}>
                       <p className={`text-sm ${!notif.isRead ? 'font-bold text-gray-900' : 'font-medium text-gray-700'}`}>
-                        {notif.title}
+                        {NOTIFICATION_META[notif.type]?.label ?? "Bildirim"}
                       </p>
                       <p className="text-xs text-gray-500 mt-1 line-clamp-2">
                         {notif.message}

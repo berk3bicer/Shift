@@ -41,11 +41,11 @@ export default function AnnouncementsBoard({
     const newAnn: AnnouncementDto = {
       id: tempId,
       title: title.trim(),
-      content: content.trim(),
-      targetBranchId: branch.id,
+      body: content.trim(),
+      branchId: branch.id,
       targetRole: roleVal,
       createdByUserId: currentUserId,
-      createdByUserFullName: "Siz (Mevcut Kullanıcı)",
+      createdByUserName: "Siz (Mevcut Kullanıcı)",
       createdAt: new Date().toISOString()
     };
 
@@ -60,7 +60,7 @@ export default function AnnouncementsBoard({
       await createAnnouncement({
         branchId: branch.id,
         title: newAnn.title,
-        content: newAnn.content,
+        body: newAnn.body,
         targetRole: roleVal
       });
 
@@ -120,7 +120,7 @@ export default function AnnouncementsBoard({
             <div key={ann.id} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex gap-4 transition-all hover:shadow-md relative overflow-hidden">
               <div className="flex-shrink-0 mt-1">
                 <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-700 text-sm">
-                  {ann.createdByUserFullName ? ann.createdByUserFullName.charAt(0) : '?'}
+                  {ann.createdByUserName ? ann.createdByUserName.charAt(0) : '?'}
                 </div>
               </div>
               <div className="flex-1">
@@ -128,7 +128,7 @@ export default function AnnouncementsBoard({
                   <div>
                     <h3 className="text-base font-bold text-slate-900">{ann.title}</h3>
                     <div className="flex items-center gap-2 text-xs font-medium text-slate-500 mt-1">
-                      <span>{ann.createdByUserFullName}</span>
+                      <span>{ann.createdByUserName}</span>
                       <span>•</span>
                       <span>{new Date(ann.createdAt).toLocaleDateString("tr-TR", { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
@@ -143,7 +143,7 @@ export default function AnnouncementsBoard({
                   </div>
                 </div>
                 <div className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed mt-3 bg-slate-50 p-4 rounded-xl">
-                  {ann.content}
+                  {ann.body}
                 </div>
               </div>
             </div>

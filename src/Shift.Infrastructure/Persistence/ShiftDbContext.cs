@@ -38,6 +38,8 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     public DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<UserBranch> UserBranches => Set<UserBranch>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<ShiftSwap> ShiftSwaps => Set<ShiftSwap>();
+    public DbSet<ShiftPoolSettings> ShiftPoolSettings => Set<ShiftPoolSettings>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -545,6 +547,52 @@ public class ShiftDbContext : DbContext, IShiftDbContext
             new Role { Id = Guid.Parse("44444444-4444-4444-4444-444444444444"), Type = RoleType.Staff, Name = "Personel", CreatedAt = seedDate },
             new Role { Id = Guid.Parse("55555555-5555-5555-5555-555555555555"), Type = RoleType.Supplier, Name = "Tedarikçi", CreatedAt = seedDate }
         );
+
+        // ── ShiftSwap (Vardiya Havuzu talebi) ──
+        // Shift silinirse ilişkili havuz talepleri de anlamsız kalır → Cascade
+        // (ChecklistRunItem/ChecklistRun deseninin aynısı: intrinsik çocuk kayıt).
+        modelBuilder.Entity<ShiftSwap>()
+            .HasOne(s => s.Shift)
+            .WithMany()
+            .HasForeignKey(s => s.ShiftId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Talep eden (audit — TimeOffRequest.User deseni). Kullanıcı silinse
+        // geçmiş talep durur → Restrict.
+        modelBuilder.Entity<ShiftSwap>()
+            .HasOne(s => s.RequestedByUser)
+            .WithMany()
+            .HasForeignKey(s => s.RequestedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Hedef (nullable, bu turda hep null — Takas için ayrılmış). Kullanıcı
+        // silinse hedef boşa düşer → SetNull (Shift.UserId ile aynı desen).
+        modelBuilder.Entity<ShiftSwap>()
+            .HasOne(s => s.TargetUser)
+            .WithMany()
+            .HasForeignKey(s => s.TargetUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Onay kuyruğu sorgusu: "bu tenant'ta Pending olan talepler" sık sorgulanır.
+        modelBuilder.Entity<ShiftSwap>()
+            .HasIndex(s => s.Status);
+
+        // Bir vardiyanın havuz geçmişini okumak (audit) için.
+        modelBuilder.Entity<ShiftSwap>()
+            .HasIndex(s => s.ShiftId);
+
+        // ShiftSwap tenant'a ait -> global filtre (tenant izolasyonu).
+        modelBuilder.Entity<ShiftSwap>().HasQueryFilter(
+            s => s.TenantId == _tenantProvider.GetTenantId());
+
+        // ── ShiftPoolSettings (Havuz onay modu) ──
+        // Tenant başına TEK kayıt → OvertimeSettings ile aynı desen.
+        modelBuilder.Entity<ShiftPoolSettings>()
+            .HasIndex(s => s.TenantId)
+            .IsUnique();
+
+        modelBuilder.Entity<ShiftPoolSettings>().HasQueryFilter(
+            s => s.TenantId == _tenantProvider.GetTenantId());
 
         // RefreshToken ilişkisi + tenant filtresi
         modelBuilder.Entity<RefreshToken>()

@@ -34,5 +34,10 @@ public enum NotificationType
     LateClockIn = 1,     // Personel vardiyasına geç giriş yaptı
     TaskAssigned = 2,    // Sana (veya pozisyonuna) bir görev atandı
     TaskCompleted = 3,   // Atadığın görev tamamlandı (atayana/oluşturana gider)
-    AnnouncementPosted = 4  // Sana yönelik bir duyuru yayınlandı
+    AnnouncementPosted = 4,  // Sana yönelik bir duyuru yayınlandı
+    ShiftUpForGrabs = 5,          // Havuza yeni açık vardiya düştü (uygun pozisyondaki personele)
+    ShiftPoolActionRequested = 6, // Give/Take onay bekliyor (yöneticiye — aksiyon gerekir)
+    ShiftTaken = 7,               // Bir vardiya havuzdan dolduruldu (yöneticiye — bilgi amaçlı)
+    ShiftPoolApproved = 8,        // Havuz talebin onaylandı (talep edene)
+    ShiftPoolRejected = 9         // Havuz talebin reddedildi (talep edene)
 }

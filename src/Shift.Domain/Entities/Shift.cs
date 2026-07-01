@@ -30,6 +30,13 @@ public class Shift : BaseEntity, ITenantEntity
 
 public enum ShiftStatus
 {
-    Draft = 0,      // Taslak — yönetici hazırlıyor, personel görmüyor
-    Published = 1   // Yayınlandı — personel görüyor
+    Draft = 0,       // Taslak — yönetici hazırlıyor, personel görmüyor
+    Published = 1,   // Yayınlandı — personel görüyor
+    UpForGrabs = 2,  // Sahibi vardiyayı havuza sundu (Give); UserId hâlâ eski sahipte, biri Kap'ana kadar
+    Filled = 3       // Havuzdan dolduruldu (Take onaylandı) — UserId yeni sahipte
 }
+
+// NOT (Withdraw — inşa bekliyor): UpForGrabs → Published geri dönüşü şema/enum
+// seviyesinde ENGELLENMEZ (Status alanı serbestçe geri yazılabilir). "Sundum,
+// kimse kapmadı, vazgeçtim" akışı bu turda YOK — ayrı bir Withdraw endpoint'i
+// (Shift.Status = Published + ilgili ShiftSwap.Status iptal) sonraki bir turda eklenir.

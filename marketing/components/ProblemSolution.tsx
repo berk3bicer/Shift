@@ -1,61 +1,86 @@
+import { Check, MessageCircle, FileText, Calculator } from "lucide-react";
 import { PROBLEM_SOLUTION } from "@/lib/content";
+import Reveal, { RevealStagger, RevealItem } from "./Reveal";
 
-// Problem → Çözüm — spec 1.1/1.3. "Mevcut yöntem" karşısında "Shift ile".
+// Problem → Çözüm — 7shifts "before/after" anlatısı. Sol: dağınık (WhatsApp/kağıt/Excel),
+// sağ: Shift'te toplanmış. Görsel kontrast (kaotik → düzenli). İçerik spec 1.1/1.3.
+const CHAOS_ICONS = [MessageCircle, FileText, Calculator, MessageCircle, FileText, MessageCircle];
+// Dağınık chip'lere doğal bir "atılmışlık" hissi için hafif dönüşler.
+const TILT = ["-2.5deg", "1.8deg", "-1.2deg", "2.2deg", "-2deg", "1.4deg"];
+
 export default function ProblemSolution() {
   return (
-    <section className="bg-[var(--color-paper)] py-20 sm:py-24">
+    <section className="bg-[var(--color-paper)] py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <div className="max-w-2xl">
+        <Reveal className="mx-auto max-w-2xl text-center">
           <span className="font-mono text-xs font-medium uppercase tracking-wider text-[var(--color-signal-deep)]">
             Problem → Çözüm
           </span>
-          <h2 className="mt-3 font-display text-3xl font-bold leading-tight sm:text-4xl">
+          <h2 className="font-display mt-3 text-3xl font-bold leading-tight sm:text-4xl">
             Dağınık araçlar bir işi iki kez yaptırır.
           </h2>
           <p className="mt-4 text-lg text-[var(--color-muted)]">
             Bağımsız kafelerin operasyonu WhatsApp, kağıt ve hesap makinesine dağılmış durumda. POS
-            sistemleri yalnız satışı çözer; ekip, mesai ve hijyen boşta kalır. Shift bu boşluğu doldurur.
+            sistemleri yalnız satışı çözer. Shift hepsini tek çatıda toplar.
           </p>
-        </div>
+        </Reveal>
 
-        <div className="mt-12 overflow-hidden rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)]">
-          {/* Başlık satırı — sadece masaüstünde */}
-          <div className="hidden grid-cols-[1.2fr_1fr_1.4fr] border-b border-[var(--color-line)] bg-[var(--color-paper)] px-6 py-3 font-mono text-xs uppercase tracking-wider text-[var(--color-muted)] sm:grid">
-            <span>Operasyonel sorun</span>
-            <span>Mevcut yöntem</span>
-            <span>Shift ile</span>
+        <div className="mt-14 grid items-stretch gap-6 lg:grid-cols-[1fr_auto_1fr]">
+          {/* Sol: dağınık */}
+          <Reveal className="relative rounded-2xl border border-[var(--color-line)] bg-[var(--color-paper-deep)] p-6 sm:p-7">
+            <div className="mb-5 flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-muted)]/50" />
+              <span className="font-display text-sm font-semibold text-[var(--color-muted)]">Şimdi — dağınık</span>
+            </div>
+            <div className="space-y-2.5">
+              {PROBLEM_SOLUTION.map((row, i) => {
+                const Icon = CHAOS_ICONS[i];
+                return (
+                  <div
+                    key={row.problem}
+                    className="flex items-center gap-3 rounded-lg border border-[var(--color-line)] bg-[var(--color-surface)] px-3.5 py-2.5 shadow-sm"
+                    style={{ transform: `rotate(${TILT[i]})` }}
+                  >
+                    <Icon size={15} className="shrink-0 text-[var(--color-muted)]/70" />
+                    <span className="text-sm text-[var(--color-muted)] line-through decoration-[var(--color-muted)]/30">
+                      {row.current}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </Reveal>
+
+          {/* Orta: ok */}
+          <div className="flex items-center justify-center lg:px-2">
+            <div className="flex h-10 w-10 rotate-90 items-center justify-center rounded-full bg-[var(--color-signal)] text-[var(--color-ink)] shadow-[var(--shadow-cta)] lg:rotate-0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
           </div>
 
-          <ul>
-            {PROBLEM_SOLUTION.map((row, i) => (
-              <li
-                key={row.problem}
-                className={`grid gap-2 px-6 py-4 sm:grid-cols-[1.2fr_1fr_1.4fr] sm:items-center sm:gap-4 ${
-                  i > 0 ? "border-t border-[var(--color-line)]" : ""
-                }`}
-              >
-                <span className="font-display font-semibold">{row.problem}</span>
-                <span className="text-sm text-[var(--color-muted)] line-through decoration-[var(--color-muted)]/40">
-                  {row.current}
-                </span>
-                <span className="flex items-start gap-2 text-sm font-medium">
-                  <svg
-                    className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-barista)]"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4l3.3 3.3 6.8-6.8a1 1 0 0 1 1.4 0Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  {row.shift}
-                </span>
-              </li>
-            ))}
-          </ul>
+          {/* Sağ: Shift'te toplanmış */}
+          <Reveal className="rounded-2xl border border-[var(--color-ink-line)] bg-gradient-to-b from-[var(--color-ink-soft)] to-[var(--color-ink)] p-6 shadow-[var(--shadow-card)] sm:p-7">
+            <div className="mb-5 flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-signal)]" />
+              <span className="font-display text-sm font-semibold text-white">Shift ile — tek çatıda</span>
+            </div>
+            <RevealStagger className="space-y-2.5" stagger={0.06}>
+              {PROBLEM_SOLUTION.map((row) => (
+                <RevealItem
+                  key={row.problem}
+                  className="flex items-center gap-3 rounded-lg border border-white/5 bg-white/5 px-3.5 py-2.5"
+                  y={12}
+                >
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--color-barista)]/20 text-[var(--color-barista)]">
+                    <Check size={12} strokeWidth={3} />
+                  </span>
+                  <span className="text-sm font-medium text-white/85">{row.shift}</span>
+                </RevealItem>
+              ))}
+            </RevealStagger>
+          </Reveal>
         </div>
       </div>
     </section>

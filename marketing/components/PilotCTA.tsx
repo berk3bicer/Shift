@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { CheckCircle2, Send } from "lucide-react";
 
-// Kapanış CTA — spec 12.2: "sıcak pilot" (soğuk satış değil). İlk 3-5 tanıdık kafede
-// ücretsiz pilot + haftalık geri bildirim.
-//
-// Backend YOK (bu tur kapsamı): gerçek lead-capture ucu ayrı tur → gap. Sahte endpoint
-// UYDURULMAZ. Bunun yerine form, girilen bilgiyle önceden doldurulmuş bir mailto: üretir —
-// gerçekten kullanıcının e-posta istemcisine devreder, uydurma bir POST'a değil.
-// merhaba@shift.app = PLACEHOLDER iletişim adresi (gerçek adres/domain Tur 3 → gap).
+// Kapanış CTA — koyu ink bant (spec 12.2: "sıcak pilot", soğuk satış değil).
+// Backend YOK: sahte endpoint UYDURULMAZ. Form, girilen bilgiyle önceden doldurulmuş bir
+// mailto: üretir → kullanıcının e-posta istemcisine gerçekten devreder.
+// merhaba@shift.app = PLACEHOLDER iletişim adresi (gerçek domain Tur 4 → gap).
 const CONTACT_EMAIL = "merhaba@shift.app";
 
 export default function PilotCTA() {
@@ -27,22 +25,23 @@ export default function PilotCTA() {
     return `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
   }
 
-  function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSent(true); // teşekkürler state; iletim mailto ile (aşağıdaki buton) yapılır
-  }
-
   return (
-    <section id="pilot" className="bg-[var(--color-paper)] py-20 sm:py-24">
-      <div className="mx-auto max-w-4xl px-5 sm:px-8">
-        <div className="overflow-hidden rounded-3xl border border-[var(--color-line)] bg-[var(--color-surface)]">
+    <section id="pilot" className="relative overflow-hidden bg-[var(--color-ink)] py-20 sm:py-28">
+      {/* Yumuşak amber ışıma — derinlik */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-32 left-1/2 h-96 w-[40rem] -translate-x-1/2 rounded-full opacity-20 blur-3xl"
+        style={{ background: "radial-gradient(circle, var(--color-signal), transparent 60%)" }}
+      />
+      <div className="relative mx-auto max-w-4xl px-5 sm:px-8">
+        <div className="overflow-hidden rounded-3xl border border-[var(--color-ink-line)] bg-[var(--color-ink-soft)] shadow-[var(--shadow-float)]">
           <div className="grid gap-0 md:grid-cols-[1fr_1.1fr]">
             {/* Sol: metin */}
-            <div className="flex flex-col justify-center bg-[var(--color-ink)] p-8 sm:p-10">
+            <div className="flex flex-col justify-center border-b border-white/5 p-8 sm:p-10 md:border-b-0 md:border-r">
               <span className="font-mono text-xs font-medium uppercase tracking-wider text-[var(--color-signal)]">
                 Ücretsiz pilot
               </span>
-              <h2 className="mt-3 font-display text-2xl font-bold leading-tight text-white sm:text-3xl">
+              <h2 className="font-display mt-3 text-2xl font-bold leading-tight text-white sm:text-3xl">
                 Tanıdık kafelerle sıcak başlıyoruz.
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-white/60">
@@ -55,39 +54,43 @@ export default function PilotCTA() {
             <div className="p-8 sm:p-10">
               {sent ? (
                 <div className="flex h-full flex-col justify-center">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-barista)]/15 text-[var(--color-barista)]">
-                    <svg viewBox="0 0 20 20" fill="currentColor" className="h-6 w-6" aria-hidden="true">
-                      <path fillRule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4l3.3 3.3 6.8-6.8a1 1 0 0 1 1.4 0Z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <h3 className="mt-4 font-display text-xl font-semibold">Neredeyse tamam!</h3>
-                  <p className="mt-2 text-sm text-[var(--color-muted)]">
-                    Son bir adım: aşağıdaki butonla önceden doldurulmuş e-postayı bize gönder.
-                    Pilot için 1 iş günü içinde dönüş yapıyoruz.
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-barista)]/15 text-[var(--color-barista)]">
+                    <CheckCircle2 size={24} />
+                  </span>
+                  <h3 className="font-display mt-4 text-xl font-semibold text-white">Neredeyse tamam!</h3>
+                  <p className="mt-2 text-sm text-white/60">
+                    Son bir adım: aşağıdaki butonla önceden doldurulmuş e-postayı bize gönder. Pilot için
+                    1 iş günü içinde dönüş yapıyoruz.
                   </p>
                   <a
                     href={buildMailto()}
-                    className="mt-5 inline-flex items-center justify-center rounded-xl bg-[var(--color-signal)] px-5 py-3 text-sm font-semibold text-[var(--color-ink)] transition-colors hover:bg-[var(--color-signal-deep)]"
+                    className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--color-signal)] px-5 py-3 text-sm font-semibold text-[var(--color-ink)] shadow-[var(--shadow-cta)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-signal-deep)]"
                   >
-                    E-postayı gönder
+                    <Send size={16} /> E-postayı gönder
                   </a>
                   <button
                     type="button"
                     onClick={() => setSent(false)}
-                    className="mt-3 text-left text-sm font-medium text-[var(--color-muted)] underline-offset-4 hover:underline"
+                    className="mt-3 text-left text-sm font-medium text-white/50 underline-offset-4 hover:text-white/80 hover:underline"
                   >
                     Bilgileri düzenle
                   </button>
                 </div>
               ) : (
-                <form onSubmit={onSubmit} className="space-y-4">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setSent(true);
+                  }}
+                  className="space-y-4"
+                >
                   <Field id="pilot-name" label="Ad soyad" value={name} onChange={setName} required placeholder="Berke Biçer" />
                   <Field id="pilot-cafe" label="İşletme adı" value={cafe} onChange={setCafe} required placeholder="Berke Kahve" />
                   <Field id="pilot-email" label="E-posta" value={email} onChange={setEmail} required type="email" placeholder="ornek@kafe.com" />
                   <Field id="pilot-phone" label="Telefon (opsiyonel)" value={phone} onChange={setPhone} type="tel" placeholder="05xx xxx xx xx" />
                   <button
                     type="submit"
-                    className="w-full rounded-xl bg-[var(--color-ink)] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-ink-soft)]"
+                    className="w-full rounded-xl bg-[var(--color-signal)] px-5 py-3 text-sm font-semibold text-[var(--color-ink)] shadow-[var(--shadow-cta)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-signal-deep)]"
                   >
                     Ücretsiz pilot iste
                   </button>
@@ -120,7 +123,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1">
-      <label htmlFor={id} className="text-sm font-medium text-[var(--color-ink)]">
+      <label htmlFor={id} className="text-sm font-medium text-white/80">
         {label}
       </label>
       <input
@@ -130,7 +133,7 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-[var(--color-line)] bg-[var(--color-surface)] px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-signal)] placeholder:text-[var(--color-muted)]/60"
+        className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none transition-colors focus:border-[var(--color-signal)] placeholder:text-white/30"
       />
     </div>
   );

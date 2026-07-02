@@ -8,13 +8,16 @@
 @theme inline {
   --color-ink: #12182b;          /* koyu taban: hero + footer + çizelge zemini */
   --color-ink-soft: #1b2440;     /* koyu zeminde kart yüzeyi */
+  --color-ink-softer: #232f52;   /* koyu zeminde kaldırılmış kart */
   --color-ink-line: #2b3557;     /* koyu zeminde ince çizgi */
   --color-paper: #f5f6f8;        /* açık bölüm zemini (cream DEĞİL — serin kağıt) */
+  --color-paper-deep: #eceef2;   /* açık zeminde ikinci ton */
   --color-surface: #ffffff;      /* açık zeminde kart */
   --color-line: #e3e6ec;         /* açık zeminde ince çizgi */
   --color-muted: #5b6472;        /* ikincil metin */
   --color-signal: #f59e0b;       /* marka aksanı / CTA (amber) */
   --color-signal-deep: #d97f07;  /* aksan hover */
+  --color-signal-soft: #fbbf4d;  /* açık amber (koyu zeminde metin) */
 
   /* Çizelge veri paleti — app'teki gerçek pozisyon renkleri (yalnız ızgara içinde) */
   --color-barista: #22c55e;
@@ -24,6 +27,11 @@
   --font-display: var(--font-space-grotesk);
   --font-body: var(--font-plex-sans);
   --font-mono: var(--font-plex-mono);
+
+  /* Katmanlı gölgeler — düz görünümden çıkış için derinlik */
+  --shadow-card: 0 1px 2px rgb(18 24 43 / 0.04), 0 8px 24px -8px rgb(18 24 43 / 0.10);
+  --shadow-float: 0 24px 60px -20px rgb(8 12 24 / 0.55), 0 8px 20px -12px rgb(8 12 24 / 0.4);
+  --shadow-cta: 0 8px 20px -6px rgb(245 158 11 / 0.45);
 }
 
 :root {
@@ -34,6 +42,11 @@
   border-color: var(--color-line);
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem; /* sticky nav için ankraj boşluğu */
+}
+
 body {
   background: var(--color-paper);
   color: var(--color-ink);
@@ -42,33 +55,45 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Display başlıklar — sıkı tracking, karakterli */
+.font-display {
+  letter-spacing: -0.02em;
+}
+
 /* Görünür klavye focus'u — marka aksanıyla halka (kalite tabanı) */
 :where(a, button, input, textarea, [tabindex]):focus-visible {
   outline: 2px solid var(--color-signal);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
-/* Çizelge blokları için "yerleşme" animasyonu — reduced-motion'a saygılı.
-   Varsayılan (motion): fade + hafif yükselme, stagger animation-delay ile. */
-@keyframes settle {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+/* Above-the-fold giriş animasyonları — SAF CSS keyframe (JS/hydration'a bağlı DEĞİL).
+   Neden CSS keyframe: framer mount-`animate` ve CSS transition arka planda yüklenen sekmede
+   (visibilityState=hidden) rAF durduğu için opacity:0'da takılıyor; keyframe + forwards ise
+   son kareye (görünür) çözülür. Yani içerik hiçbir koşulda görünmez kalmaz. */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
 }
-
-.shift-block {
+@keyframes settle-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.95); }
+  to { opacity: 1; transform: none; }
+}
+.anim-rise {
   opacity: 0;
-  animation: settle 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: rise-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.anim-settle {
+  opacity: 0;
+  animation: settle-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .shift-block {
+  html {
+    scroll-behavior: auto;
+  }
+  .anim-rise,
+  .anim-settle {
     opacity: 1;
     animation: none;
   }

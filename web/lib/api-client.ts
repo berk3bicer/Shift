@@ -19,6 +19,42 @@ async function ensureOk(res: Response, fallback: string): Promise<void> {
   throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `${fallback} (${res.status}).`);
 }
 
+// ── Kurulum Sihirbazı (Onboarding) ──
+// Kayıt sonrası sahip şubesiz/pozisyonsuz düşer; wizard bunları client'tan kurar.
+// DTO tuzağı: CreateBranch → {branchId}, CreatePosition → {positionId} döner
+// (LIST uçları `id` döner — parse'ı buna göre ayrı tut).
+
+export async function createBranch(payload: {
+  name: string;
+  address: string | null;
+  latitude: number | null;
+  longitude: number | null;
+}): Promise<{ branchId: string }> {
+  const res = await fetch(`/api/proxy/api/branches`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  await ensureOk(res, "Şube oluşturulamadı");
+  const data = await res.json();
+  return { branchId: data.branchId };
+}
+
+export async function createPosition(payload: {
+  name: string;
+  colorCode: string | null;
+  hourlyRate: number | null;
+}): Promise<{ positionId: string }> {
+  const res = await fetch(`/api/proxy/api/positions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  await ensureOk(res, "Pozisyon oluşturulamadı");
+  const data = await res.json();
+  return { positionId: data.positionId };
+}
+
 // ── Vardiya (Shift) ──
 
 export async function updateShift(

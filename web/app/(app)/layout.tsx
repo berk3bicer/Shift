@@ -17,6 +17,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   let branches: BranchDto[] = [];
   let currentBranchId = "";
   let staff = false;
+  let needsOnboarding = false;
   try {
     const me = await getMe();
     // GUARD: Staff bu yönetici route grubuna girmemeli. getBranches/getStaff gibi
@@ -28,13 +29,20 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       role = me.roles[0] ?? "";
       notifications = await getNotifications();
       branches = await getBranches();
-      currentBranchId = (await selectBranch(branches))?.id ?? "";
+      // Kurulum yapılmamış yönetici (0 şube) doğrudan /dashboard yazsa şube seçici boş
+      // kalır → kuruluma yolla (Part C emniyet ağı; kök yönlendirmeyle aynı karar).
+      if (branches.length === 0) {
+        needsOnboarding = true;
+      } else {
+        currentBranchId = (await selectBranch(branches))?.id ?? "";
+      }
     }
   } catch (e) {
     if (e instanceof ApiError && e.status === 401) redirect("/login");
     throw e;
   }
   if (staff) redirect("/today");
+  if (needsOnboarding) redirect("/onboarding");
 
   return (
     <div className="min-h-screen bg-gray-50">

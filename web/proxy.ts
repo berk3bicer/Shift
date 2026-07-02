@@ -7,15 +7,17 @@ import { SESSION_COOKIE_NAME } from "@/lib/session";
 export function proxy(req: NextRequest) {
   const hasSession = Boolean(req.cookies.get(SESSION_COOKIE_NAME)?.value);
   const { pathname } = req.nextUrl;
-  const isLogin = pathname === "/login";
+  // Oturumsuz erişilebilir auth sayfaları: giriş + kayıt. Yeni sahibin henüz oturumu
+  // yoktur → /register guard'ın DIŞINDA olmalı (yoksa kayıt ekranı /login'e sekerdi).
+  const isAuthPage = pathname === "/login" || pathname === "/register";
 
-  if (!hasSession && !isLogin) {
+  if (!hasSession && !isAuthPage) {
     const url = req.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
-  if (hasSession && isLogin) {
+  if (hasSession && isAuthPage) {
     const url = req.nextUrl.clone();
     url.pathname = "/"; // kök role göre yönlendirir (Staff'ı /schedule'a düşürme)
     return NextResponse.redirect(url);

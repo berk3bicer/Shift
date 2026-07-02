@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -89,6 +90,13 @@ export default function LoginPage() {
         >
           {loading ? "Giriş yapılıyor…" : "Giriş yap"}
         </button>
+
+        <p className="text-center text-sm text-gray-500">
+          Hesabın yok mu?{" "}
+          <Link href="/register" className="font-medium text-gray-900 hover:underline">
+            Kayıt ol
+          </Link>
+        </p>
       </form>
     </main>
   );

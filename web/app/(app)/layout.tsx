@@ -2,30 +2,39 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getMe, getNotifications, getBranches, ApiError } from "@/lib/api-server";
 import { selectBranch } from "@/lib/branch";
+import { isManager } from "@/lib/roles";
 import LogoutButton from "@/components/LogoutButton";
 import NotificationBell from "@/components/NotificationBell";
 import BranchSwitcher from "@/components/BranchSwitcher";
-import type { BranchDto } from "@/lib/types";
+import type { BranchDto, NotificationDto } from "@/lib/types";
 
 // Korumalı uygulama düzeni. Sunucuda /me ile kullanıcıyı çözer (token geçersizse
 // 401 → login'e). Üst bar: marka + nav + şube seçici + kullanıcı + çıkış.
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   let name: string | null = null;
   let role = "";
-  let notifications = [];
+  let notifications: NotificationDto[] = [];
   let branches: BranchDto[] = [];
   let currentBranchId = "";
+  let staff = false;
   try {
     const me = await getMe();
-    name = me.name;
-    role = me.roles[0] ?? "";
-    notifications = await getNotifications();
-    branches = await getBranches();
-    currentBranchId = (await selectBranch(branches))?.id ?? "";
+    // GUARD: Staff bu yönetici route grubuna girmemeli. getBranches/getStaff gibi
+    // M/O-only uçları çağırmadan ÖNCE yönlendir — yoksa Staff'a 403 → 500 (eski bug).
+    if (!isManager(me.roles)) {
+      staff = true;
+    } else {
+      name = me.name;
+      role = me.roles[0] ?? "";
+      notifications = await getNotifications();
+      branches = await getBranches();
+      currentBranchId = (await selectBranch(branches))?.id ?? "";
+    }
   } catch (e) {
     if (e instanceof ApiError && e.status === 401) redirect("/login");
     throw e;
   }
+  if (staff) redirect("/today");
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -26,8 +26,9 @@ export default function LoginPage() {
         setError(body?.title ?? "Giriş başarısız.");
         return;
       }
-      // Cookie set edildi; korumalı sayfaya geç (server tarafı yeniden render).
-      router.replace("/schedule");
+      // Cookie set edildi; köke geç — server tarafı role göre yönlendirir
+      // (yönetici → /dashboard, Staff → /today).
+      router.replace("/");
       router.refresh();
     } catch {
       setError("Sunucuya ulaşılamadı.");

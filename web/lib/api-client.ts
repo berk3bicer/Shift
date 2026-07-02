@@ -220,6 +220,28 @@ export async function createAnnouncement(payload: {
   return { announcementId: data.announcementId };
 }
 
+// ── Vardiya Havuzu (Shift Pool) — Give/Take (Faz 2 Tur #2 FE) ──
+// UserId token'dan (IDOR); client yalnızca shiftId söyler. ShiftId'nin sahibi/pozisyonu
+// backend'de doğrulanır (403/400). Onay modu ApprovalRequired ise swap Pending kalır.
+
+export async function giveShift(shiftId: string): Promise<void> {
+  const res = await fetch(`/api/proxy/api/shift-pool/give`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ shiftId }),
+  });
+  await ensureOk(res, "Vardiya havuza sunulamadı");
+}
+
+export async function takeShift(shiftId: string): Promise<void> {
+  const res = await fetch(`/api/proxy/api/shift-pool/take`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ shiftId }),
+  });
+  await ensureOk(res, "Vardiya alınamadı");
+}
+
 export async function markNotificationAsRead(id: string): Promise<void> {
   const res = await fetch(`/api/proxy/api/notifications/${id}/read`, { method: "POST" });
   await ensureOk(res, "Bildirim okundu işaretlenemedi");

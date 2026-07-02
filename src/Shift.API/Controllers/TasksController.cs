@@ -5,6 +5,7 @@ using Shift.Application.Features.Tasks.Create;
 using Shift.Application.Features.Tasks.Update;
 using Shift.Application.Features.Tasks.Delete;
 using Shift.Application.Features.Tasks.List;
+using Shift.Application.Features.Tasks.Mine;
 using Shift.Application.Features.Tasks.Move;
 
 namespace Shift.API.Controllers;
@@ -40,6 +41,17 @@ public class TasksController : ControllerBase
         [FromQuery] Guid? assignedUserId)
     {
         var result = await _mediator.Send(new ListTasksQuery(branchId, status, assignedUserId));
+        return Ok(result);
+    }
+
+    // Personele ATANMIŞ görevler (kendi panosu). "Görevi tamamla" (move) zaten Staff'a
+    // açıktı ama listeleme değildi — bu uç o asimetriyi kapatır. Owner/Manager pano
+    // ucundan AYRI: yetki [Authorize], veri handler'da JWT userId ile sınırlı.
+    [Authorize]
+    [HttpGet("mine")]
+    public async Task<IActionResult> Mine([FromQuery] int? status)
+    {
+        var result = await _mediator.Send(new MyTasksQuery(status));
         return Ok(result);
     }
 

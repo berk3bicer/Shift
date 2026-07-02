@@ -1,6 +1,6 @@
 import "server-only";
 import { getToken } from "./session";
-import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskItemDto, TimeOffRequestDto, TimeClockDto, OvertimeSettingsDto, OvertimeSummaryDto, OvertimeRecordDto, ChecklistDto, ChecklistRunDto, ChecklistRunSummaryDto, ShiftNoteDto, AnnouncementDto, NotificationDto } from "./types";
+import type { AvailabilityDto, BranchDto, MeResponse, PositionDto, ProblemDetails, ShiftDto, StaffDto, TaskItemDto, TimeOffRequestDto, TimeClockDto, OvertimeSettingsDto, OvertimeSummaryDto, OvertimeRecordDto, ChecklistDto, ChecklistRunDto, ChecklistRunSummaryDto, ShiftNoteDto, AnnouncementDto, NotificationDto, ShiftPoolItemDto } from "./types";
 
 // SUNUCU tarafı API istemcisi. Server component / route handler buradan .NET'i DOĞRUDAN
 // çağırır (server-to-server → CORS YOK; backend'e dokunmadan). Token httpOnly cookie'den.
@@ -88,6 +88,26 @@ export function getShifts(branchId: string, rangeStartIso: string, rangeEndIso: 
   return apiFetch<ShiftDto[]>(`/api/shifts?${qs.toString()}`);
 }
 
+// ── Staff self-read (JWT userId ile handler'da sınırlı; Owner/Manager listelerinden AYRI) ──
+
+// Staff'ın kendi vardiyaları — GET /api/shifts/mine (yalnızca çağıranın vardiyaları).
+export const getMyShifts = (rangeStartIso: string, rangeEndIso: string) => {
+  const qs = new URLSearchParams({ rangeStart: rangeStartIso, rangeEnd: rangeEndIso });
+  return apiFetch<ShiftDto[]>(`/api/shifts/mine?${qs.toString()}`);
+};
+
+// Staff'a atanmış görevler — GET /api/tasks/mine. status opsiyonel (0/1/2).
+export const getMyTasks = (status?: number) => {
+  const qs = status !== undefined ? `?status=${status}` : "";
+  return apiFetch<TaskItemDto[]>(`/api/tasks/mine${qs}`);
+};
+
+// Vardiya havuzu — GET /api/shift-pool (caller'ın pozisyon+şubesine göre; param yok).
+export const getShiftPool = () => apiFetch<ShiftPoolItemDto[]>(`/api/shift-pool`);
+
+// Staff'ın kendi puantaj kayıtları — GET /api/timeclocks/mine (açık kayıt + geçmiş).
+export const getMyTimeClocks = () => apiFetch<TimeClockDto[]>(`/api/timeclocks/mine`);
+
 // Backend controller'ı AvailabilitiesController → route api/availabilities (çoğul).
 export const getAvailabilities = (userId?: string) => {
   const qs = userId ? `?userId=${userId}` : "";
@@ -95,6 +115,9 @@ export const getAvailabilities = (userId?: string) => {
 };
 
 export const getTimeOffRequests = () => apiFetch<TimeOffRequestDto[]>("/api/timeoffrequests/pending");
+
+// Staff'ın kendi izin geçmişi — /mine (her yetkili çağırabilir, token'dan userId).
+export const getMyTimeOffRequests = () => apiFetch<TimeOffRequestDto[]>("/api/timeoffrequests/mine");
 
 export const getTimeClocks = (branchId: string, mineOnly: boolean = false) => {
   const qs = new URLSearchParams();

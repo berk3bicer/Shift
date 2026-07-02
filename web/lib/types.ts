@@ -13,6 +13,7 @@ export interface MeResponse {
   tenantId: string;
   name: string | null;
   roles: string[]; // ["Owner"] | ["Manager"] ...
+  branchId: string | null; // birincil şube (Staff clock-in için); Owner'da null
 }
 
 export interface BranchDto {
@@ -324,6 +325,37 @@ export interface AnnouncementDto {
   targetRole: number | null; // null = tüm roller
   createdByUserId: string | null;
   createdByUserName: string | null;
+  createdAt: string;
+}
+
+// -----------------------------------------------------------------------------
+// Vardiya Havuzu (Shift Pool) Modülü (Gün 30 backend, Faz 2 Tur #2 FE)
+// -----------------------------------------------------------------------------
+
+// Havuz listesi item'ı (GET /api/shift-pool) — backend ShiftPoolItemDto ile birebir.
+// Status: 1=Published(açık vardiya), 2=UpForGrabs(sunulmuş), 3=Filled.
+export interface ShiftPoolItemDto {
+  id: string;
+  branchId: string;
+  branchName: string;
+  positionId: string;
+  positionName: string;
+  startTime: string; // ISO
+  endTime: string; // ISO
+  status: number;
+  userFullName: string | null; // UpForGrabs'ta sunan kişi; açık vardiyada null
+  notes: string | null;
+}
+
+// Give/Take/Approve/Reject dönüşü — backend ShiftSwapDto ile birebir.
+export interface ShiftSwapDto {
+  id: string;
+  shiftId: string;
+  requestedByUserId: string;
+  requestedByUserName: string;
+  type: number;
+  status: number;
+  shiftStatus: number;
   createdAt: string;
 }
 

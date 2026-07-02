@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+/* ── Tasarım token'ları — "kafe arka-ofis operasyon paneli" yönü ──
+   Bilinçli olarak generic-AI landing'den kaçınılır: indigo-on-white DEĞİL,
+   cream+serif+terracotta (#D97757) DEĞİL, black+acid-green DEĞİL.
+   Taban: mürekkep lacivert (ink). Marka aksanı: amber (kafe sıcaklığı — crema/bal —
+   ama terracotta değil; aynı zamanda çizelge ızgarasındaki "komi" bloğunun rengi). */
+@theme inline {
+  --color-ink: #12182b;          /* koyu taban: hero + footer + çizelge zemini */
+  --color-ink-soft: #1b2440;     /* koyu zeminde kart yüzeyi */
+  --color-ink-line: #2b3557;     /* koyu zeminde ince çizgi */
+  --color-paper: #f5f6f8;        /* açık bölüm zemini (cream DEĞİL — serin kağıt) */
+  --color-surface: #ffffff;      /* açık zeminde kart */
+  --color-line: #e3e6ec;         /* açık zeminde ince çizgi */
+  --color-muted: #5b6472;        /* ikincil metin */
+  --color-signal: #f59e0b;       /* marka aksanı / CTA (amber) */
+  --color-signal-deep: #d97f07;  /* aksan hover */
+
+  /* Çizelge veri paleti — app'teki gerçek pozisyon renkleri (yalnız ızgara içinde) */
+  --color-barista: #22c55e;
+  --color-kasiyer: #3b82f6;
+  --color-komi: #f59e0b;
+
+  --font-display: var(--font-space-grotesk);
+  --font-body: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+}
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  border-color: var(--color-line);
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Görünür klavye focus'u — marka aksanıyla halka (kalite tabanı) */
+:where(a, button, input, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Çizelge blokları için "yerleşme" animasyonu — reduced-motion'a saygılı.
+   Varsayılan (motion): fade + hafif yükselme, stagger animation-delay ile. */
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.shift-block {
+  opacity: 0;
+  animation: settle 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shift-block {
+    opacity: 1;
+    animation: none;
+  }
+}

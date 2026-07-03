@@ -9,13 +9,20 @@ import type { ReactNode } from "react";
 // state'te (opacity 0) takılı kalıyordu. Çözüm: her yerde OBJE-tabanlı initial/animate/
 // whileInView kullan (bu güvenilir çalışıyor), stagger'ı elle delay ile ver.
 
-// Bölüm/öğe giriş animasyonu — viewport'a girince fade + hafif yukarı kayma.
+// Tur 6 kök neden düzeltmesi: önceki `amount: 0.2` öğe viewport'un EN ALT kenarında %20
+// görünür olur olmaz tetikliyordu → reveal ekran kenarında, kullanıcı bakmadan bitiyordu.
+// Yeni tetik: negatif alt rootMargin — öğe alt kenardan ~%15 İÇERİ girince oynar (kullanıcı
+// tam o bölgeye bakarken). Mesafe de 20px→36px: hissedilir ama sarsıntısız (Apple/7shifts).
+const VIEWPORT = { once: true, margin: "0px 0px -15% 0px" } as const;
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+// Bölüm/öğe giriş animasyonu — viewport'a girince fade + aşağıdan yukarı belirgin kayma.
 // prefers-reduced-motion → hareket YOK, öğe direkt yerinde (kalite tabanı).
 export default function Reveal({
   children,
   className,
   delay = 0,
-  y = 20,
+  y = 36,
   once = true,
 }: {
   children: ReactNode;
@@ -30,8 +37,36 @@ export default function Reveal({
       className={`reveal${className ? ` ${className}` : ""}`}
       initial={reduce ? false : { opacity: 0, y }}
       whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once, amount: 0.2 }}
-      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ ...VIEWPORT, once }}
+      transition={{ duration: 0.6, delay, ease: EASE }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// Yatay reveal — zikzak feature blokları için: görsel bir yandan, metin diğer yandan kayarak
+// belirir (x: ±32→0 + fade). Mobil dahil transform+opacity (layout tetiklemez, akıcı).
+export function RevealX({
+  children,
+  className,
+  from = "left",
+  delay = 0,
+}: {
+  children: ReactNode;
+  className?: string;
+  from?: "left" | "right";
+  delay?: number;
+}) {
+  const reduce = useReducedMotion();
+  const x = from === "left" ? -32 : 32;
+  return (
+    <motion.div
+      className={`reveal${className ? ` ${className}` : ""}`}
+      initial={reduce ? false : { opacity: 0, x }}
+      whileInView={reduce ? undefined : { opacity: 1, x: 0 }}
+      viewport={VIEWPORT}
+      transition={{ duration: 0.65, delay, ease: EASE }}
     >
       {children}
     </motion.div>
@@ -42,7 +77,7 @@ export default function Reveal({
 export function RevealStagger({
   children,
   className,
-  stagger = 0.08,
+  stagger = 0.1,
   baseDelay = 0,
 }: {
   children: ReactNode;
@@ -107,7 +142,7 @@ export function CountUp({
 export function RevealItem({
   children,
   className,
-  y = 24,
+  y = 32,
   delay = 0,
 }: {
   children: ReactNode;
@@ -121,8 +156,8 @@ export function RevealItem({
       className={`reveal${className ? ` ${className}` : ""}`}
       initial={reduce ? false : { opacity: 0, y }}
       whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, margin: "0px 0px -12% 0px" }}
+      transition={{ duration: 0.55, delay, ease: EASE }}
     >
       {children}
     </motion.div>

@@ -1,11 +1,11 @@
-import { Scale, ShieldCheck, Coffee, MessagesSquare, Check, Minus } from "lucide-react";
+import { Scale, ShieldCheck, Zap, MessagesSquare, Check, Minus } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { WHY_CARDS, COMPARISON } from "@/lib/content";
 import Reveal, { RevealStagger, RevealItem } from "./Reveal";
 
 // Neden Shift — spec 1.5 / 2.4. TR kazanan kartları öne çıkan görsel kartlar (düz tablo DEĞİL),
 // altında sadeleştirilmiş rakip matrisi. "7shifts'te yok" vurgusu.
-const ICONS: Record<string, LucideIcon> = { Scale, ShieldCheck, MessagesSquare, Coffee };
+const ICONS: Record<string, LucideIcon> = { Scale, ShieldCheck, MessagesSquare, Zap };
 
 function Cell({ value, isShift }: { value: string; isShift: boolean }) {
   if (value === "full") {

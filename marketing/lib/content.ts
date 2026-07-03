@@ -96,10 +96,10 @@ export const WHY_CARDS = [
     badge: "Yerel kazanç",
   },
   {
-    icon: "Coffee",
-    title: "İçeriden yazıldı",
-    detail: "Shift'i, kafede çalışmış biri yaptı. Açılış-kapanış telaşı, vardiya krizi — gerçek operasyonel acılar birinci elden biliniyor.",
-    badge: "Yerel kazanç",
+    icon: "Zap",
+    title: "10 dakikada kurulum",
+    detail: "Teknik bilgi gerektirmez: şubeni aç, pozisyonları seç, ekibini davet et. İlk vardiya programını aynı gün yayınla.",
+    badge: "Kolay başlangıç",
   },
 ];
 

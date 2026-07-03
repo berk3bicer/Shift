@@ -4,8 +4,8 @@ import ShiftGrid from "./ShiftGrid";
 import Photo from "./Photo";
 
 // Hero — AYDINLIK/SICAK, havadar SPLIT (7shifts hissi). Sol: başlık + açıklama + 2 CTA + güven.
-// Sağ: gerçek kafe çalışanı fotoğrafı (sıcaklık kaynağı) + üstüne bindirilmiş CANLI vardiya kartı
-// + minik "giriş yaptı" chip'i (ürün canlı görünsün). Zemin beyaz/krem, koyu DEĞİL.
+// Sağ: gerçek kafe çalışanı fotoğrafı (sıcaklık kaynağı) + üstüne bindirilmiş CANLI vardiya kartı.
+// Zemin beyaz/krem, koyu DEĞİL.
 // Giriş animasyonu SAF CSS keyframe (.anim-rise/.anim-float) — arka plan sekmede bile görünür.
 export default function Hero() {
   return (
@@ -30,7 +30,7 @@ export default function Hero() {
             style={{ animationDelay: "40ms" }}
           >
             <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-barista)]" />
-            Kafede çalışmış biri tarafından, kafeler için yapıldı.
+            Kafe ve restoranlar için hepsi-bir-arada operasyon platformu
           </span>
 
           <h1
@@ -99,21 +99,6 @@ export default function Hero() {
                 eager
                 className="aspect-[4/5] w-full object-cover sm:aspect-[5/4] lg:aspect-[4/5]"
               />
-            </div>
-
-            {/* Minik canlı chip — üst sol, ürün "canlı" hissi */}
-            <div
-              className="anim-float absolute left-3 top-4 z-20 flex items-center gap-2 rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)]/95 px-3 py-2 shadow-[var(--shadow-card)] backdrop-blur-sm"
-              style={{ animationDelay: "520ms" }}
-            >
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-barista)] opacity-60" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[var(--color-barista)]" />
-              </span>
-              <span className="text-xs font-semibold text-[var(--color-ink)]">
-                Ayşe giriş yaptı{" "}
-                <span className="font-mono font-normal text-[var(--color-muted)]">08:02</span>
-              </span>
             </div>
 
             {/* Bindirilmiş çizelge kartı — mobilde fotoğrafın altına taşar, lg'de sağa çıkar */}

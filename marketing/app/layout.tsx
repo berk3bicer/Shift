@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import Nav from "@/components/Nav";
+import Footer from "@/components/Footer";
 import "./globals.css";
 
 // Display: Plus Jakarta Sans — sıcak, humanist, yuvarlak hatlı sans. Space Grotesk'in
@@ -58,8 +60,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="tr">
+      {/* Tur 7: ortak Nav + Footer layout'ta — her route'ta aynı iskelet, sayfalar yalnız içerik */}
       <body className={`${jakarta.variable} ${plexSans.variable} ${plexMono.variable}`}>
+        <Nav />
         {children}
+        <Footer />
       </body>
     </html>
   );

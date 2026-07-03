@@ -16,6 +16,13 @@ import type { ReactNode } from "react";
 const VIEWPORT = { once: true, margin: "0px 0px -15% 0px" } as const;
 const EASE = [0.22, 1, 0.36, 1] as const;
 
+// Tur 7 KÖK NEDEN düzeltmesi (reduced-motion görünmez içerik): eski yol `initial=false +
+// whileInView=undefined` idi — framer öğeye HİÇ stil yazmıyordu, SSR'dan gelen inline
+// `opacity:0` kalıcı oluyordu (React 19 hydration attribute uyuşmazlığını YAMAMAZ, sadece
+// uyarır). Sonuç: reduce açık kullanıcıda içerik sonsuza dek gizli. Yeni yol: reduce'ta
+// initial AÇIK görünür değerler taşır (opacity:1) → framer mount'ta stili imperatif yazar
+// ve SSR kalıntısını ezer; whileInView hep tanımlı, reduce'ta duration:0 (hareket hissi yok).
+
 // Bölüm/öğe giriş animasyonu — viewport'a girince fade + aşağıdan yukarı belirgin kayma.
 // prefers-reduced-motion → hareket YOK, öğe direkt yerinde (kalite tabanı).
 export default function Reveal({
@@ -35,10 +42,10 @@ export default function Reveal({
   return (
     <motion.div
       className={`reveal${className ? ` ${className}` : ""}`}
-      initial={reduce ? false : { opacity: 0, y }}
-      whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+      initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ ...VIEWPORT, once }}
-      transition={{ duration: 0.6, delay, ease: EASE }}
+      transition={reduce ? { duration: 0 } : { duration: 0.6, delay, ease: EASE }}
     >
       {children}
     </motion.div>
@@ -63,10 +70,10 @@ export function RevealX({
   return (
     <motion.div
       className={`reveal${className ? ` ${className}` : ""}`}
-      initial={reduce ? false : { opacity: 0, x }}
-      whileInView={reduce ? undefined : { opacity: 1, x: 0 }}
+      initial={reduce ? { opacity: 1, x: 0 } : { opacity: 0, x }}
+      whileInView={{ opacity: 1, x: 0 }}
       viewport={VIEWPORT}
-      transition={{ duration: 0.65, delay, ease: EASE }}
+      transition={reduce ? { duration: 0 } : { duration: 0.65, delay, ease: EASE }}
     >
       {children}
     </motion.div>
@@ -154,10 +161,10 @@ export function RevealItem({
   return (
     <motion.div
       className={`reveal${className ? ` ${className}` : ""}`}
-      initial={reduce ? false : { opacity: 0, y }}
-      whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+      initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "0px 0px -12% 0px" }}
-      transition={{ duration: 0.55, delay, ease: EASE }}
+      transition={reduce ? { duration: 0 } : { duration: 0.55, delay, ease: EASE }}
     >
       {children}
     </motion.div>

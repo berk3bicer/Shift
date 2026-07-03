@@ -20,13 +20,76 @@ function Cell({ value, isShift }: { value: string; isShift: boolean }) {
       </span>
     );
   }
+  if (value === "none") {
+    return (
+      <span className="inline-flex h-6 w-6 items-center justify-center text-[var(--color-muted)]/40" title="Yok">
+        <Minus size={14} aria-label="Yok" />
+      </span>
+    );
+  }
+  // Serbest metin hücre: "kısmi", "temel", "Faz 2" gibi — Shift sütunundaki faz etiketi
+  // amber tonda (yol haritası vurgusu), diğerleri nötr.
   if (value === "partial") {
     return <span className="text-xs font-medium text-[var(--color-muted)]" title="Kısmi">kısmi</span>;
   }
   return (
-    <span className="inline-flex h-6 w-6 items-center justify-center text-[var(--color-muted)]/40" title="Yok">
-      <Minus size={14} aria-label="Yok" />
+    <span
+      className={`text-xs font-medium ${
+        isShift ? "rounded-full bg-[var(--color-signal)]/15 px-2 py-0.5 font-bold text-[var(--color-signal-deep)]" : "text-[var(--color-muted)]"
+      }`}
+    >
+      {value}
     </span>
+  );
+}
+
+// Karşılaştırma matrisi — landing (sade COMPARISON) ve /neden-shift (COMPARISON_FULL)
+// aynı bileşeni kullanır (Tur 7 yeniden kullanımı).
+export function ComparisonTable({
+  data,
+}: {
+  data: { competitors: string[]; rows: { feature: string; values: string[] }[]; footnote: string };
+}) {
+  return (
+    <>
+      <Reveal className="overflow-x-auto">
+        <table className="w-full min-w-[560px] border-separate border-spacing-0 overflow-hidden rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] shadow-[var(--shadow-card)]">
+          <thead>
+            <tr>
+              <th className="bg-[var(--color-paper)] px-5 py-4 text-left text-xs font-bold uppercase tracking-wider text-[var(--color-muted)]">
+                Özellik
+              </th>
+              {data.competitors.map((c, i) => (
+                <th
+                  key={c}
+                  className={`px-4 py-4 text-center font-display text-sm font-semibold ${
+                    i === 0 ? "bg-[var(--color-ink)] text-white" : "bg-[var(--color-paper)] text-[var(--color-muted)]"
+                  }`}
+                >
+                  {c}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.rows.map((row) => (
+              <tr key={row.feature}>
+                <td className="border-t border-[var(--color-line)] px-5 py-3 text-sm font-medium">{row.feature}</td>
+                {row.values.map((v, i) => (
+                  <td
+                    key={i}
+                    className={`border-t border-[var(--color-line)] px-4 py-3 text-center ${i === 0 ? "bg-[var(--color-ink)]/[0.03]" : ""}`}
+                  >
+                    <Cell value={v} isShift={i === 0} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Reveal>
+      <p className="mt-3 text-xs text-[var(--color-muted)]">{data.footnote}</p>
+    </>
   );
 }
 
@@ -76,44 +139,10 @@ export default function WhyShift() {
           })}
         </RevealStagger>
 
-        {/* Karşılaştırma matrisi */}
-        <Reveal className="mt-10 overflow-x-auto">
-          <table className="w-full min-w-[560px] border-separate border-spacing-0 overflow-hidden rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] shadow-[var(--shadow-card)]">
-            <thead>
-              <tr>
-                <th className="bg-[var(--color-paper)] px-5 py-4 text-left text-xs font-bold uppercase tracking-wider text-[var(--color-muted)]">
-                  Özellik
-                </th>
-                {COMPARISON.competitors.map((c, i) => (
-                  <th
-                    key={c}
-                    className={`px-4 py-4 text-center font-display text-sm font-semibold ${
-                      i === 0 ? "bg-[var(--color-ink)] text-white" : "bg-[var(--color-paper)] text-[var(--color-muted)]"
-                    }`}
-                  >
-                    {c}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {COMPARISON.rows.map((row) => (
-                <tr key={row.feature}>
-                  <td className="border-t border-[var(--color-line)] px-5 py-3 text-sm font-medium">{row.feature}</td>
-                  {row.values.map((v, i) => (
-                    <td
-                      key={i}
-                      className={`border-t border-[var(--color-line)] px-4 py-3 text-center ${i === 0 ? "bg-[var(--color-ink)]/[0.03]" : ""}`}
-                    >
-                      <Cell value={v} isShift={i === 0} />
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Reveal>
-        <p className="mt-3 text-xs text-[var(--color-muted)]">{COMPARISON.footnote}</p>
+        {/* Karşılaştırma matrisi — /neden-shift'te genişletilmiş hali (COMPARISON_FULL) kullanılır */}
+        <div className="mt-10">
+          <ComparisonTable data={COMPARISON} />
+        </div>
       </div>
     </section>
   );

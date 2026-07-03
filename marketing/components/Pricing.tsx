@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Check, Sparkles } from "lucide-react";
 import { PRICING } from "@/lib/content";
 import { REGISTER_URL } from "@/lib/config";
@@ -5,21 +6,24 @@ import Reveal, { RevealStagger, RevealItem } from "./Reveal";
 
 // Fiyatlandırma — spec 12.3 birebir (499 / 999 / 1.799 / Özel). AYDINLIK zemin, beyaz kartlar.
 // Ortadaki "Büyüme" vurgulu (amber kenarlık + "Popüler" rozeti, 7shifts deseni). Şube başına aylık.
-export default function Pricing() {
+// hideHeader: /fiyatlar sayfası kendi hero'sunu taşır — bölüm başlığı orada gizlenir (Tur 7).
+export default function Pricing({ hideHeader = false }: { hideHeader?: boolean }) {
   return (
-    <section id="fiyat" className="bg-[var(--color-paper)] py-20 sm:py-28">
+    <section id="fiyat" className={`bg-[var(--color-paper)] ${hideHeader ? "pb-16 sm:pb-20" : "py-20 sm:py-28"}`}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <Reveal className="mx-auto max-w-2xl text-center">
-          <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-signal-deep)]">
-            Fiyatlandırma
-          </span>
-          <h2 className="font-display mt-3 text-3xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-4xl">
-            Şube başına, aylık. Sürpriz yok.
-          </h2>
-          <p className="mt-4 text-lg text-[var(--color-muted)]">
-            Küçük kafeden büyüyen zincire — ihtiyacın kadar modül. Gizli ücret, zorunlu üst paket yok.
-          </p>
-        </Reveal>
+        {!hideHeader && (
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-signal-deep)]">
+              Fiyatlandırma
+            </span>
+            <h2 className="font-display mt-3 text-3xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-4xl">
+              Şube başına, aylık. Sürpriz yok.
+            </h2>
+            <p className="mt-4 text-lg text-[var(--color-muted)]">
+              Küçük kafeden büyüyen zincire — ihtiyacın kadar modül. Gizli ücret, zorunlu üst paket yok.
+            </p>
+          </Reveal>
+        )}
 
         <RevealStagger className="mt-12 grid items-start gap-5 lg:grid-cols-4">
           {PRICING.map((plan) => (
@@ -59,8 +63,9 @@ export default function Pricing() {
                   ))}
                 </ul>
 
-                <a
-                  href={plan.price === "Özel" ? "#pilot" : REGISTER_URL}
+                {/* "/#pilot": Pricing artık /fiyatlar'da da render edilir — anchor ana sayfadaki forma */}
+                <Link
+                  href={plan.price === "Özel" ? "/#pilot" : REGISTER_URL}
                   className={`mt-6 inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-bold transition-all ${
                     plan.highlighted
                       ? "bg-[var(--color-signal)] text-[var(--color-ink)] shadow-[var(--shadow-cta)] hover:bg-[var(--color-signal-deep)] hover:text-white"
@@ -68,7 +73,7 @@ export default function Pricing() {
                   }`}
                 >
                   {plan.price === "Özel" ? "İletişime geç" : "Başla"}
-                </a>
+                </Link>
               </div>
             </RevealItem>
           ))}

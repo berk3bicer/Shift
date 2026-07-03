@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { LOGIN_URL, REGISTER_URL } from "@/lib/config";
 
 // Footer — sayfanın kapanış koyu bölgesi (CTA ile birlikte alttaki tek koyu bant). Çok kolonlu
@@ -19,8 +20,8 @@ export default function Footer() {
             </p>
           </div>
 
-          <FooterCol title="Ürün" links={[["Modüller", "#moduller"], ["Fiyatlar", "#fiyat"], ["Neden Shift", "#neden"]]} />
-          <FooterCol title="Şirket" links={[["Hakkında", "#"], ["İletişim", "mailto:merhaba@shift.app"], ["Ücretsiz başla", REGISTER_URL]]} />
+          <FooterCol title="Ürün" links={[["Tüm modüller", "/moduller"], ["Vardiya & Planlama", "/moduller/vardiya"], ["Giriş-Çıkış & Mesai", "/moduller/giris-cikis"], ["Fiyatlar", "/fiyatlar"], ["Neden Shift", "/neden-shift"]]} />
+          <FooterCol title="Kaynaklar" links={[["Kafe Operasyon Rehberi", "/kaynaklar/kafe-rehberi"], ["İletişim", "mailto:merhaba@shift.app"], ["Ücretsiz başla", REGISTER_URL]]} />
           <FooterCol title="Yasal" links={[["KVKK Aydınlatma", "#"], ["Gizlilik", "#"], ["Giriş Yap", LOGIN_URL]]} />
         </div>
 
@@ -42,9 +43,15 @@ function FooterCol({ title, links }: { title: string; links: [string, string][] 
       <ul className="mt-3 space-y-2">
         {links.map(([label, href]) => (
           <li key={label}>
-            <a href={href} className="text-sm text-white/60 transition-colors hover:text-white">
-              {label}
-            </a>
+            {href.startsWith("/") ? (
+              <Link href={href} className="text-sm text-white/60 transition-colors hover:text-white">
+                {label}
+              </Link>
+            ) : (
+              <a href={href} className="text-sm text-white/60 transition-colors hover:text-white">
+                {label}
+              </a>
+            )}
           </li>
         ))}
       </ul>

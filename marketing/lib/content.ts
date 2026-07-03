@@ -129,6 +129,29 @@ export const COMPARISON = {
   footnote: "* Restomenum, Menulux, KarekodGarson gibi POS/adisyon sistemleri yalnız satış tarafını çözer. Kaynak: Ürün Spesifikasyonu 1.5.",
 };
 
+// Spec 1.5 — TAM rakip matrisi (/neden-shift sayfası, Tur 7). Landing'deki sade COMPARISON'ın
+// genişletilmişi: 4 sütun + 11 satır, spec tablosuyla birebir. DÜRÜSTLÜK: spec Shift vizyonunu
+// "Tam" yazar ama stok/tedarik/hijyen/İK henüz İNŞA EDİLMEDİ → Shift hücresinde faz etiketi
+// gösterilir ("var" gibi sunulmaz).
+export const COMPARISON_FULL = {
+  competitors: ["Shift", "7shifts", "Restomenum", "KarekodGarson"],
+  rows: [
+    { feature: "Vardiya Planlama", values: ["full", "full", "temel", "AI önerili"] },
+    { feature: "Vardiya Havuzu / Takas", values: ["full", "full", "none", "none"] },
+    { feature: "Görev (Kanban + foto)", values: ["full", "temel", "none", "none"] },
+    { feature: "Giriş-Çıkış & Mesai", values: ["full", "full", "kısmi", "kısmi"] },
+    { feature: "Stok Takibi", values: ["Faz 2", "none", "uyarı bazlı", "temel"] },
+    { feature: "Tedarik Yönetimi", values: ["Faz 2", "none", "none", "none"] },
+    { feature: "Hijyen / HACCP", values: ["Faz 3", "none", "none", "none"] },
+    { feature: "İK / Personel", values: ["Faz 3", "temel", "none", "none"] },
+    { feature: "İş Kanunu Uyumu", values: ["full", "none", "kısmi", "kısmi"] },
+    { feature: "KVKK Uyumu", values: ["full", "none", "full", "full"] },
+    { feature: "Türkçe Destek", values: ["full", "none", "full", "full"] },
+  ],
+  footnote:
+    "Kaynak: Ürün Spesifikasyonu 1.5. \"Faz 2/3\" = Shift yol haritasında, henüz yayında değil — dürüst etiket. Restomenum ve KarekodGarson POS/adisyon odaklıdır; ekip operasyonu tarafı sınırlıdır.",
+};
+
 // Spec 12.3 — Fiyatlandırma (referans). Kapsamlar tabloyla birebir.
 export const PRICING = [
   {

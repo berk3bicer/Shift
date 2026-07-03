@@ -1,4 +1,4 @@
-import { Camera, Check, QrCode, ArrowRight, ShieldCheck, TriangleAlert, User } from "lucide-react";
+import { Camera, Check, QrCode, ArrowRight, ShieldCheck, Thermometer, TriangleAlert, User } from "lucide-react";
 import type { ReactNode } from "react";
 
 // Zikzak showcase ürün mockup'ları — hero'daki ShiftGrid gibi GERÇEK DOM (stok foto/screenshot
@@ -220,6 +220,111 @@ export function PoolMock({ className = "" }: { className?: string }) {
       <p className="mt-3 flex items-center gap-1.5 border-t border-[var(--color-line)] pt-2.5 text-[10px] font-medium text-[var(--color-muted)]">
         <ShieldCheck size={11} className="shrink-0 text-[var(--color-barista)]" />
         İş Kanunu limitleri her takasta otomatik kontrol edilir.
+      </p>
+    </Frame>
+  );
+}
+
+/* ── Stok & Tedarik (Faz 2 sayfası için): PAR uyarılı stok seviyeleri + sipariş çipi ── */
+const STOCK = [
+  { name: "Kahve çekirdeği", level: 68, unit: "12 kg" },
+  { name: "Badem sütü", level: 18, unit: "3 L", low: true },
+  { name: "Vanilya şurubu", level: 45, unit: "4 şişe" },
+];
+
+export function StockMock({ className = "" }: { className?: string }) {
+  return (
+    <Frame
+      label="Stok takibi örneği: kahve çekirdeği ve şurup yeterli seviyede, badem sütü PAR seviyesinin altına düştüğü için sipariş uyarısı görünüyor."
+      className={className}
+    >
+      <CardHeader title="Stok · Kritik Seviyeler" badge="1 PAR uyarısı" badgeColor="var(--color-signal-deep)" />
+      <div className="space-y-2.5">
+        {STOCK.map((s) => (
+          <div key={s.name}>
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="font-semibold text-[var(--color-ink)]">{s.name}</span>
+              <span className="font-mono text-[10px] text-[var(--color-muted)]">
+                {s.unit}
+                {s.low && <TriangleAlert size={11} className="ml-1 inline text-[var(--color-signal-deep)]" />}
+              </span>
+            </div>
+            <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[var(--color-paper-deep)]">
+              <div
+                className="h-full rounded-full"
+                style={{
+                  width: `${s.level}%`,
+                  backgroundColor: s.low ? "var(--color-signal)" : "color-mix(in srgb, var(--color-barista) 55%, white)",
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 flex items-center justify-between rounded-xl bg-[var(--color-paper)] p-2.5">
+        <div>
+          <p className="text-[10px] font-bold text-[var(--color-ink)]">Badem sütü · PAR altında</p>
+          <p className="text-[9px] text-[var(--color-muted)]">Süt Dünyası · Salı teslimat</p>
+        </div>
+        <span className="flex items-center gap-1 rounded-full bg-[var(--color-signal)]/15 px-2 py-1 text-[9px] font-bold text-[var(--color-signal-deep)]">
+          Sipariş oluştur <ArrowRight size={10} />
+        </span>
+      </div>
+    </Frame>
+  );
+}
+
+/* ── Hijyen & HACCP (Faz 3 sayfası için): günlük denetim checklist'i + sıcaklık kayıtları ── */
+const HYGIENE = [
+  { text: "Yüzey ve tezgah dezenfeksiyonu", done: true },
+  { text: "El hijyeni istasyonu dolu", done: true },
+  { text: "Çöp alanı kontrolü", done: false },
+];
+
+export function HygieneMock({ className = "" }: { className?: string }) {
+  return (
+    <Frame
+      label="Hijyen denetimi örneği: günlük HACCP checklist'inde iki madde tamamlanmış, vitrin ve derin dondurucu sıcaklıkları normal aralıkta kaydedilmiş."
+      className={className}
+    >
+      <CardHeader title="Hijyen · Günlük Denetim" badge="2/3 tamam" badgeColor="var(--color-kasiyer)" />
+      <div className="space-y-2">
+        {HYGIENE.map((h) => (
+          <div
+            key={h.text}
+            className={`flex items-center gap-2 rounded-lg border border-[var(--color-line)] bg-[var(--color-surface)] p-2 shadow-sm ${h.done ? "opacity-75" : ""}`}
+          >
+            <span
+              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${
+                h.done ? "bg-[var(--color-barista)]/20 text-[var(--color-barista)]" : "border border-[var(--color-line-strong)]"
+              }`}
+            >
+              {h.done && <Check size={10} strokeWidth={3} />}
+            </span>
+            <span className={`text-[10px] font-semibold text-[var(--color-ink)] ${h.done ? "line-through decoration-[var(--color-muted)]/50" : ""}`}>
+              {h.text}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        {[
+          { name: "Vitrin buzdolabı", temp: "+3,2°C" },
+          { name: "Derin dondurucu", temp: "−18,5°C" },
+        ].map((t) => (
+          <div key={t.name} className="rounded-xl bg-[var(--color-paper)] p-2.5">
+            <p className="flex items-center gap-1 text-[9px] font-semibold text-[var(--color-muted)]">
+              <Thermometer size={10} className="text-[var(--color-kasiyer)]" /> {t.name}
+            </p>
+            <p className="mt-0.5 font-mono text-xs font-bold text-[var(--color-ink)]">
+              {t.temp} <Check size={11} strokeWidth={3} className="inline text-[var(--color-barista)]" />
+            </p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 flex items-center gap-1.5 border-t border-[var(--color-line)] pt-2.5 text-[10px] font-medium text-[var(--color-muted)]">
+        <ShieldCheck size={11} className="shrink-0 text-[var(--color-barista)]" />
+        Denetim günü tüm kayıtlardan tek tıkla HACCP raporu.
       </p>
     </Frame>
   );

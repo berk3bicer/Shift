@@ -21,7 +21,7 @@ function Cell({ value, isShift }: { value: string; isShift: boolean }) {
     );
   }
   if (value === "partial") {
-    return <span className="font-mono text-xs text-[var(--color-muted)]" title="Kısmi">kısmi</span>;
+    return <span className="text-xs font-medium text-[var(--color-muted)]" title="Kısmi">kısmi</span>;
   }
   return (
     <span className="inline-flex h-6 w-6 items-center justify-center text-[var(--color-muted)]/40" title="Yok">
@@ -35,10 +35,10 @@ export default function WhyShift() {
     <section id="neden" className="bg-[var(--color-paper)] py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <Reveal className="max-w-2xl">
-          <span className="font-mono text-xs font-medium uppercase tracking-wider text-[var(--color-signal-deep)]">
+          <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-signal-deep)]">
             Neden Shift
           </span>
-          <h2 className="font-display mt-3 text-3xl font-bold leading-tight sm:text-4xl">
+          <h2 className="font-display mt-3 text-3xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-4xl">
             7shifts&apos;in bıraktığı yerde, Türkiye&apos;ye göre.
           </h2>
           <p className="mt-4 text-lg text-[var(--color-muted)]">
@@ -59,7 +59,7 @@ export default function WhyShift() {
                       <Icon size={20} />
                     </span>
                     <span
-                      className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-medium ${
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
                         c.badge === "Yerel kazanç"
                           ? "bg-[var(--color-barista)]/15 text-[var(--color-barista)]"
                           : "bg-[var(--color-signal)]/15 text-[var(--color-signal-deep)]"
@@ -68,7 +68,7 @@ export default function WhyShift() {
                       {c.badge}
                     </span>
                   </div>
-                  <h3 className="font-display mt-4 text-base font-semibold">{c.title}</h3>
+                  <h3 className="font-display mt-4 text-base font-bold text-[var(--color-ink)]">{c.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-[var(--color-muted)]">{c.detail}</p>
                 </div>
               </RevealItem>
@@ -81,7 +81,7 @@ export default function WhyShift() {
           <table className="w-full min-w-[560px] border-separate border-spacing-0 overflow-hidden rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] shadow-[var(--shadow-card)]">
             <thead>
               <tr>
-                <th className="bg-[var(--color-paper)] px-5 py-4 text-left font-mono text-xs font-medium uppercase tracking-wider text-[var(--color-muted)]">
+                <th className="bg-[var(--color-paper)] px-5 py-4 text-left text-xs font-bold uppercase tracking-wider text-[var(--color-muted)]">
                   Özellik
                 </th>
                 {COMPARISON.competitors.map((c, i) => (
@@ -113,7 +113,7 @@ export default function WhyShift() {
             </tbody>
           </table>
         </Reveal>
-        <p className="mt-3 font-mono text-xs text-[var(--color-muted)]">{COMPARISON.footnote}</p>
+        <p className="mt-3 text-xs text-[var(--color-muted)]">{COMPARISON.footnote}</p>
       </div>
     </section>
   );

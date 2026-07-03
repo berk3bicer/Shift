@@ -9,8 +9,8 @@ import PilotCTA from "@/components/PilotCTA";
 import Footer from "@/components/Footer";
 
 // Tek sayfa landing — 7shifts www düzeni. Oturumsuz, statik/SSG.
-// Bölüm ritmi: ink(hero) → paper(social+problem) → ink(modüller) → paper(neden) →
-// ink(fiyat+pilot) → ink(footer) — koyu/açık alternasyon göz yormasın.
+// Tur 4 ritmi AYDINLIK: hero(paper) → social(surface) → problem(paper) → modüller(paper-deep)
+// → neden(paper) → fiyat(paper) → SADECE kapanış CTA + footer koyu (tek sıcak vurgu bölgesi).
 export default function Home() {
   return (
     <>

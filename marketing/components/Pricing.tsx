@@ -3,24 +3,20 @@ import { PRICING } from "@/lib/content";
 import { REGISTER_URL } from "@/lib/config";
 import Reveal, { RevealStagger, RevealItem } from "./Reveal";
 
-// Fiyatlandırma — spec 12.3 birebir (499 / 999 / 1.799 / Özel). Ortadaki "Büyüme" vurgulu
-// ("Popüler" rozeti, 7shifts deseni). Şube başına aylık.
+// Fiyatlandırma — spec 12.3 birebir (499 / 999 / 1.799 / Özel). AYDINLIK zemin, beyaz kartlar.
+// Ortadaki "Büyüme" vurgulu (amber kenarlık + "Popüler" rozeti, 7shifts deseni). Şube başına aylık.
 export default function Pricing() {
   return (
-    <section id="fiyat" className="relative overflow-hidden bg-[var(--color-ink)] py-20 sm:py-28">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"
-      />
+    <section id="fiyat" className="bg-[var(--color-paper)] py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <span className="font-mono text-xs font-medium uppercase tracking-wider text-[var(--color-signal)]">
+          <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-signal-deep)]">
             Fiyatlandırma
           </span>
-          <h2 className="font-display mt-3 text-3xl font-bold leading-tight text-white sm:text-4xl">
+          <h2 className="font-display mt-3 text-3xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-4xl">
             Şube başına, aylık. Sürprizsiz.
           </h2>
-          <p className="mt-4 text-lg text-white/60">Küçük kafeden büyüyen zincire — ihtiyacın kadar modül.</p>
+          <p className="mt-4 text-lg text-[var(--color-muted)]">Küçük kafeden büyüyen zincire — ihtiyacın kadar modül.</p>
         </Reveal>
 
         <RevealStagger className="mt-12 grid items-start gap-5 lg:grid-cols-4">
@@ -29,33 +25,33 @@ export default function Pricing() {
               <div
                 className={`relative flex h-full flex-col rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 ${
                   plan.highlighted
-                    ? "border-[var(--color-signal)] bg-[var(--color-ink-softer)] shadow-[0_20px_50px_-20px_rgb(245_158_11_/_0.4)] ring-1 ring-[var(--color-signal)] lg:-translate-y-2 lg:hover:-translate-y-3"
-                    : "border-[var(--color-ink-line)] bg-[var(--color-ink-soft)] hover:border-white/25"
+                    ? "border-2 border-[var(--color-signal)] bg-gradient-to-b from-[var(--color-cream)] to-[var(--color-surface)] shadow-[0_24px_50px_-24px_rgb(245_158_11_/_0.55)] lg:-translate-y-2 lg:hover:-translate-y-3"
+                    : "border-[var(--color-line)] bg-[var(--color-surface)] shadow-[var(--shadow-card)] hover:border-[var(--color-signal)]/50"
                 }`}
               >
                 {plan.highlighted && (
-                  <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-[var(--color-signal)] px-3 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-[var(--color-ink)] shadow-[var(--shadow-cta)]">
+                  <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-[var(--color-signal)] px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--color-ink)] shadow-[var(--shadow-cta)]">
                     <Sparkles size={11} /> Popüler
                   </span>
                 )}
 
-                <h3 className="font-display text-lg font-semibold text-white">{plan.name}</h3>
+                <h3 className="font-display text-lg font-bold text-[var(--color-ink)]">{plan.name}</h3>
                 <div className="mt-3 flex items-baseline gap-1">
                   {plan.price === "Özel" ? (
-                    <span className="font-display text-3xl font-bold text-white">Özel</span>
+                    <span className="font-display text-3xl font-extrabold text-[var(--color-ink)]">Özel</span>
                   ) : (
                     <>
-                      <span className="font-display text-4xl font-bold text-white">{plan.price}</span>
-                      <span className="font-mono text-sm text-white/50">TL/ay</span>
+                      <span className="font-display text-4xl font-extrabold text-[var(--color-ink)]">{plan.price}</span>
+                      <span className="text-sm font-medium text-[var(--color-muted)]">TL/ay</span>
                     </>
                   )}
                 </div>
-                <p className="mt-1 font-mono text-xs text-white/45">{plan.users}</p>
+                <p className="mt-1 text-xs font-medium text-[var(--color-muted)]">{plan.users}</p>
 
-                <ul className="mt-5 flex-1 space-y-2.5 border-t border-white/5 pt-5">
+                <ul className="mt-5 flex-1 space-y-2.5 border-t border-[var(--color-line)] pt-5">
                   {plan.scope.map((s) => (
-                    <li key={s} className="flex items-start gap-2 text-sm text-white/70">
-                      <Check size={16} className="mt-0.5 shrink-0 text-[var(--color-signal)]" strokeWidth={2.5} />
+                    <li key={s} className="flex items-start gap-2 text-sm text-[var(--color-ink)]">
+                      <Check size={16} className="mt-0.5 shrink-0 text-[var(--color-signal-deep)]" strokeWidth={2.5} />
                       {s}
                     </li>
                   ))}
@@ -63,10 +59,10 @@ export default function Pricing() {
 
                 <a
                   href={plan.price === "Özel" ? "#pilot" : REGISTER_URL}
-                  className={`mt-6 inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${
+                  className={`mt-6 inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-bold transition-all ${
                     plan.highlighted
-                      ? "bg-[var(--color-signal)] text-[var(--color-ink)] shadow-[var(--shadow-cta)] hover:bg-[var(--color-signal-deep)]"
-                      : "border border-white/20 text-white hover:bg-white/5"
+                      ? "bg-[var(--color-signal)] text-[var(--color-ink)] shadow-[var(--shadow-cta)] hover:bg-[var(--color-signal-deep)] hover:text-white"
+                      : "border border-[var(--color-line-strong)] text-[var(--color-ink)] hover:border-[var(--color-signal)] hover:bg-[var(--color-cream)]/50"
                   }`}
                 >
                   {plan.price === "Özel" ? "İletişime geç" : "Başla"}

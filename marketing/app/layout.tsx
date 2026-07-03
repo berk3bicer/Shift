@@ -1,15 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-// Display: Space Grotesk (geometrik/teknik — "ızgara" dünyasına uyar, Inter refleksi DEĞİL).
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+// Display: Plus Jakarta Sans — sıcak, humanist, yuvarlak hatlı sans. Space Grotesk'in
+// teknik/geometrik hissi yerine daha DAVETKÂR bir başlık sesi (7shifts aydınlık yönü).
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin", "latin-ext"], // latin-ext = Türkçe ş/ğ/ı/İ/ö/ü/ç
+  weight: ["500", "600", "700", "800"],
   display: "swap",
 });
 
-// Body: IBM Plex Sans (mühendis hissi + güçlü Türkçe diakritik desteği).
+// Body: IBM Plex Sans — temiz, okunur, güçlü Türkçe diakritik desteği.
 const plexSans = IBM_Plex_Sans({
   variable: "--font-plex-sans",
   subsets: ["latin", "latin-ext"],
@@ -17,7 +19,8 @@ const plexSans = IBM_Plex_Sans({
   display: "swap",
 });
 
-// Mono: IBM Plex Mono (çizelge saat etiketleri — 08:00… — "gerçek araç" hissi).
+// Mono: IBM Plex Mono — ARTIK yalnız minik veri etiketlerinde (çizelge saat rakamları 08:00…).
+// Başlık/gövde/nav'da KULLANILMAZ (eski "kod/terminal" hissi buradan geliyordu).
 const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
   subsets: ["latin"],
@@ -47,7 +50,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#12182b",
+  themeColor: "#faf7f2",
   width: "device-width",
   initialScale: 1,
 };
@@ -55,7 +58,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="tr">
-      <body className={`${spaceGrotesk.variable} ${plexSans.variable} ${plexMono.variable}`}>
+      <body className={`${jakarta.variable} ${plexSans.variable} ${plexMono.variable}`}>
         {children}
       </body>
     </html>

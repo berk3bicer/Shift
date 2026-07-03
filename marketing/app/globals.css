@@ -1,37 +1,47 @@
 @import "tailwindcss";
 
-/* ── Tasarım token'ları — "kafe arka-ofis operasyon paneli" yönü ──
-   Bilinçli olarak generic-AI landing'den kaçınılır: indigo-on-white DEĞİL,
-   cream+serif+terracotta (#D97757) DEĞİL, black+acid-green DEĞİL.
-   Taban: mürekkep lacivert (ink). Marka aksanı: amber (kafe sıcaklığı — crema/bal —
-   ama terracotta değil; aynı zamanda çizelge ızgarasındaki "komi" bloğunun rengi). */
+/* ── Tasarım token'ları — Tur 4: AYDINLIK / SICAK yön (7shifts hissi) ──
+   Önceki yön (kapkara "matrix" ink zemin + mono her yerde) TERSİNE ÇEVRİLDİ.
+   Yeni taban: SICAK kağıt beyazı (paper). Ink artık zemin değil, yalnız METİN rengi
+   + sayfanın en altında 1 koyu vurgu bandı (CTA/footer). Aksan: amber (kahve crema/bal)
+   + ikincil sıcak turuncu. Kafe sıcaklığı fotoğraftan ve sıcak nötrlerden gelir. */
 @theme inline {
-  --color-ink: #12182b;          /* koyu taban: hero + footer + çizelge zemini */
-  --color-ink-soft: #1b2440;     /* koyu zeminde kart yüzeyi */
-  --color-ink-softer: #232f52;   /* koyu zeminde kaldırılmış kart */
-  --color-ink-line: #2b3557;     /* koyu zeminde ince çizgi */
-  --color-paper: #f5f6f8;        /* açık bölüm zemini (cream DEĞİL — serin kağıt) */
-  --color-paper-deep: #eceef2;   /* açık zeminde ikinci ton */
+  /* Koyu ton — SADECE metin + alttaki tek koyu vurgu bandı (CTA/footer) */
+  --color-ink: #2a2521;          /* sıcak antrasit: ana metin + koyu bant */
+  --color-ink-soft: #34302a;     /* koyu bantta kart yüzeyi */
+  --color-ink-softer: #423b32;   /* koyu bantta kaldırılmış kart */
+  --color-ink-line: #4b4239;     /* koyu bantta ince çizgi */
+
+  /* Aydınlık taban — sayfanın %90'ı */
+  --color-paper: #faf7f2;        /* sıcak kağıt beyazı: ana zemin (soğuk gri DEĞİL) */
+  --color-paper-deep: #f2ece2;   /* sıcak ikinci ton */
+  --color-cream: #fdf3e7;        /* sıcak krem aksan zemini */
+  --color-cream-2: #fbeee0;      /* şeftali-krem aksan zemini (daha derin) */
   --color-surface: #ffffff;      /* açık zeminde kart */
-  --color-line: #e3e6ec;         /* açık zeminde ince çizgi */
-  --color-muted: #5b6472;        /* ikincil metin */
-  --color-signal: #f59e0b;       /* marka aksanı / CTA (amber) */
-  --color-signal-deep: #d97f07;  /* aksan hover */
-  --color-signal-soft: #fbbf4d;  /* açık amber (koyu zeminde metin) */
+  --color-line: #ece4d8;         /* sıcak ince çizgi */
+  --color-line-strong: #ded3c2;  /* daha belirgin çizgi */
+  --color-muted: #6d655b;        /* sıcak ikincil metin */
 
-  /* Çizelge veri paleti — app'teki gerçek pozisyon renkleri (yalnız ızgara içinde) */
-  --color-barista: #22c55e;
-  --color-kasiyer: #3b82f6;
-  --color-komi: #f59e0b;
+  /* Marka aksanları — amber + ikincil sıcak turuncu */
+  --color-signal: #f59e0b;       /* amber (CTA / vurgu) */
+  --color-signal-deep: #d97706;  /* amber hover / koyu amber metin */
+  --color-signal-soft: #fbbf4d;  /* açık amber (koyu zeminde) */
+  --color-warm: #f97316;         /* ikincil sıcak turuncu */
+  --color-warm-soft: #fdba74;    /* yumuşak şeftali */
 
-  --font-display: var(--font-space-grotesk);
+  /* Çizelge veri paleti — açık zemine uygun canlı-ama-yumuşak tonlar */
+  --color-barista: #16a34a;
+  --color-kasiyer: #2563eb;
+  --color-komi: #e08a06;
+
+  --font-display: var(--font-jakarta);
   --font-body: var(--font-plex-sans);
   --font-mono: var(--font-plex-mono);
 
-  /* Katmanlı gölgeler — düz görünümden çıkış için derinlik */
-  --shadow-card: 0 1px 2px rgb(18 24 43 / 0.04), 0 8px 24px -8px rgb(18 24 43 / 0.10);
-  --shadow-float: 0 24px 60px -20px rgb(8 12 24 / 0.55), 0 8px 20px -12px rgb(8 12 24 / 0.4);
-  --shadow-cta: 0 8px 20px -6px rgb(245 158 11 / 0.45);
+  /* Sıcak-tonlu, yumuşak gölgeler — aydınlık zeminde derinlik */
+  --shadow-card: 0 1px 2px rgb(60 50 40 / 0.04), 0 12px 30px -14px rgb(70 55 40 / 0.16);
+  --shadow-float: 0 30px 60px -22px rgb(60 45 30 / 0.30), 0 12px 26px -16px rgb(60 45 30 / 0.18);
+  --shadow-cta: 0 12px 26px -8px rgb(245 158 11 / 0.5);
 }
 
 :root {
@@ -55,8 +65,9 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Display başlıklar — sıkı tracking, karakterli */
+/* Display başlıklar — sıcak humanist sans, hafif sıkı tracking */
 .font-display {
+  font-family: var(--font-display), system-ui, sans-serif;
   letter-spacing: -0.02em;
 }
 
@@ -70,13 +81,17 @@ body {
 /* Above-the-fold giriş animasyonları — SAF CSS keyframe (JS/hydration'a bağlı DEĞİL).
    Neden CSS keyframe: framer mount-`animate` ve CSS transition arka planda yüklenen sekmede
    (visibilityState=hidden) rAF durduğu için opacity:0'da takılıyor; keyframe + forwards ise
-   son kareye (görünür) çözülür. Yani içerik hiçbir koşulda görünmez kalmaz. */
+   son kareye (görünür) çözülür. Yani içerik hiçbir koşulda görünmez kalmaz. (Gün 34 dersi.) */
 @keyframes rise-in {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: none; }
 }
 @keyframes settle-in {
   from { opacity: 0; transform: translateY(8px) scale(0.95); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes float-in {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
   to { opacity: 1; transform: none; }
 }
 .anim-rise {
@@ -87,13 +102,18 @@ body {
   opacity: 0;
   animation: settle-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+.anim-float {
+  opacity: 0;
+  animation: float-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
   .anim-rise,
-  .anim-settle {
+  .anim-settle,
+  .anim-float {
     opacity: 1;
     animation: none;
   }

@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { CheckCircle2, Send } from "lucide-react";
+import Photo from "./Photo";
 
-// Kapanış CTA — koyu ink bant (spec 12.2: "sıcak pilot", soğuk satış değil).
+// Kapanış CTA — sayfanın TEK koyu vurgu bandı (spec 12.2: "sıcak pilot", soğuk satış değil).
+// Koyu ama SICAK: warm-ink zemin + amber ışıma + gerçek barista fotoğrafı (insan sıcaklığı).
 // Backend YOK: sahte endpoint UYDURULMAZ. Form, girilen bilgiyle önceden doldurulmuş bir
 // mailto: üretir → kullanıcının e-posta istemcisine gerçekten devreder.
-// merhaba@shift.app = PLACEHOLDER iletişim adresi (gerçek domain Tur 4 → gap).
+// merhaba@shift.app = PLACEHOLDER iletişim adresi (gerçek domain → gap #P3).
 const CONTACT_EMAIL = "merhaba@shift.app";
 
 export default function PilotCTA() {
@@ -27,44 +29,52 @@ export default function PilotCTA() {
 
   return (
     <section id="pilot" className="relative overflow-hidden bg-[var(--color-ink)] py-20 sm:py-28">
-      {/* Yumuşak amber ışıma — derinlik */}
+      {/* Yumuşak amber ışıma — sıcak derinlik */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-32 left-1/2 h-96 w-[40rem] -translate-x-1/2 rounded-full opacity-20 blur-3xl"
+        className="pointer-events-none absolute -bottom-32 left-1/2 h-96 w-[40rem] -translate-x-1/2 rounded-full opacity-25 blur-3xl"
         style={{ background: "radial-gradient(circle, var(--color-signal), transparent 60%)" }}
       />
       <div className="relative mx-auto max-w-4xl px-5 sm:px-8">
         <div className="overflow-hidden rounded-3xl border border-[var(--color-ink-line)] bg-[var(--color-ink-soft)] shadow-[var(--shadow-float)]">
           <div className="grid gap-0 md:grid-cols-[1fr_1.1fr]">
-            {/* Sol: metin */}
-            <div className="flex flex-col justify-center border-b border-white/5 p-8 sm:p-10 md:border-b-0 md:border-r">
-              <span className="font-mono text-xs font-medium uppercase tracking-wider text-[var(--color-signal)]">
-                Ücretsiz pilot
-              </span>
-              <h2 className="font-display mt-3 text-2xl font-bold leading-tight text-white sm:text-3xl">
-                Tanıdık kafelerle sıcak başlıyoruz.
-              </h2>
-              <p className="mt-4 text-sm leading-relaxed text-white/60">
-                İlk kafelerde ücretsiz pilot ve haftalık geri bildirim toplantısı. Kurulum 10 dakika,
-                kredi kartı yok. Ekibini bir haftada dijitale taşı.
-              </p>
+            {/* Sol: fotoğraf + metin overlay */}
+            <div className="relative flex min-h-[15rem] flex-col justify-end overflow-hidden p-8 sm:p-10">
+              <Photo
+                src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=800&q=80&auto=format&fit=crop"
+                alt="Bir baristanın filtre kahve demleyişi"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink)] via-[var(--color-ink)]/80 to-[var(--color-ink)]/30" />
+              <div className="relative">
+                <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-signal-soft)]">
+                  Ücretsiz pilot
+                </span>
+                <h2 className="font-display mt-3 text-2xl font-extrabold leading-tight text-white sm:text-3xl">
+                  Tanıdık kafelerle sıcak başlıyoruz.
+                </h2>
+                <p className="mt-4 text-sm leading-relaxed text-white/70">
+                  İlk kafelerde ücretsiz pilot ve haftalık geri bildirim toplantısı. Kurulum 10 dakika,
+                  kredi kartı yok. Ekibini bir haftada dijitale taşı.
+                </p>
+              </div>
             </div>
 
             {/* Sağ: form / teşekkürler */}
-            <div className="p-8 sm:p-10">
+            <div className="bg-[var(--color-ink-soft)] p-8 sm:p-10">
               {sent ? (
                 <div className="flex h-full flex-col justify-center">
                   <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-barista)]/15 text-[var(--color-barista)]">
                     <CheckCircle2 size={24} />
                   </span>
-                  <h3 className="font-display mt-4 text-xl font-semibold text-white">Neredeyse tamam!</h3>
+                  <h3 className="font-display mt-4 text-xl font-bold text-white">Neredeyse tamam!</h3>
                   <p className="mt-2 text-sm text-white/60">
                     Son bir adım: aşağıdaki butonla önceden doldurulmuş e-postayı bize gönder. Pilot için
                     1 iş günü içinde dönüş yapıyoruz.
                   </p>
                   <a
                     href={buildMailto()}
-                    className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--color-signal)] px-5 py-3 text-sm font-semibold text-[var(--color-ink)] shadow-[var(--shadow-cta)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-signal-deep)]"
+                    className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--color-signal)] px-5 py-3 text-sm font-bold text-[var(--color-ink)] shadow-[var(--shadow-cta)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-signal-deep)] hover:text-white"
                   >
                     <Send size={16} /> E-postayı gönder
                   </a>
@@ -90,7 +100,7 @@ export default function PilotCTA() {
                   <Field id="pilot-phone" label="Telefon (opsiyonel)" value={phone} onChange={setPhone} type="tel" placeholder="05xx xxx xx xx" />
                   <button
                     type="submit"
-                    className="w-full rounded-xl bg-[var(--color-signal)] px-5 py-3 text-sm font-semibold text-[var(--color-ink)] shadow-[var(--shadow-cta)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-signal-deep)]"
+                    className="w-full rounded-xl bg-[var(--color-signal)] px-5 py-3 text-sm font-bold text-[var(--color-ink)] shadow-[var(--shadow-cta)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-signal-deep)] hover:text-white"
                   >
                     Ücretsiz pilot iste
                   </button>

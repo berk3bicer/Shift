@@ -17,11 +17,11 @@ export default function ProblemSolution() {
             Problem → Çözüm
           </span>
           <h2 className="font-display mt-3 text-3xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-4xl">
-            Dağınık araçlar bir işi iki kez yaptırır.
+            Dağınık araçlar, işi iki kez yaptırır.
           </h2>
           <p className="mt-4 text-lg text-[var(--color-muted)]">
-            Bağımsız kafelerin operasyonu WhatsApp, kağıt ve hesap makinesine dağılmış durumda. POS
-            sistemleri yalnız satışı çözer. Shift hepsini tek çatıda toplar.
+            Bugün kafeler ekibini WhatsApp, Excel ve kağıt arasında yönetiyor. Bir vardiya değişikliği
+            üç yere yazılıyor, bir hijyen kaydı deftere sıkışıyor. Shift hepsini tek yerde toplar.
           </p>
         </Reveal>
 

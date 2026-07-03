@@ -30,7 +30,7 @@ export default function Hero() {
             style={{ animationDelay: "40ms" }}
           >
             <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-barista)]" />
-            Kafeler için, kafede çalışmış biri tarafından
+            Kafede çalışmış biri tarafından, kafeler için yapıldı.
           </span>
 
           <h1
@@ -57,8 +57,9 @@ export default function Hero() {
             className="anim-rise mt-6 max-w-xl text-lg leading-relaxed text-[var(--color-muted)]"
             style={{ animationDelay: "200ms" }}
           >
-            Vardiya WhatsApp&apos;ta, hijyen kağıtta, mesai hesap makinesinde dönmesin. Vardiya, görev,
-            giriş-çıkış, checklist ve duyuru — hepsi tek platformda, Türkçe.
+            Vardiya WhatsApp&apos;ta, hijyen kağıtta, mesai hesap makinesinde dönmesin. Planlamadan
+            giriş-çıkışa, görevlerden duyurulara — ekibini yönetmek için ihtiyacın olan her şey tek
+            platformda. 10 dakikada kur, bugün kullanmaya başla.
           </p>
 
           <div className="anim-rise mt-8 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "280ms" }}>

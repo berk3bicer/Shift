@@ -3,12 +3,12 @@
 
 // Spec 1.3 — Temel Değer Önerisi tablosu (çekirdek satırlar; landing'de sadeleştirildi).
 export const PROBLEM_SOLUTION = [
-  { problem: "Vardiya planı WhatsApp/kağıtta", current: "Excel veya kağıt", shift: "Sürükle-bırak dijital çizelge" },
-  { problem: "Görev takibi yok", current: "Sözlü iletişim", shift: "Kanban görev panosu + fotoğraf kanıtı" },
-  { problem: "Ek mesai hesabı elle", current: "Hesap makinesi", shift: "İş Kanunu'na göre otomatik hesaplama + uyarı" },
-  { problem: "Vardiya değişimi karmaşası", current: "WhatsApp'ta yazışma", shift: "Vardiya havuzu (sun/kap) + onay akışı" },
-  { problem: "Hijyen denetimi kağıtta", current: "Form / defter", shift: "Dijital checklist + fotoğraf kaydı" },
-  { problem: "Ekip iletişimi dağınık", current: "WhatsApp grupları", shift: "Uygulama içi duyuru + bildirim" },
+  { problem: "Vardiya planı dağınık", current: "Excel / kağıt vardiya", shift: "Sürükle-bırak çizelge" },
+  { problem: "Görev takibi yok", current: "Sözlü görev dağıtımı", shift: "Kanban görev + foto kanıt" },
+  { problem: "Ek mesai hesabı elle", current: "Hesap makinesiyle mesai", shift: "İş Kanunu'na göre otomatik mesai" },
+  { problem: "Vardiya değişimi karmaşası", current: "WhatsApp'ta takas kaosu", shift: "Havuzla vardiya değişimi" },
+  { problem: "Hijyen denetimi kağıtta", current: "Deftere hijyen kaydı", shift: "Dijital checklist + HACCP" },
+  { problem: "Ekip iletişimi dağınık", current: "WhatsApp grupları", shift: "Uygulama içi duyuru" },
 ];
 
 // Spec Bölüm 4 — çekirdek MVP modülleri (Faz 1). Spec 12.1 "derinlik > genişlik" gereği
@@ -18,52 +18,60 @@ export const CORE_MODULES = [
     key: "vardiya",
     title: "Vardiya Çizelgesi",
     icon: "CalendarDays",
-    benefit: "Haftalık programı sürükle-bırakla kur, tek tuşla yayınla — ekip anında bildirim alır.",
-    points: ["Pozisyon renk kodu: barista / kasiyer / komi", "Açık vardiya + vardiya havuzu (sun / kap)", "Geçen haftayı kopyala-yapıştır"],
+    benefit: "Haftalık programı dakikalar içinde kur — yayınlayınca ekip anında haberdar olur.",
+    points: ["Sürükle-bırak takvim, renk kodlu pozisyonlar", "Geçen haftayı ya da şablonu tek tuşla klonla", "Açık vardiya havuzuyla boşlukları doldur"],
     accent: "barista",
   },
   {
     key: "gorev",
     title: "Görev Panosu",
     icon: "KanbanSquare",
-    benefit: "\"Vitrini düzenle, makineyi temizle\" — sözlü iş emri yerine kanban, fotoğraf kanıtıyla.",
-    points: ["Yapılacak → Devam Ediyor → Tamamlandı", "Kişiye ya da pozisyona ata (\"tüm baristalar\")", "Tamamlanınca yöneticiye anlık bildirim"],
+    benefit: "Hiçbir iş unutulmasın — sözlü iş emri yerine kanban, kim ne yaptı ne zaman hepsi kayıtlı.",
+    points: ["Fotoğraf kanıtıyla görev tamamlama", "Kişiye ya da pozisyona ata (\"tüm baristalar\")", "Açılış / kapanış checklist'leri"],
     accent: "kasiyer",
   },
   {
     key: "puantaj",
     title: "Giriş-Çıkış & Mesai",
     icon: "Clock",
-    benefit: "QR ya da tablet PIN ile giriş-çıkış; mesai İş Kanunu'na göre otomatik hesaplanır.",
-    points: ["Kiosk modu: tezgah arkasındaki paylaşılan tablet", "Geç giriş / erken çıkışta anlık uyarı", "Günlük 11s / haftalık 45s limit uyarısı"],
+    benefit: "Mesai hesabı elle bitsin — QR/PIN giriş-çıkış, İş Kanunu'na göre otomatik fazla mesai.",
+    points: ["Kiosk modu: tezgahtaki paylaşılan tablet", "Haftalık 45s limitinde otomatik uyarı", "Bordroya hazır aylık özet"],
     accent: "komi",
   },
   {
-    key: "checklist",
-    title: "Açılış / Kapanış Listeleri",
-    icon: "ListChecks",
-    benefit: "Espresso makinesi ısındı mı, kasa sayıldı mı — dijital checklist, tamamlayan ve saat kayıtlı.",
-    points: ["Her işletme kendi listesini kurar", "Tamamlayan kişi + saat otomatik damga", "Yönetici anında tamamlanma raporu görür"],
+    key: "havuz",
+    title: "Vardiya Havuzu",
+    icon: "ArrowRightLeft",
+    benefit: "\"Bugün gelemiyorum\" krize dönüşmesin — personel vardiyasını havuza sunar, başkası kapar.",
+    points: ["Sun / kap akışı, WhatsApp takasına son", "Onay modunu sen seçersin", "İş Kanunu limitleri otomatik korunur"],
     accent: "barista",
   },
   {
     key: "duyuru",
     title: "Duyuru & Bildirim",
     icon: "Megaphone",
-    benefit: "Dağınık WhatsApp trafiğini uygulamaya taşı — yöneticiden tüm ekibe ya da tek role.",
-    points: ["Tek yönlü duyuru: tüm ekip veya belirli rol", "Vardiya notu: \"badem sütü bitti, 14:00 rezervasyon\"", "Anlık push bildirim"],
+    benefit: "Herkes aynı bilgiyle çalışsın — önemli haber WhatsApp trafiğinde kaybolmasın.",
+    points: ["Tüm ekibe ya da tek role duyuru", "Anlık push bildirim", "Okundu takibi"],
     accent: "kasiyer",
   },
 ] as const;
 
 // Sosyal kanıt şeridi — metin tabanlı güven istatistikleri (SAHTE müşteri logosu YOK).
-// Kaynaklar: %50 WhatsApp azaltma (spec 8.2), 10 dk kurulum (spec 1.2/12.1),
-// 5–50 personel hedef (spec 1.4), tek platform 11 modül (spec 0).
-export const STATS = [
-  { value: "%50", label: "daha az WhatsApp trafiği" },
-  { value: "10 dk", label: "kurulum, teknik bilgi gerekmez" },
-  { value: "5–50", label: "personelli kafeler için" },
-  { value: "11", label: "modül, tek platformda" },
+// DÜRÜSTLÜK: müşteri verimiz henüz yok → "%X tasarruf" gibi ÖLÇÜLMEMİŞ net iddia KULLANMA
+// (Tur 5 kararı; eski "%50 daha az WhatsApp" söküldü). Sadece doğrulanabilir çerçeve rakamları:
+// 10 dk kurulum (spec 1.2/12.1), 5–50 personel hedef (spec 1.4), 11 modül (spec 0), tek platform.
+// `to` alanı olanlar count-up animasyonu yapar; `text` olan (Tek çatı) niteliksel — sayı değil.
+export const STATS: {
+  to?: number;
+  prefix?: string;
+  suffix?: string;
+  text?: string;
+  label: string;
+}[] = [
+  { text: "Tek çatı", label: "WhatsApp, Excel ve kağıt yerine tek platform" },
+  { to: 10, suffix: " dk", label: "kurulum — teknik bilgi gerekmez" },
+  { prefix: "5–", to: 50, label: "personelli kafeler için ölçeklenir" },
+  { to: 11, label: "modül, vardiyadan hijyene tek çatı" },
 ];
 
 // Neden Shift — farklılaştırıcı kartlar (spec 1.5 / 2.3 / 2.4). "7shifts'te yok" vurgusu
@@ -72,36 +80,37 @@ export const WHY_CARDS = [
   {
     icon: "Scale",
     title: "İş Kanunu'na göre mesai",
-    detail: "Günlük 11s, haftalık 45s limiti; fazla mesai %50 zamlı — otomatik hesap ve uyarı.",
+    detail: "Fazla mesai, gece/tatil çarpanı, günlük 11s / haftalık 45s limiti otomatik. ABD kurallarına göre değil, buraya göre.",
     badge: "7shifts'te yok",
   },
   {
     icon: "ShieldCheck",
-    title: "KVKK uyumu",
-    detail: "Verileriniz Avrupa / Türkiye veri merkezinde (Hetzner). GDPR değil, KVKK.",
-    badge: "7shifts'te yok",
-  },
-  {
-    icon: "Boxes",
-    title: "Stok, tedarik, hijyen",
-    detail: "7shifts yalnız vardiya ve işgücüne girer; bu modüller sonraki fazlarda tek çatıda.",
+    title: "KVKK, tedarik, hijyen",
+    detail: "Verilerin Avrupa / Türkiye'de. Stok, tedarik ve HACCP denetimi 7shifts'te yok — Shift'te var.",
     badge: "7shifts'te yok",
   },
   {
     icon: "MessagesSquare",
     title: "Türkçe, kafe diliyle",
-    detail: "Arayüz ve jargon kafe operasyonuna göre kalibre — Türkçe destek, yerel POS/bordro.",
+    detail: "\"86 badem sütü\", \"vitrin buzdolabı\", \"açılış checklist'i\" — ekibinin konuştuğu dille. Türkçe destek, çeviri değil.",
+    badge: "Yerel kazanç",
+  },
+  {
+    icon: "Coffee",
+    title: "İçeriden yazıldı",
+    detail: "Shift'i, kafede çalışmış biri yaptı. Açılış-kapanış telaşı, vardiya krizi — gerçek operasyonel acılar birinci elden biliniyor.",
     badge: "Yerel kazanç",
   },
 ];
 
 // "ve dahası" — spec'te var, landing'de başlık düzeyinde özetlenen modüller (11'e boğmadan).
 export const MORE_MODULES = [
-  "Vardiya Havuzu",
-  "Müsaitlik & İzin",
-  "Vardiya Notları",
-  "Bordro Desteği (Logo / Mikro / Paraşüt)",
-  "Raporlar & Dışa Aktarma",
+  "Stok",
+  "Tedarik",
+  "Hijyen / HACCP",
+  "İK",
+  "Analitik",
+  "Çok Şube",
 ];
 
 // Spec 1.5 — Rakip Konumlandırma Özeti (sadeleştirilmiş; farklılaştırıcı satırlar öne).

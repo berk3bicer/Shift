@@ -1,11 +1,11 @@
-import { Scale, ShieldCheck, Boxes, MessagesSquare, Check, Minus } from "lucide-react";
+import { Scale, ShieldCheck, Coffee, MessagesSquare, Check, Minus } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { WHY_CARDS, COMPARISON } from "@/lib/content";
 import Reveal, { RevealStagger, RevealItem } from "./Reveal";
 
 // Neden Shift — spec 1.5 / 2.4. TR kazanan kartları öne çıkan görsel kartlar (düz tablo DEĞİL),
 // altında sadeleştirilmiş rakip matrisi. "7shifts'te yok" vurgusu.
-const ICONS: Record<string, LucideIcon> = { Scale, ShieldCheck, Boxes, MessagesSquare };
+const ICONS: Record<string, LucideIcon> = { Scale, ShieldCheck, MessagesSquare, Coffee };
 
 function Cell({ value, isShift }: { value: string; isShift: boolean }) {
   if (value === "full") {
@@ -39,11 +39,11 @@ export default function WhyShift() {
             Neden Shift
           </span>
           <h2 className="font-display mt-3 text-3xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-4xl">
-            7shifts&apos;in bıraktığı yerde, Türkiye&apos;ye göre.
+            7shifts&apos;in bıraktığı yerde, Türkiye için.
           </h2>
           <p className="mt-4 text-lg text-[var(--color-muted)]">
-            7shifts vardiyada güçlü ama stok, tedarik ve hijyene hiç girmez; İş Kanunu ve KVKK&apos;yı
-            bilmez. Yerli POS sistemleri ise yalnız satışı çözer.
+            7shifts vardiya ve ekip yönetiminde dünya lideri — ama stok, tedarik ve hijyene hiç girmez,
+            İş Kanunu&apos;nu bilmez, Türkçe konuşmaz. Shift tam burada devreye girer.
           </p>
         </Reveal>
 

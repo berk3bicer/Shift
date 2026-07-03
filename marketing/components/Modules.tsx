@@ -1,4 +1,4 @@
-import { CalendarDays, KanbanSquare, Clock, ListChecks, Megaphone, ArrowUpRight } from "lucide-react";
+import { CalendarDays, KanbanSquare, Clock, ArrowRightLeft, Megaphone, ArrowUpRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { CORE_MODULES, MORE_MODULES } from "@/lib/content";
 import Reveal, { RevealStagger, RevealItem } from "./Reveal";
@@ -9,7 +9,7 @@ const ICONS: Record<string, LucideIcon> = {
   CalendarDays,
   KanbanSquare,
   Clock,
-  ListChecks,
+  ArrowRightLeft,
   Megaphone,
 };
 const ACCENT: Record<string, string> = {

@@ -1,6 +1,6 @@
 import { Scale, ShieldCheck, MessagesSquare, Clock } from "lucide-react";
 import { STATS } from "@/lib/content";
-import Reveal, { RevealStagger, RevealItem } from "./Reveal";
+import Reveal, { RevealStagger, RevealItem, CountUp } from "./Reveal";
 
 // Sosyal kanıt şeridi — hero'nun HEMEN altında, GÖRÜNÜR. Metin tabanlı (SAHTE logo YOK).
 // Üstte uyum rozetleri (İş Kanunu · KVKK · Türkçe · 10 dk), altında spec istatistikleri.
@@ -31,7 +31,11 @@ export default function SocialProof() {
           {STATS.map((s) => (
             <RevealItem key={s.label} className="text-center">
               <div className="font-display text-4xl font-extrabold text-[var(--color-signal-deep)] sm:text-[2.75rem]">
-                {s.value}
+                {s.to != null ? (
+                  <CountUp to={s.to} prefix={s.prefix} suffix={s.suffix} />
+                ) : (
+                  s.text
+                )}
               </div>
               <div className="mt-1.5 text-sm font-medium text-[var(--color-muted)]">{s.label}</div>
             </RevealItem>

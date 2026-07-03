@@ -19,13 +19,15 @@ export default function Footer() {
             </p>
           </div>
 
-          <FooterCol title="Ürün" links={[["Modüller", "#moduller"], ["Neden Shift", "#neden"], ["Fiyatlar", "#fiyat"]]} />
-          <FooterCol title="Başla" links={[["Ücretsiz başla", REGISTER_URL], ["Giriş Yap", LOGIN_URL], ["Pilot iste", "#pilot"]]} />
-          <FooterCol title="Yasal" links={[["KVKK Aydınlatma", "#"], ["Gizlilik", "#"], ["İletişim", "mailto:merhaba@shift.app"]]} />
+          <FooterCol title="Ürün" links={[["Modüller", "#moduller"], ["Fiyatlar", "#fiyat"], ["Neden Shift", "#neden"]]} />
+          <FooterCol title="Şirket" links={[["Hakkında", "#"], ["İletişim", "mailto:merhaba@shift.app"], ["Ücretsiz başla", REGISTER_URL]]} />
+          <FooterCol title="Yasal" links={[["KVKK Aydınlatma", "#"], ["Gizlilik", "#"], ["Giriş Yap", LOGIN_URL]]} />
         </div>
 
         <div className="flex flex-col gap-2 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-white/40">© {new Date().getFullYear()} Shift · Restoran ve kafe operasyonu</p>
+          <p className="text-xs text-white/40">
+            Shift — Kafe ve restoran operasyonunu dijitalleştir. © {new Date().getFullYear()}
+          </p>
           <p className="text-xs text-white/30">Verileriniz Avrupa / Türkiye veri merkezinde</p>
         </div>
       </div>

@@ -14,9 +14,11 @@ export default function Pricing() {
             Fiyatlandırma
           </span>
           <h2 className="font-display mt-3 text-3xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-4xl">
-            Şube başına, aylık. Sürprizsiz.
+            Şube başına, aylık. Sürpriz yok.
           </h2>
-          <p className="mt-4 text-lg text-[var(--color-muted)]">Küçük kafeden büyüyen zincire — ihtiyacın kadar modül.</p>
+          <p className="mt-4 text-lg text-[var(--color-muted)]">
+            Küçük kafeden büyüyen zincire — ihtiyacın kadar modül. Gizli ücret, zorunlu üst paket yok.
+          </p>
         </Reveal>
 
         <RevealStagger className="mt-12 grid items-start gap-5 lg:grid-cols-4">

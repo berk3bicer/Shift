@@ -1,7 +1,7 @@
 "use client";
 
-import { Children, cloneElement, isValidElement } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { Children, cloneElement, isValidElement, useEffect, useRef, useState } from "react";
+import { animate, motion, useInView, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 
 // NOT: framer-motion 12 + React 19 kurulumunda STRING variant-label propagasyonu
@@ -58,6 +58,48 @@ export function RevealStagger({
           : child,
       )}
     </div>
+  );
+}
+
+// Count-up — sayı viewport'a girince 0'dan hedefe akar (Apple/7shifts istatistik hissi).
+// prefers-reduced-motion → animasyon YOK, sayı direkt hedefte (erişilebilirlik + Gün 34 dersi:
+// içerik hiçbir koşulda boş/0'da takılı kalmaz). once: bir kez sayar, tekrar tetiklenmez.
+export function CountUp({
+  to,
+  prefix = "",
+  suffix = "",
+  duration = 1.2,
+}: {
+  to: number;
+  prefix?: string;
+  suffix?: string;
+  duration?: number;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.6 });
+  const reduce = useReducedMotion();
+  const [n, setN] = useState(reduce ? to : 0);
+
+  useEffect(() => {
+    if (reduce) {
+      setN(to);
+      return;
+    }
+    if (!inView) return;
+    const controls = animate(0, to, {
+      duration,
+      ease: [0.22, 1, 0.36, 1],
+      onUpdate: (v) => setN(Math.round(v)),
+    });
+    return () => controls.stop();
+  }, [inView, to, reduce, duration]);
+
+  return (
+    <span ref={ref}>
+      {prefix}
+      {n}
+      {suffix}
+    </span>
   );
 }
 

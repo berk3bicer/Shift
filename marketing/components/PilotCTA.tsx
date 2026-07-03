@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CheckCircle2, Send } from "lucide-react";
 import Photo from "./Photo";
+import Reveal from "./Reveal";
 
 // Kapanış CTA — sayfanın TEK koyu vurgu bandı (spec 12.2: "sıcak pilot", soğuk satış değil).
 // Koyu ama SICAK: warm-ink zemin + amber ışıma + gerçek barista fotoğrafı (insan sıcaklığı).
@@ -36,7 +37,7 @@ export default function PilotCTA() {
         style={{ background: "radial-gradient(circle, var(--color-signal), transparent 60%)" }}
       />
       <div className="relative mx-auto max-w-4xl px-5 sm:px-8">
-        <div className="overflow-hidden rounded-3xl border border-[var(--color-ink-line)] bg-[var(--color-ink-soft)] shadow-[var(--shadow-float)]">
+        <Reveal className="overflow-hidden rounded-3xl border border-[var(--color-ink-line)] bg-[var(--color-ink-soft)] shadow-[var(--shadow-float)]">
           <div className="grid gap-0 md:grid-cols-[1fr_1.1fr]">
             {/* Sol: fotoğraf + metin overlay */}
             <div className="relative flex min-h-[15rem] flex-col justify-end overflow-hidden p-8 sm:p-10">
@@ -51,11 +52,11 @@ export default function PilotCTA() {
                   Ücretsiz pilot
                 </span>
                 <h2 className="font-display mt-3 text-2xl font-extrabold leading-tight text-white sm:text-3xl">
-                  Tanıdık kafelerle sıcak başlıyoruz.
+                  Tanıdık kafelerle ücretsiz pilot başlıyoruz.
                 </h2>
                 <p className="mt-4 text-sm leading-relaxed text-white/70">
-                  İlk kafelerde ücretsiz pilot ve haftalık geri bildirim toplantısı. Kurulum 10 dakika,
-                  kredi kartı yok. Ekibini bir haftada dijitale taşı.
+                  İlk kafelerle birebir çalışıyoruz — kurulumdan ilk vardiyaya kadar yanındayız. Sıcak,
+                  ücretsiz, taahhütsüz. Kafeni Shift&apos;le tanıştıralım.
                 </p>
               </div>
             </div>
@@ -108,7 +109,7 @@ export default function PilotCTA() {
               )}
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

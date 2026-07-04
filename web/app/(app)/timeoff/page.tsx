@@ -1,4 +1,4 @@
-import { getTimeOffRequests, getStaff } from "@/lib/api-server";
+import { getTimeOffRequests, getMe } from "@/lib/api-server";
 import TimeOffBoard from "@/components/timeoff/TimeOffBoard";
 import { Metadata } from "next";
 
@@ -6,17 +6,21 @@ export const metadata: Metadata = {
   title: "İzin Yönetimi | Shift",
 };
 
-// Sunucu tarafında personelleri ve izin taleplerini çeker
+// Sunucu tarafında izin taleplerini + oturum sahibini çeker.
+// Not: Talep oluşturma backend'de HER ZAMAN login olan kullanıcı adına kaydedilir
+// (token'dan; gövdedeki userId yok sayılır). Bu yüzden personel seçici yok — kim
+// giriş yaptıysa talep onun adına düşer (gerçeğe uygun optimistic görünüm için ad).
 export default async function TimeOffPage() {
-  const [requests, staff] = await Promise.all([
+  const [requests, me] = await Promise.all([
     getTimeOffRequests(),
-    getStaff(),
+    getMe(),
   ]);
 
   return (
     <TimeOffBoard
       initialRequests={requests}
-      staff={staff}
+      currentUserId={me.userId}
+      currentUserName={me.name}
     />
   );
 }

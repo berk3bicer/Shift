@@ -1,4 +1,4 @@
-import type { ShiftDto } from "./types";
+import type { ShiftDto, NotificationDto } from "./types";
 
 // Client (tarayıcı) tarafı mutation'lar — hepsi BFF proxy üzerinden (same-origin → CORS
 // yok; token sunucuda eklenir). Server'daki api-server.ts'in client kardeşi.
@@ -283,6 +283,14 @@ export async function markNotificationAsRead(id: string): Promise<void> {
   await ensureOk(res, "Bildirim okundu işaretlenemedi");
 }
 
+// Zilin canlı tazelenmesi için client-side çekim (layout server prop'u yalnız ilk
+// yüklemede gelir; yeni duyuru/bildirim F5'siz düşsün diye zil bunu aralıkla çağırır).
+export async function fetchNotifications(): Promise<NotificationDto[]> {
+  const res = await fetch(`/api/proxy/api/notifications`, { cache: "no-store" });
+  await ensureOk(res, "Bildirimler alınamadı");
+  return res.json();
+}
+
 // ── Müsaitlik (Availability) — route api/availabilities (çoğul) ──
 
 export async function createAvailability(payload: {
@@ -299,7 +307,9 @@ export async function createAvailability(payload: {
   });
   await ensureOk(res, "Eklenemedi");
   const data = await res.json();
-  return { id: data.id };
+  // Backend CreateAvailabilityResult.AvailabilityId döner (`id` DEĞİL). `data.id`
+  // okumak undefined veriyordu → optimistic kart id'siz → React key uyarısı.
+  return { id: data.availabilityId ?? data.id };
 }
 
 export async function deleteAvailability(id: string): Promise<void> {

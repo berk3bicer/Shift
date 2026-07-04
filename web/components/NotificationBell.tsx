@@ -1,10 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Bell } from "lucide-react";
 import type { NotificationDto } from "@/lib/types";
-import { markNotificationAsRead } from "@/lib/api-client";
+import { markNotificationAsRead, fetchNotifications } from "@/lib/api-client";
 import { useRouter } from "next/navigation";
+
+// Zili canlı tutan poll aralığı. SignalR/websocket bu turun kapsamı değil (#13 gap);
+// yeni duyuru F5 olmadan makul gecikmeyle düşsün diye hafif polling yeterli.
+const POLL_MS = 45_000;
 
 // Backend NotificationType enum'ı (int) → kullanıcıya gösterilecek başlık + tıklama hedefi.
 // 0=ShiftPublished, 1=LateClockIn, 2=TaskAssigned, 3=TaskCompleted, 4=AnnouncementPosted.
@@ -21,6 +25,40 @@ export default function NotificationBell({ initialNotifications }: { initialNoti
   const [notifications, setNotifications] = useState<NotificationDto[]>(initialNotifications);
   const [isOpen, setIsOpen] = useState(false);
 
+  // Optimistic okundu işaretlerini poll ezmesin: yerel olarak okunmuş id'leri tut,
+  // sunucudan gelen listeye uygula (backend commit'i yakalayana kadar flicker olmasın).
+  const readIdsRef = useRef<Set<string>>(new Set());
+
+  // Canlı tazeleme: sekme görünürken aralıkla bildirimleri yeniden çek. Sekme arka
+  // plandayken durdur (gereksiz istek yok), hata sessiz geçilir.
+  useEffect(() => {
+    let cancelled = false;
+
+    async function refresh() {
+      if (document.hidden) return;
+      try {
+        const fresh = await fetchNotifications();
+        if (cancelled) return;
+        setNotifications(
+          fresh.map((n) => (readIdsRef.current.has(n.id) ? { ...n, isRead: true } : n)),
+        );
+      } catch {
+        // Sessiz geç — zil kritik değil, bir sonraki tur yeniden dener.
+      }
+    }
+
+    const timer = setInterval(refresh, POLL_MS);
+    // Sekmeye geri dönünce hemen tazele (bekleyen aralığı bekleme).
+    const onVisible = () => { if (!document.hidden) refresh(); };
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, []);
+
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   const handleOpen = () => {
@@ -30,6 +68,7 @@ export default function NotificationBell({ initialNotifications }: { initialNoti
   const handleNotificationClick = async (notif: NotificationDto) => {
     if (!notif.isRead) {
       // Optimistic mark as read
+      readIdsRef.current.add(notif.id);
       setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, isRead: true } : n));
       try {
         await markNotificationAsRead(notif.id);

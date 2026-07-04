@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { StaffDto, TimeOffRequestDto } from "@/lib/types";
+import type { TimeOffRequestDto } from "@/lib/types";
 import { TimeOffType, TimeOffStatus } from "@/lib/types";
 import { useOptimisticList } from "@/lib/useOptimisticList";
 import { decideTimeOffRequest } from "@/lib/api-client";
@@ -16,10 +16,12 @@ const TYPE_LABELS = {
 
 export default function TimeOffBoard({
   initialRequests,
-  staff,
+  currentUserId,
+  currentUserName,
 }: {
   initialRequests: TimeOffRequestDto[];
-  staff: StaffDto[];
+  currentUserId: string;
+  currentUserName: string | null;
 }) {
   const { items: requests, setItems: setRequests, feedback, setFeedback, pendingId, mutate } =
     useOptimisticList<TimeOffRequestDto>(initialRequests);
@@ -188,7 +190,12 @@ export default function TimeOffBoard({
       )}
 
       {modalOpen && (
-        <TimeOffModal staff={staff} onClose={() => setModalOpen(false)} onCreated={onCreated} />
+        <TimeOffModal
+          currentUserId={currentUserId}
+          currentUserName={currentUserName}
+          onClose={() => setModalOpen(false)}
+          onCreated={onCreated}
+        />
       )}
     </div>
   );

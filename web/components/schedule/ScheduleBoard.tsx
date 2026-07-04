@@ -21,6 +21,24 @@ import {
 } from "@/lib/api-client";
 import { useOptimisticList } from "@/lib/useOptimisticList";
 
+// ── Saat-dilimi grupları (Tur 9 fix) ─────────────────────────────────────────
+// Sütuna bakınca "hangi dilimde kaç kişi" bir bakışta okunsun diye vardiyalar
+// başlangıç saatine göre alt-başlıklar altında gruplanır. İki renk kanalı hiyerarşisi:
+// saat-dilimi = gruplama/zemin (nerede duruyor), pozisyon = kartın kimliği (sol şerit).
+// Eşikler tek yerde — Berke kafesine göre ayarlamak isterse yalnız burası değişir.
+// Renkler mevcut paletten: sabah=amber/krem, gündüz=nötr kâğıt, akşam=adaçayı.
+const TIME_SLOTS = [
+  { label: "Sabah", untilHour: 12, zone: "bg-cream/70", heading: "text-signal-deep" },
+  { label: "Gündüz", untilHour: 17, zone: "bg-paper-deep/70", heading: "text-muted" },
+  { label: "Akşam", untilHour: 24, zone: "bg-sage-soft/60", heading: "text-sage-deep" },
+] as const;
+
+// Başlangıç saatine göre dilim index'i (duvar saati — ISO'dan TZ yorumsuz).
+function slotIndexOf(startIso: string): number {
+  const hour = Number(formatTime(startIso).slice(0, 2));
+  return TIME_SLOTS.findIndex((s) => hour < s.untilHour);
+}
+
 // Haftalık çizelge — tüm yönetim etkileşimleri:
 //   • Gün-taşıma (sürükle) + kişi-atama (tıkla) → optimistic + rollback (applyUpdate).
 //   • Oluştur (gün "+" → modal) / Sil (pop-over, onaylı, HARD) → pessimistic.
@@ -206,54 +224,72 @@ export default function ScheduleBoard({
                     + Vardiya ekle
                   </button>
                 ) : (
-                  dayShifts.map((s) => (
-                    <div key={s.id} className="relative">
-                      <div
-                        draggable
-                        onDragStart={(e) => {
-                          e.dataTransfer.setData("text/plain", s.id);
-                          e.dataTransfer.effectAllowed = "move";
-                          setDraggingId(s.id);
-                        }}
-                        onDragEnd={() => { setDraggingId(null); setOverDay(null); }}
-                        onClick={() => setAssigningId((cur) => (cur === s.id ? null : s.id))}
-                        className={`cursor-pointer ${draggingId === s.id ? "opacity-40" : ""} ${savingId === s.id ? "animate-pulse" : ""}`}
-                        title="Tıkla: kişi ata / sil · Sürükle: başka güne taşı"
-                      >
-                        <ShiftCard shift={s} />
-                      </div>
-
-                      {assigningId === s.id && (
-                        <div
-                          className="absolute left-0 right-0 top-full z-10 mt-1.5 space-y-3 rounded-xl border border-line bg-surface p-3 shadow-float"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <div>
-                            <label className="mb-1.5 block text-xs font-semibold text-ink">Kişi ata</label>
-                            <select
-                              autoFocus
-                              defaultValue={s.userId ?? ""}
-                              onChange={(e) => onAssign(s, e.target.value)}
-                              className="w-full rounded-lg border border-line-strong bg-paper px-2 py-2 text-xs text-ink outline-none transition-colors focus:border-signal"
-                            >
-                              <option value="">Açık vardiya (atama yok)</option>
-                              {staff.map((m) => (
-                                <option key={m.id} value={m.id}>
-                                  {m.fullName}{m.positionName ? ` — ${m.positionName}` : ""}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                          <button
-                            onClick={() => onDelete(s)}
-                            className="w-full rounded-lg bg-red-50 px-2 py-2 text-xs font-semibold text-red-700 transition-colors hover:bg-red-100"
-                          >
-                            Vardiyayı Sil
-                          </button>
+                  TIME_SLOTS.map((slot, si) => {
+                    const slotShifts = dayShifts.filter((s) => slotIndexOf(s.startTime) === si);
+                    if (slotShifts.length === 0) return null; // boş dilim hiç çizilmez — sade
+                    return (
+                      <div key={slot.label} className={`rounded-xl p-1.5 ${slot.zone}`}>
+                        <div className="mb-1.5 flex items-center justify-between px-1">
+                          <span className={`text-[11px] font-bold uppercase tracking-wide ${slot.heading}`}>
+                            {slot.label}
+                          </span>
+                          <span className="rounded-full border border-line bg-surface px-1.5 py-0.5 text-[10px] font-bold text-muted">
+                            {slotShifts.length} kişi
+                          </span>
                         </div>
-                      )}
-                    </div>
-                  ))
+                        <div className="space-y-2">
+                          {slotShifts.map((s) => (
+                            <div key={s.id} className="relative">
+                              <div
+                                draggable
+                                onDragStart={(e) => {
+                                  e.dataTransfer.setData("text/plain", s.id);
+                                  e.dataTransfer.effectAllowed = "move";
+                                  setDraggingId(s.id);
+                                }}
+                                onDragEnd={() => { setDraggingId(null); setOverDay(null); }}
+                                onClick={() => setAssigningId((cur) => (cur === s.id ? null : s.id))}
+                                className={`cursor-pointer ${draggingId === s.id ? "opacity-40" : ""} ${savingId === s.id ? "animate-pulse" : ""}`}
+                                title="Tıkla: kişi ata / sil · Sürükle: başka güne taşı"
+                              >
+                                <ShiftCard shift={s} />
+                              </div>
+
+                              {assigningId === s.id && (
+                                <div
+                                  className="absolute left-0 right-0 top-full z-10 mt-1.5 space-y-3 rounded-xl border border-line bg-surface p-3 shadow-float"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <div>
+                                    <label className="mb-1.5 block text-xs font-semibold text-ink">Kişi ata</label>
+                                    <select
+                                      autoFocus
+                                      defaultValue={s.userId ?? ""}
+                                      onChange={(e) => onAssign(s, e.target.value)}
+                                      className="w-full rounded-lg border border-line-strong bg-paper px-2 py-2 text-xs text-ink outline-none transition-colors focus:border-signal"
+                                    >
+                                      <option value="">Açık vardiya (atama yok)</option>
+                                      {staff.map((m) => (
+                                        <option key={m.id} value={m.id}>
+                                          {m.fullName}{m.positionName ? ` — ${m.positionName}` : ""}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                  <button
+                                    onClick={() => onDelete(s)}
+                                    className="w-full rounded-lg bg-red-50 px-2 py-2 text-xs font-semibold text-red-700 transition-colors hover:bg-red-100"
+                                  >
+                                    Vardiyayı Sil
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })
                 )}
               </div>
             </div>

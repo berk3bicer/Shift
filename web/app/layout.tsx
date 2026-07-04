@@ -37,6 +37,9 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#faf7f2",
+  // Panel tek tema: açık. CSS'ten önce/bağımsız <meta name="color-scheme"> ile sabitlenir —
+  // stil yüklemesi gecikse bile tarayıcı UA-dark'a düşüp siyah ekran göstermesin (Tur 9 fix).
+  colorScheme: "light",
 };
 
 export default function RootLayout({

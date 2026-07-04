@@ -101,28 +101,53 @@ export default function TasksBoard({
   const [assigneeType, setAssigneeType] = useState<"none" | "user" | "position">("none");
   const [assigneeId, setAssigneeId] = useState<string>("");
 
+  // Oluşturma da taşıma/silme ile AYNI optimistic desen (tutarlılık): kart geçici id ile
+  // ANINDA "Yapılacak"a düşer, createTask dönen gerçek id ile değiştirilir, hata olursa
+  // geri alınır + banner. Form alanları yalnız başarıda temizlenir — hata sonrası modal
+  // yeniden açılınca girilenler kaybolmasın.
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    const payload = {
+      branchId: branch.id,
+      title,
+      description: description || null,
+      priority,
+      category,
+      assignedUserId: assigneeType === "user" ? assigneeId : null,
+      assignedPositionId: assigneeType === "position" ? assigneeId : null,
+    };
+    const tempId = `temp-${Date.now()}`;
+    const optimisticTask: TaskItemDto = {
+      ...payload,
+      id: tempId,
+      status: 0, // Yapılacak
+      assignedUserName:
+        assigneeType === "user" ? staff.find((s) => s.id === assigneeId)?.fullName ?? null : null,
+      assignedPositionName:
+        assigneeType === "position" ? positions.find((p) => p.id === assigneeId)?.name ?? null : null,
+      createdAt: new Date().toISOString(),
+      startedAt: null,
+      completedAt: null,
+      completedByUserId: null,
+    };
+    setTasks((prev) => [...prev, optimisticTask]);
+    setIsModalOpen(false);
     setIsSubmitting(true);
     try {
-      await createTask({
-        branchId: branch.id,
-        title,
-        description: description || null,
-        priority,
-        category,
-        assignedUserId: assigneeType === "user" ? assigneeId : null,
-        assignedPositionId: assigneeType === "position" ? assigneeId : null,
-      });
-      setIsModalOpen(false);
+      const { taskId } = await createTask(payload);
+      setTasks((prev) => prev.map((t) => (t.id === tempId ? { ...t, id: taskId } : t)));
       setTitle("");
       setDescription("");
+      setPriority(1);
+      setCategory(0);
       setAssigneeType("none");
       setAssigneeId("");
       router.refresh();
     } catch (err: any) {
-      setError(err.message || "Oluşturulamadı");
+      setTasks((prev) => prev.filter((t) => t.id !== tempId)); // rollback — hayalet kart kalmasın
+      setError(err.message || "Görev oluşturulamadı.");
+      setTimeout(() => setError(null), 3000);
     } finally {
       setIsSubmitting(false);
     }

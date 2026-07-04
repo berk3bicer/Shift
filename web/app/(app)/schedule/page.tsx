@@ -25,7 +25,7 @@ export default async function SchedulePage({
 
   const branch = await selectBranch(branches);
   if (!branch) {
-    return <p className="text-sm text-gray-500">Henüz şube yok. Önce bir şube oluşturun.</p>;
+    return <p className="text-sm text-muted">Henüz şube yok. Önce bir şube oluşturun.</p>;
   }
   const branchId = branch.id;
   const weekStart = sp.week ?? mondayOf(new Date());
@@ -52,12 +52,12 @@ export default async function SchedulePage({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-lg font-semibold text-gray-900">Vardiya Çizelgesi — {branch.name}</h1>
+        <h1 className="font-display text-lg font-bold text-ink">Vardiya Çizelgesi — {branch.name}</h1>
 
         <div className="flex items-center gap-2 text-sm">
-          <Link href={hrefFor(prevWeek)} className="rounded-md border border-gray-300 px-2 py-1 text-gray-700 hover:bg-gray-100">← Önceki</Link>
-          <span className="px-1 font-medium text-gray-700">{weekStart} haftası</span>
-          <Link href={hrefFor(nextWeek)} className="rounded-md border border-gray-300 px-2 py-1 text-gray-700 hover:bg-gray-100">Sonraki →</Link>
+          <Link href={hrefFor(prevWeek)} className="rounded-lg border border-line-strong bg-surface px-3 py-2 font-medium text-muted transition-colors hover:bg-paper-deep hover:text-ink">← Önceki</Link>
+          <span className="px-1 font-mono text-xs font-medium text-muted">{weekStart} haftası</span>
+          <Link href={hrefFor(nextWeek)} className="rounded-lg border border-line-strong bg-surface px-3 py-2 font-medium text-muted transition-colors hover:bg-paper-deep hover:text-ink">Sonraki →</Link>
         </div>
       </div>
 
@@ -70,7 +70,7 @@ export default async function SchedulePage({
         staff={staff}
         positions={positions}
       />
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-faint">
         İpucu: kartı <strong>sürükle</strong> → başka güne taşı · karta <strong>tıkla</strong> → kişi ata.
       </p>
     </div>

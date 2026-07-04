@@ -174,14 +174,14 @@ export default function ChecklistsBoard({
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Kontrol Listeleri</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            {branch.name} şubesi için rutin listeleri ({runDate})
+          <h1 className="font-display text-2xl font-bold text-ink">Kontrol Listeleri</h1>
+          <p className="mt-1 text-sm text-muted">
+            {branch.name} için rutin listeleri ({runDate})
           </p>
         </div>
         <button
           onClick={openCreateModal}
-          className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-colors"
+          className="flex items-center gap-2 rounded-lg bg-signal px-4 py-2 text-sm font-bold text-ink shadow-card hover:bg-signal-deep hover:text-white transition-colors"
         >
           <ListPlus className="h-4 w-4" />
           Yeni Şablon Ekle
@@ -189,7 +189,7 @@ export default function ChecklistsBoard({
       </div>
 
       {error && (
-        <div className="rounded-lg bg-rose-50 p-4 text-sm font-medium text-rose-800 border border-rose-200">
+        <div className="rounded-lg bg-red-50 p-4 text-sm font-medium text-red-800 border border-red-200">
           {error}
         </div>
       )}
@@ -198,10 +198,10 @@ export default function ChecklistsBoard({
 
         {/* Sol Taraf: Şablonlar */}
         <div className="col-span-1 space-y-4">
-          <h2 className="text-lg font-semibold text-slate-800 border-b pb-2">Şablonlar</h2>
+          <h2 className="font-display text-lg font-bold text-ink border-b pb-2">Şablonlar</h2>
 
           {localChecklists.length === 0 && (
-            <div className="text-sm text-slate-500 p-4 border border-dashed border-slate-200 rounded-lg text-center">
+            <div className="text-sm text-muted p-4 border border-dashed border-line rounded-lg text-center">
               Henüz bir şablon bulunmuyor.
             </div>
           )}
@@ -210,23 +210,23 @@ export default function ChecklistsBoard({
             const hasRunToday = runs.some(r => r.checklistId === checklist.id);
 
             return (
-              <div key={checklist.id} className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col gap-4 relative group">
+              <div key={checklist.id} className="bg-surface rounded-xl p-5 border border-line shadow-card flex flex-col gap-4 relative group">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-bold text-slate-900">{checklist.name}</h3>
-                    <p className="text-sm text-slate-500 mt-1">{checklist.items.length} Madde</p>
+                    <h3 className="font-bold text-ink">{checklist.name}</h3>
+                    <p className="text-sm text-muted mt-1">{checklist.items.length} Madde</p>
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => openEditModal(checklist)}
-                      className="text-slate-400 hover:text-indigo-600 p-1.5 rounded hover:bg-indigo-50"
+                      className="text-faint hover:text-signal-deep p-1.5 rounded hover:bg-cream"
                       title="Şablonu Düzenle"
                     >
                       <Edit2 className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => handleDeleteTemplate(checklist.id)}
-                      className="text-slate-400 hover:text-rose-500 p-1.5 rounded hover:bg-rose-50"
+                      className="text-faint hover:text-red-500 p-1.5 rounded hover:bg-red-50"
                       title="Şablonu Sil"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -239,8 +239,8 @@ export default function ChecklistsBoard({
                   disabled={hasRunToday || isStarting === checklist.id}
                   className={`flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
                     hasRunToday
-                      ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                      : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200"
+                      ? "bg-paper-deep text-faint cursor-not-allowed"
+                      : "bg-sage-soft text-sage-deep hover:bg-sage/25 border border-sage/40"
                   }`}
                 >
                   {isStarting === checklist.id ? (
@@ -262,12 +262,12 @@ export default function ChecklistsBoard({
 
         {/* Sağ Taraf: Aktif Çalıştırmalar (Runs) */}
         <div className="col-span-1 lg:col-span-2 space-y-4">
-          <h2 className="text-lg font-semibold text-slate-800 border-b pb-2">Aktif Listeler (Bugün)</h2>
+          <h2 className="font-display text-lg font-bold text-ink border-b pb-2">Aktif Listeler (Bugün)</h2>
 
           {runs.length === 0 && (
-            <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-8 text-center">
-              <p className="text-slate-500 font-medium">Bugün henüz bir kontrol listesi başlatılmadı.</p>
-              <p className="text-sm text-slate-400 mt-1">Sol taraftaki şablonlardan birini başlatabilirsiniz.</p>
+            <div className="bg-paper border-2 border-dashed border-line rounded-xl p-8 text-center">
+              <p className="text-muted font-medium">Bugün henüz bir kontrol listesi başlatılmadı.</p>
+              <p className="text-sm text-faint mt-1">Sol taraftaki şablonlardan birini başlatabilirsiniz.</p>
             </div>
           )}
 
@@ -279,13 +279,13 @@ export default function ChecklistsBoard({
                 : 0;
 
               return (
-                <div key={run.id} className={`bg-white rounded-xl border ${isCompleted ? 'border-emerald-300 shadow-emerald-100' : 'border-slate-200'} shadow-sm overflow-hidden flex flex-col`}>
+                <div key={run.id} className={`bg-surface rounded-xl border ${isCompleted ? 'border-sage/50 shadow-card' : 'border-line'} shadow-card overflow-hidden flex flex-col`}>
 
                   {/* Header */}
-                  <div className={`p-4 border-b ${isCompleted ? 'bg-emerald-50/50' : 'bg-slate-50'} flex items-start justify-between`}>
+                  <div className={`p-4 border-b ${isCompleted ? 'bg-sage-soft/60' : 'bg-paper'} flex items-start justify-between`}>
                     <div>
-                      <h3 className="font-bold text-slate-900">{run.checklistName}</h3>
-                      <div className="flex items-center gap-2 mt-2 text-xs font-medium text-slate-500">
+                      <h3 className="font-bold text-ink">{run.checklistName}</h3>
+                      <div className="flex items-center gap-2 mt-2 text-xs font-medium text-muted">
                         <span className="flex items-center gap-1">
                           <Clock className="h-3.5 w-3.5" />
                           {new Date(run.startedAt).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}
@@ -299,7 +299,7 @@ export default function ChecklistsBoard({
                       </div>
                     </div>
                     {isCompleted && (
-                      <span className="flex items-center gap-1 bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs font-bold">
+                      <span className="flex items-center gap-1 bg-sage-soft text-sage-deep px-2 py-1 rounded text-xs font-bold">
                         <CheckCircle2 className="h-4 w-4" />
                         Tamamlandı
                       </span>
@@ -307,36 +307,36 @@ export default function ChecklistsBoard({
                   </div>
 
                   {/* Progress Bar */}
-                  <div className="h-1.5 w-full bg-slate-100">
+                  <div className="h-1.5 w-full bg-paper-deep">
                     <div
-                      className={`h-full transition-all duration-500 ${isCompleted ? 'bg-emerald-500' : 'bg-blue-500'}`}
+                      className={`h-full transition-all duration-500 ${isCompleted ? 'bg-sage' : 'bg-signal'}`}
                       style={{ width: `${progress}%` }}
                     />
                   </div>
 
                   {/* Items */}
-                  <div className="p-2 space-y-1 bg-slate-50/50 flex-1">
+                  <div className="p-2 space-y-1 bg-paper flex-1">
                     {run.items.map(item => (
                       <div
                         key={item.id}
                         className={`w-full flex flex-col p-3 rounded-lg transition-colors ${
                           item.isChecked
-                            ? "bg-slate-100/50"
-                            : "bg-white hover:bg-slate-50 border border-slate-100 shadow-sm"
+                            ? "bg-paper-deep"
+                            : "bg-surface hover:bg-paper border border-line shadow-card"
                         }`}
                       >
                         <div className="flex items-start gap-3 w-full">
-                          <button onClick={() => handleToggleCheck(run.id, item)} className={`mt-0.5 flex-shrink-0 ${item.isChecked ? 'text-emerald-500' : 'text-slate-300'}`}>
+                          <button onClick={() => handleToggleCheck(run.id, item)} className={`mt-0.5 flex-shrink-0 ${item.isChecked ? 'text-sage' : 'text-faint'}`}>
                             {item.isChecked ? <CheckSquare className="h-5 w-5" /> : <Square className="h-5 w-5" />}
                           </button>
 
                           <div className="flex-1 flex justify-between items-start gap-2">
                             <div>
-                              <span className={`text-sm font-medium ${item.isChecked ? 'line-through text-slate-500 opacity-70' : 'text-slate-700'}`}>
+                              <span className={`text-sm font-medium ${item.isChecked ? 'line-through text-muted opacity-70' : 'text-ink'}`}>
                                 {item.text}
                               </span>
                               {item.isChecked && item.checkedByUserName && (
-                                <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-wide font-semibold">
+                                <p className="text-[10px] text-faint mt-1 uppercase tracking-wide font-semibold">
                                   {item.checkedByUserName} onayladı
                                   {item.checkedAt && ` • ${new Date(item.checkedAt).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}`}
                                 </p>
@@ -346,9 +346,9 @@ export default function ChecklistsBoard({
                             {/* Fotoğraf Yükleme İkonu */}
                             <div className="flex-shrink-0 flex flex-col items-center">
                               {uploadingRunItemId === item.id ? (
-                                <Loader2 className="h-4 w-4 animate-spin text-indigo-500" />
+                                <Loader2 className="h-4 w-4 animate-spin text-signal-deep" />
                               ) : (
-                                <label className="cursor-pointer text-slate-300 hover:text-indigo-600 transition-colors" title="Kanıt Fotoğrafı Yükle">
+                                <label className="cursor-pointer text-faint hover:text-signal-deep transition-colors" title="Kanıt Fotoğrafı Yükle">
                                   <Camera className="h-4 w-4" />
                                   <input
                                     type="file"
@@ -371,7 +371,7 @@ export default function ChecklistsBoard({
                                 href={att.downloadUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="relative block rounded-lg overflow-hidden border border-slate-200 w-32"
+                                className="relative block rounded-lg overflow-hidden border border-line w-32"
                                 title={att.fileName ?? "Kanıt"}
                               >
                                 <img src={att.downloadUrl} alt="Kontrol Kanıtı" className="w-full h-20 object-cover" />
@@ -392,11 +392,11 @@ export default function ChecklistsBoard({
 
       {/* Şablon Ekleme Modalı */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-900">{editingId ? "Şablonu Düzenle" : "Yeni Şablon Oluştur"}</h2>
-              <button type="button" onClick={handleCloseModal} className="text-slate-400 hover:text-slate-600">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl bg-surface shadow-float overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-line flex items-center justify-between">
+              <h2 className="font-display text-xl font-bold text-ink">{editingId ? "Şablonu Düzenle" : "Yeni Şablon Oluştur"}</h2>
+              <button type="button" onClick={handleCloseModal} className="text-faint hover:text-ink">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -404,23 +404,23 @@ export default function ChecklistsBoard({
             <form onSubmit={handleCreateTemplate} className="flex flex-col overflow-hidden">
               <div className="p-6 space-y-4 overflow-y-auto">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Şablon Adı</label>
+                  <label className="block text-sm font-medium text-muted mb-1">Şablon Adı</label>
                   <input
                     required
                     type="text"
                     value={tplName}
                     onChange={(e) => setTplName(e.target.value)}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full rounded-lg border border-line-strong px-3 py-2 text-sm focus:border-signal focus:outline-none focus:ring-1 focus:ring-signal"
                     placeholder="Örn: Haftalık Depo Sayımı"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Türü</label>
+                  <label className="block text-sm font-medium text-muted mb-1">Türü</label>
                   <select
                     value={tplType}
                     onChange={(e) => setTplType(Number(e.target.value))}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full rounded-lg border border-line-strong px-3 py-2 text-sm focus:border-signal focus:outline-none focus:ring-1 focus:ring-signal"
                   >
                     <option value={0}>Açılış Listesi</option>
                     <option value={1}>Kapanış Listesi</option>
@@ -430,11 +430,11 @@ export default function ChecklistsBoard({
 
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-medium text-slate-700">Maddeler</label>
+                    <label className="block text-sm font-medium text-muted">Maddeler</label>
                     <button
                       type="button"
                       onClick={() => setTplItems([...tplItems, { id: Math.random().toString(), text: "" }])}
-                      className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+                      className="text-xs font-semibold text-signal-deep hover:text-ink flex items-center gap-1"
                     >
                       <Plus className="h-3 w-3" /> Madde Ekle
                     </button>
@@ -443,7 +443,7 @@ export default function ChecklistsBoard({
                   <div className="space-y-2">
                     {tplItems.map((item, index) => (
                       <div key={item.id} className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-400 w-4">{index + 1}.</span>
+                        <span className="text-xs font-bold text-faint w-4">{index + 1}.</span>
                         <input
                           required
                           type="text"
@@ -453,14 +453,14 @@ export default function ChecklistsBoard({
                             updated[index].text = e.target.value;
                             setTplItems(updated);
                           }}
-                          className="flex-1 rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          className="flex-1 rounded-lg border border-line-strong px-3 py-1.5 text-sm focus:border-signal focus:outline-none focus:ring-1 focus:ring-signal"
                           placeholder="Madde metni..."
                         />
                         {tplItems.length > 1 && (
                           <button
                             type="button"
                             onClick={() => setTplItems(tplItems.filter(i => i.id !== item.id))}
-                            className="text-slate-400 hover:text-rose-500 p-1"
+                            className="text-faint hover:text-red-500 p-1"
                           >
                             <X className="h-4 w-4" />
                           </button>
@@ -471,18 +471,18 @@ export default function ChecklistsBoard({
                 </div>
               </div>
 
-              <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+              <div className="p-6 border-t border-line bg-paper flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-200 transition-colors"
+                  className="rounded-lg px-4 py-2 text-sm font-semibold text-muted hover:bg-paper-deep transition-colors"
                 >
                   İptal
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="rounded-lg bg-indigo-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50 transition-colors"
+                  className="rounded-lg bg-signal px-6 py-2 text-sm font-bold text-ink shadow-card hover:bg-signal-deep hover:text-white disabled:opacity-50 transition-colors"
                 >
                   {isSubmitting ? "Kaydediliyor..." : "Kaydet"}
                 </button>

@@ -21,14 +21,14 @@ export default function BranchSwitcher({
   }
 
   if (branches.length <= 1) {
-    return <span className="text-sm font-medium text-gray-700">{branches[0]?.name}</span>;
+    return <span className="text-sm font-medium text-muted">{branches[0]?.name}</span>;
   }
 
   return (
     <select
       value={currentId}
       onChange={onChange}
-      className="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700 focus:border-gray-900 focus:outline-none"
+      className="rounded-lg border border-line-strong bg-surface px-2 py-2 text-sm font-medium text-ink focus:border-signal focus:outline-none"
       aria-label="Şube seç"
     >
       {branches.map((b) => (

@@ -11,7 +11,7 @@ export default async function TimeClockPage() {
   const [branches, staff, me] = await Promise.all([getBranches(), getStaff(), getMe()]);
   const branch = await selectBranch(branches);
   if (!branch) {
-    return <p className="text-sm text-gray-500">Henüz şube yok.</p>;
+    return <p className="text-sm text-muted">Henüz şube yok.</p>;
   }
 
   // Şubenin tüm puantaj kayıtları (yönetici görünümü).

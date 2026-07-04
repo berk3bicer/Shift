@@ -135,26 +135,32 @@ export default function ScheduleBoard({
     feedback?.type === "error"
       ? "bg-red-50 text-red-700"
       : feedback?.type === "success"
-        ? "bg-green-50 text-green-700"
-        : "bg-amber-50 text-amber-800";
+        ? "bg-sage-soft text-sage-deep"
+        : "bg-cream text-signal-deep";
   const fbLabel =
     feedback?.type === "error" ? "İşlem geri alındı: " : feedback?.type === "success" ? "" : "Uyarı: ";
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-        <h2 className="text-xl font-semibold tracking-tight text-slate-900">Vardiya Çizelgesi</h2>
+      {/* Sayfa başlığı zaten "Vardiya Çizelgesi — {şube}" — burada tekrar etme (çift başlık kusuru).
+          Solda taslak durumu, sağda tek birincil eylem. */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-2">
+        <p className="text-sm text-muted">
+          {draftCount > 0
+            ? `${draftCount} taslak vardiya henüz yayınlanmadı.`
+            : "Tüm vardiyalar yayında."}
+        </p>
         <button
           onClick={onPublishWeek}
           disabled={publishing || draftCount === 0}
-          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="rounded-lg bg-signal px-4 py-2 text-sm font-bold text-ink shadow-card transition-colors hover:bg-signal-deep hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           {publishing ? "Yayınlanıyor…" : `Haftayı Yayınla${draftCount ? ` (${draftCount} taslak)` : ""}`}
         </button>
       </div>
 
       {feedback && (
-        <div className={`flex items-start justify-between gap-3 rounded-md px-3 py-2 text-sm ${fbColor}`} role="status">
+        <div className={`flex items-start justify-between gap-3 rounded-lg px-3 py-2 text-sm ${fbColor}`} role="status">
           <span>
             <span className="font-medium">{fbLabel}</span>
             {feedback.text}
@@ -173,27 +179,32 @@ export default function ScheduleBoard({
               onDragOver={(e) => { e.preventDefault(); if (overDay !== day.iso) setOverDay(day.iso); }}
               onDragLeave={() => setOverDay((d) => (d === day.iso ? null : d))}
               onDrop={() => onDropDay(day.iso)}
-              className={`min-h-[16rem] rounded-xl p-3 transition-all duration-200 ${
-                isOver ? "bg-slate-200/50 ring-2 ring-slate-300" : "bg-slate-50/50 border border-slate-100"
+              className={`min-h-[16rem] rounded-2xl border p-3 transition-all duration-200 ${
+                isOver ? "border-signal bg-cream ring-2 ring-signal/30" : "border-line bg-paper-deep/40"
               }`}
             >
-              <div className="mb-4 flex items-start justify-between px-1">
+              <div className="mb-3 flex items-start justify-between px-1">
                 <div>
-                  <div className="text-sm font-bold text-slate-900">{day.name}</div>
-                  <div className="text-xs font-medium text-slate-400">{day.label}</div>
+                  <div className="font-display text-sm font-bold text-ink">{day.name}</div>
+                  <div className="text-xs font-medium text-faint">{day.label}</div>
                 </div>
                 <button
                   onClick={() => setModalDay(day.iso)}
-                  className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200/50 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-900"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-line bg-surface text-muted shadow-card transition-colors hover:border-signal hover:text-signal-deep"
                   title="Yeni vardiya ekle"
                   aria-label="Yeni vardiya"
                 >
-                  <span className="text-sm leading-none">+</span>
+                  <span className="text-base leading-none">+</span>
                 </button>
               </div>
               <div className="space-y-3">
                 {dayShifts.length === 0 ? (
-                  <div className="py-6 text-center text-xs font-medium text-slate-300">Vardiya yok</div>
+                  <button
+                    onClick={() => setModalDay(day.iso)}
+                    className="w-full rounded-xl border border-dashed border-line-strong py-6 text-center text-xs font-medium text-faint transition-colors hover:border-signal hover:text-signal-deep"
+                  >
+                    + Vardiya ekle
+                  </button>
                 ) : (
                   dayShifts.map((s) => (
                     <div key={s.id} className="relative">
@@ -214,16 +225,16 @@ export default function ScheduleBoard({
 
                       {assigningId === s.id && (
                         <div
-                          className="absolute left-0 right-0 top-full z-10 mt-1.5 space-y-3 rounded-xl border border-slate-200 bg-white p-3 shadow-xl ring-1 ring-slate-900/5"
+                          className="absolute left-0 right-0 top-full z-10 mt-1.5 space-y-3 rounded-xl border border-line bg-surface p-3 shadow-float"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <div>
-                            <label className="mb-1.5 block text-xs font-semibold text-slate-700">Kişi ata</label>
+                            <label className="mb-1.5 block text-xs font-semibold text-ink">Kişi ata</label>
                             <select
                               autoFocus
                               defaultValue={s.userId ?? ""}
                               onChange={(e) => onAssign(s, e.target.value)}
-                              className="w-full rounded-lg border border-slate-300 bg-slate-50 px-2 py-1.5 text-xs text-slate-900 outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-500 transition-colors"
+                              className="w-full rounded-lg border border-line-strong bg-paper px-2 py-2 text-xs text-ink outline-none transition-colors focus:border-signal"
                             >
                               <option value="">Açık vardiya (atama yok)</option>
                               {staff.map((m) => (
@@ -235,7 +246,7 @@ export default function ScheduleBoard({
                           </div>
                           <button
                             onClick={() => onDelete(s)}
-                            className="w-full rounded-lg bg-red-50 px-2 py-1.5 text-xs font-semibold text-red-600 transition-colors hover:bg-red-100"
+                            className="w-full rounded-lg bg-red-50 px-2 py-2 text-xs font-semibold text-red-700 transition-colors hover:bg-red-100"
                           >
                             Vardiyayı Sil
                           </button>

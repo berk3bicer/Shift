@@ -4,9 +4,9 @@ export const STATUS_ORDER = [0, 1, 2]; // ToDo, InProgress, Done
 
 export const PRIORITY_LABEL = ["Düşük", "Orta", "Yüksek", "Acil"];
 export const PRIORITY_BADGE = [
-  "bg-gray-100 text-gray-600",
-  "bg-blue-100 text-blue-700",
-  "bg-orange-100 text-orange-700",
+  "bg-paper-deep text-muted",
+  "bg-cream text-signal-deep",
+  "bg-terra-soft text-terra",
   "bg-red-100 text-red-700",
 ];
 

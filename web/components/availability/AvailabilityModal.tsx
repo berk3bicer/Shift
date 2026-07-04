@@ -70,18 +70,18 @@ export default function AvailabilityModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm transition-opacity" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4 backdrop-blur-sm transition-opacity" onClick={onClose}>
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={onSubmit}
-        className="w-full max-w-md space-y-6 rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-slate-900/5 animate-in fade-in zoom-in-95 duration-200"
+        className="w-full max-w-md space-y-6 rounded-2xl bg-surface p-6 shadow-float ring-1 ring-ink/5 animate-in fade-in zoom-in-95 duration-200"
       >
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold tracking-tight text-slate-900">Müsaitlik Ekle</h2>
-            <p className="text-sm text-slate-500 mt-1">Personelin düzenli olarak çalışamayacağı saatleri (kısıtları) girin.</p>
+            <h2 className="font-display text-xl font-bold text-ink">Müsaitlik Ekle</h2>
+            <p className="text-sm text-muted mt-1">Personelin düzenli olarak çalışamayacağı saatleri (kısıtları) girin.</p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+          <button type="button" onClick={onClose} className="rounded-full p-1.5 text-faint hover:bg-paper-deep hover:text-ink transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -90,11 +90,11 @@ export default function AvailabilityModal({
 
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-slate-700">Personel</label>
+            <label className="text-sm font-semibold text-muted">Personel</label>
             <select
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-all cursor-pointer"
+              className="w-full rounded-xl border border-line-strong bg-surface px-3 py-2.5 text-sm text-ink focus:border-signal focus:outline-none focus:ring-2 focus:ring-signal/20 transition-all cursor-pointer"
             >
               {staff.map((m) => (
                 <option key={m.id} value={m.id}>
@@ -105,11 +105,11 @@ export default function AvailabilityModal({
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-slate-700">Haftanın Günü</label>
+            <label className="text-sm font-semibold text-muted">Haftanın Günü</label>
             <select
               value={dayOfWeek}
               onChange={(e) => setDayOfWeek(Number(e.target.value))}
-              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-all cursor-pointer"
+              className="w-full rounded-xl border border-line-strong bg-surface px-3 py-2.5 text-sm text-ink focus:border-signal focus:outline-none focus:ring-2 focus:ring-signal/20 transition-all cursor-pointer"
             >
               {DAY_LABELS.map((day, idx) => (
                 <option key={idx} value={idx}>{day}</option>
@@ -119,42 +119,42 @@ export default function AvailabilityModal({
 
           <div className="flex gap-4">
             <div className="flex-1 space-y-1.5">
-              <label className="text-sm font-semibold text-slate-700">Başlangıç Saati</label>
+              <label className="text-sm font-semibold text-muted">Başlangıç Saati</label>
               <input
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-all cursor-pointer"
+                className="w-full rounded-xl border border-line-strong bg-surface px-3 py-2 text-sm text-ink focus:border-signal focus:outline-none focus:ring-2 focus:ring-signal/20 transition-all cursor-pointer"
               />
             </div>
             <div className="flex-1 space-y-1.5">
-              <label className="text-sm font-semibold text-slate-700">Bitiş Saati</label>
+              <label className="text-sm font-semibold text-muted">Bitiş Saati</label>
               <input
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-all cursor-pointer"
+                className="w-full rounded-xl border border-line-strong bg-surface px-3 py-2 text-sm text-ink focus:border-signal focus:outline-none focus:ring-2 focus:ring-signal/20 transition-all cursor-pointer"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-slate-700">Sebep (Opsiyonel)</label>
+            <label className="text-sm font-semibold text-muted">Sebep (Opsiyonel)</label>
             <input
               type="text"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Örn: Okul, Kurs, Başka iş..."
-              className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-all"
+              className="w-full rounded-xl border border-line-strong px-4 py-2.5 text-sm text-ink placeholder:text-faint focus:border-signal focus:outline-none focus:ring-2 focus:ring-signal/20 transition-all"
             />
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-          <button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors">
+        <div className="flex justify-end gap-3 pt-4 border-t border-line">
+          <button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted hover:bg-paper-deep transition-colors">
             Vazgeç
           </button>
-          <button type="submit" disabled={saving} className="rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+          <button type="submit" disabled={saving} className="rounded-xl bg-signal px-6 py-2.5 text-sm font-bold text-ink shadow-card hover:bg-signal-deep hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal transition-all disabled:opacity-60 disabled:cursor-not-allowed">
             {saving ? "Kaydediliyor..." : "Kaydet"}
           </button>
         </div>

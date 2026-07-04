@@ -62,32 +62,32 @@ export default function StaffClock({
 
   return (
     <div className="space-y-5">
-      {error && <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
+      {error && <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
 
       {/* Durum + aksiyon */}
-      <div className="rounded-xl border border-gray-200 bg-white p-5 text-center shadow-sm">
+      <div className="rounded-xl border border-line bg-surface p-5 text-center shadow-card">
         {open ? (
           <>
-            <p className="text-sm text-gray-500">İçeridesin</p>
-            <p className="mt-1 text-2xl font-semibold text-gray-900">
+            <p className="text-sm text-muted">İçeridesin</p>
+            <p className="mt-1 text-2xl font-semibold text-ink">
               {formatTime(open.checkInTime)}
             </p>
-            <p className="mt-0.5 text-xs text-gray-400">girişinden beri</p>
+            <p className="mt-0.5 text-xs text-faint">girişinden beri</p>
             <button
               onClick={doClockOut}
               disabled={busy}
-              className="mt-4 w-full rounded-md bg-rose-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-rose-700 disabled:opacity-60"
+              className="mt-4 w-full rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-60"
             >
               {busy ? "…" : "Çıkış Yap"}
             </button>
           </>
         ) : (
           <>
-            <p className="text-sm text-gray-500">Şu an dışarıdasın</p>
+            <p className="text-sm text-muted">Şu an dışarıdasın</p>
             <button
               onClick={doClockIn}
               disabled={busy}
-              className="mt-4 w-full rounded-md bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
+              className="mt-4 w-full rounded-lg bg-sage-deep px-4 py-2.5 text-sm font-semibold text-white hover:bg-sage disabled:opacity-60"
             >
               {busy ? "…" : "Giriş Yap"}
             </button>
@@ -97,22 +97,22 @@ export default function StaffClock({
 
       {/* Geçmiş */}
       <div className="space-y-2">
-        <h2 className="text-sm font-semibold text-gray-900">Son Kayıtlar</h2>
+        <h2 className="font-display text-sm font-bold text-ink">Son Kayıtlar</h2>
         {history.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-gray-200 bg-white p-4 text-center text-xs text-gray-500">
+          <p className="rounded-xl border border-dashed border-line bg-surface p-4 text-center text-xs text-muted">
             Henüz tamamlanmış puantaj kaydın yok.
           </p>
         ) : (
           <ul className="space-y-2">
             {history.map((r) => (
-              <li key={r.id} className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
+              <li key={r.id} className="flex items-center justify-between rounded-xl border border-line bg-surface p-3 shadow-card">
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-ink">
                     {r.checkInTime.slice(8, 10)}.{r.checkInTime.slice(5, 7)} • {formatTime(r.checkInTime)}–{r.checkOutTime ? formatTime(r.checkOutTime) : "…"}
                   </p>
-                  {r.isLate && <p className="text-[11px] font-semibold text-amber-600">Geç giriş</p>}
+                  {r.isLate && <p className="text-[11px] font-semibold text-signal-deep">Geç giriş</p>}
                 </div>
-                <span className="text-xs font-medium text-gray-500">{fmtDur(r.workedMinutes)}</span>
+                <span className="text-xs font-medium text-muted">{fmtDur(r.workedMinutes)}</span>
               </li>
             ))}
           </ul>

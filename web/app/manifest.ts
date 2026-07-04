@@ -9,8 +9,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Kafe/restoran vardiya ve operasyon uygulaması",
     start_url: "/",
     display: "standalone",
-    background_color: "#f9fafb",
-    theme_color: "#4f46e5",
+    background_color: "#faf7f2",
+    theme_color: "#f59e0b",
     lang: "tr",
     icons: [
       { src: "/icon-192x192.png", sizes: "192x192", type: "image/png", purpose: "any" },

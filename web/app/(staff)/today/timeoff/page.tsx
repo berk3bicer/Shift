@@ -10,7 +10,7 @@ export default async function StaffTimeOffPage() {
 
   return (
     <div className="space-y-4">
-      <Link href="/today" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900">
+      <Link href="/today" className="inline-flex items-center gap-1 text-sm text-muted hover:text-ink">
         <ChevronLeft className="h-4 w-4" /> Bugün
       </Link>
       <StaffTimeOff userId={me.userId} initialRequests={requests} />

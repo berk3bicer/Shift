@@ -68,22 +68,22 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+    <main className="flex min-h-screen items-center justify-center bg-paper p-4">
       <form
         onSubmit={onSubmit}
-        className="w-full max-w-sm space-y-5 rounded-xl border border-gray-200 bg-white p-8 shadow-sm"
+        className="w-full max-w-sm space-y-5 rounded-xl border border-line bg-surface p-8 shadow-card"
       >
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Shift</h1>
-          <p className="text-sm text-gray-500">İşletmeni kaydet, birkaç dakikada kur.</p>
+          <h1 className="font-display text-xl font-bold text-ink">Shift<span className="text-signal">.</span></h1>
+          <p className="text-sm text-muted">İşletmeni kaydet, birkaç dakikada kur.</p>
         </div>
 
         {error && (
-          <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
+          <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
         )}
 
         <div className="space-y-1">
-          <label htmlFor="businessName" className="text-sm font-medium text-gray-700">
+          <label htmlFor="businessName" className="text-sm font-medium text-muted">
             İşletme adı
           </label>
           <input
@@ -93,20 +93,20 @@ export default function RegisterPage() {
             maxLength={150}
             value={businessName}
             onChange={(e) => setBusinessName(e.target.value)}
-            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-gray-900 placeholder:text-gray-400"
+            className="w-full rounded-lg border border-line-strong bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-signal placeholder:text-faint"
             placeholder="Berke Kahve"
           />
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="businessType" className="text-sm font-medium text-gray-700">
+          <label htmlFor="businessType" className="text-sm font-medium text-muted">
             İşletme tipi
           </label>
           <select
             id="businessType"
             value={businessType}
             onChange={(e) => setBusinessType(Number(e.target.value))}
-            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-gray-900"
+            className="w-full rounded-lg border border-line-strong bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-signal"
           >
             {BUSINESS_TYPES.map((t) => (
               <option key={t.value} value={t.value}>
@@ -117,7 +117,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="fullName" className="text-sm font-medium text-gray-700">
+          <label htmlFor="fullName" className="text-sm font-medium text-muted">
             Ad soyad
           </label>
           <input
@@ -127,13 +127,13 @@ export default function RegisterPage() {
             maxLength={150}
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-gray-900 placeholder:text-gray-400"
+            className="w-full rounded-lg border border-line-strong bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-signal placeholder:text-faint"
             placeholder="Berke Biçer"
           />
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="email" className="text-sm font-medium text-gray-700">
+          <label htmlFor="email" className="text-sm font-medium text-muted">
             E-posta
           </label>
           <input
@@ -142,13 +142,13 @@ export default function RegisterPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-gray-900 placeholder:text-gray-400"
+            className="w-full rounded-lg border border-line-strong bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-signal placeholder:text-faint"
             placeholder="ornek@kafe.com"
           />
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="password" className="text-sm font-medium text-gray-700">
+          <label htmlFor="password" className="text-sm font-medium text-muted">
             Şifre
           </label>
           <input
@@ -158,7 +158,7 @@ export default function RegisterPage() {
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-gray-900 placeholder:text-gray-400"
+            className="w-full rounded-lg border border-line-strong bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-signal placeholder:text-faint"
             placeholder="En az 8 karakter"
           />
         </div>
@@ -166,14 +166,14 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-60"
+          className="w-full rounded-lg bg-signal px-4 py-2.5 text-sm font-bold text-ink shadow-card transition-colors hover:bg-signal-deep hover:text-white disabled:opacity-60"
         >
           {loading ? "Kayıt oluşturuluyor…" : "Kayıt ol"}
         </button>
 
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-muted">
           Zaten hesabın var mı?{" "}
-          <Link href="/login" className="font-medium text-gray-900 hover:underline">
+          <Link href="/login" className="font-semibold text-signal-deep hover:underline">
             Giriş yap
           </Link>
         </p>

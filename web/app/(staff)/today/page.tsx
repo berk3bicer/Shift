@@ -24,23 +24,23 @@ export default function StaffTodayPage() {
   return (
     <div className="space-y-4">
       <InstallHint />
-      <h1 className="text-xl font-semibold text-gray-900">Bugün</h1>
+      <h1 className="font-display text-xl font-bold text-ink">Bugün</h1>
       <div className="grid grid-cols-2 gap-3">
         {CARDS.map((c) => {
           const Icon = c.icon;
           const inner = (
             <>
               <div className="flex items-center justify-between">
-                <Icon className="h-6 w-6 text-indigo-600" />
+                <Icon className="h-6 w-6 text-signal-deep" />
                 {!c.ready && (
-                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-400">
+                  <span className="rounded-full bg-paper-deep px-2 py-0.5 text-[10px] font-medium text-faint">
                     yakında
                   </span>
                 )}
               </div>
               <div className="mt-3">
-                <p className="text-sm font-semibold text-gray-900">{c.title}</p>
-                <p className="mt-0.5 text-xs text-gray-500">{c.desc}</p>
+                <p className="text-sm font-semibold text-ink">{c.title}</p>
+                <p className="mt-0.5 text-xs text-muted">{c.desc}</p>
               </div>
             </>
           );
@@ -48,7 +48,7 @@ export default function StaffTodayPage() {
             <Link
               key={c.href}
               href={c.href}
-              className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-colors hover:border-indigo-300 hover:bg-indigo-50/30"
+              className="rounded-xl border border-line bg-surface p-4 shadow-card transition-colors hover:border-signal hover:bg-cream"
             >
               {inner}
             </Link>
@@ -56,7 +56,7 @@ export default function StaffTodayPage() {
             <div
               key={c.href}
               aria-disabled
-              className="cursor-not-allowed rounded-xl border border-gray-200 bg-white p-4 opacity-60"
+              className="cursor-not-allowed rounded-xl border border-line bg-surface p-4 opacity-60"
             >
               {inner}
             </div>

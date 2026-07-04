@@ -11,7 +11,7 @@ export default async function TasksPage() {
   // Demo amaçlı ilk şubeyi alıyoruz
   const branches = await getBranches();
   if (branches.length === 0) {
-    return <div className="p-4 text-rose-500">Önce bir şube eklemelisiniz.</div>;
+    return <div className="p-4 text-red-500">Önce bir şube eklemelisiniz.</div>;
   }
   
   const branch = (await selectBranch(branches))!;

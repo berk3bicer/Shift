@@ -132,25 +132,25 @@ export default function PayrollBoard({
       {/* Header and Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Bordro Onayı (Timesheets)</h1>
-          <p className="text-sm text-slate-500">Personelin puantajlarını tek bir ekrandan inceleyin ve dönemi toplu olarak kilitleyin.</p>
+          <h1 className="font-display text-2xl font-bold text-ink">Bordro Onayı (Timesheets)</h1>
+          <p className="text-sm text-muted">Personelin puantajlarını tek bir ekrandan inceleyin ve dönemi toplu olarak kilitleyin.</p>
         </div>
         
-        <div className="flex items-center gap-4 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+        <div className="flex items-center gap-4 bg-surface p-2 rounded-xl border border-line shadow-card">
           <div className="flex items-center gap-2 pl-2">
-            <span className="text-sm font-semibold text-slate-700">Dönem:</span>
+            <span className="text-sm font-semibold text-muted">Dönem:</span>
             <input
               type="month"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="rounded-lg border-none bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-slate-500"
+              className="rounded-lg border-none bg-paper-deep px-3 py-1.5 text-sm font-medium text-muted outline-none focus:ring-2 focus:ring-signal"
             />
           </div>
-          <div className="h-6 w-px bg-slate-200"></div>
+          <div className="h-6 w-px bg-paper-deep"></div>
           <button
             onClick={handleBulkClose}
             disabled={loading === "bulk-close" || isAllLocked}
-            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="flex items-center gap-2 rounded-lg bg-sage-deep px-5 py-2 text-sm font-semibold text-white shadow-card hover:bg-sage disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {loading === "bulk-close" ? (
               <Calculator className="h-4 w-4 animate-spin" />
@@ -165,7 +165,7 @@ export default function PayrollBoard({
           <button
             onClick={handleExportCsv}
             disabled={!gridData.some(r => r.record?.isLocked)}
-            className="flex items-center gap-2 rounded-lg bg-slate-800 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="flex items-center gap-2 rounded-lg bg-ink px-5 py-2 text-sm font-semibold text-white shadow-card hover:bg-ink-soft disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             title="Sadece kilitli kayıtları dışa aktarır"
           >
             <Download className="h-4 w-4" />
@@ -181,82 +181,82 @@ export default function PayrollBoard({
       )}
 
       {success && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-800 flex items-center gap-2">
+        <div className="rounded-xl border border-sage/40 bg-sage-soft p-4 text-sm font-medium text-sage-deep flex items-center gap-2">
           <FileCheck2 className="h-4 w-4" /> {success}
         </div>
       )}
 
       {/* Main Master-List Grid */}
-      <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+      <div className="rounded-2xl border border-line bg-surface overflow-hidden shadow-card">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-600">
-            <thead className="border-b border-slate-200 bg-slate-50/80 text-xs font-semibold uppercase text-slate-500">
+          <table className="w-full text-left text-sm text-muted">
+            <thead className="border-b border-line bg-paper text-xs font-semibold uppercase text-muted">
               <tr>
                 <th className="px-6 py-4">Personel</th>
                 <th className="px-6 py-4">Dönem</th>
                 <th className="px-6 py-4 text-right">Normal Saat</th>
                 <th className="px-6 py-4 text-right">Fazla Mesai</th>
-                <th className="px-6 py-4 text-right font-bold text-slate-900">Toplam Saat</th>
+                <th className="px-6 py-4 text-right font-bold text-ink">Toplam Saat</th>
                 <th className="px-6 py-4 text-right">Brüt Tutar</th>
                 <th className="px-6 py-4 text-center">Durum</th>
                 <th className="px-6 py-4 text-right">İşlem</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-line">
               {gridData.map((row) => (
-                <tr key={row.staff.id} className="hover:bg-slate-50/50 transition-colors">
+                <tr key={row.staff.id} className="hover:bg-paper transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-paper-deep text-muted">
                         <UserRound className="h-4 w-4" />
                       </div>
-                      <span className="font-semibold text-slate-900">{row.staff.fullName}</span>
+                      <span className="font-semibold text-ink">{row.staff.fullName}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-xs font-medium text-slate-500">
+                  <td className="px-6 py-4 text-xs font-medium text-muted">
                     {new Date(periodStart).toLocaleDateString('tr-TR', { month: 'short' })}
                   </td>
-                  <td className="px-6 py-4 text-right font-medium text-slate-700">
-                    {row.record ? `${row.record.normalHours}s` : <span className="text-slate-300">-</span>}
+                  <td className="px-6 py-4 text-right font-medium text-muted">
+                    {row.record ? `${row.record.normalHours}s` : <span className="text-faint">-</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
                     {row.record && row.record.overtimeHours > 0 ? (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-bold text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                      <span className="inline-flex items-center gap-1 rounded-lg bg-cream px-2 py-1 text-xs font-bold text-signal-deep ring-1 ring-inset ring-signal/30">
                         {row.record.overtimeHours}s
                       </span>
                     ) : row.record ? (
-                      <span className="text-slate-400">0s</span>
+                      <span className="text-faint">0s</span>
                     ) : (
-                      <span className="text-slate-300">-</span>
+                      <span className="text-faint">-</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-right font-bold text-slate-900">
-                    {row.record ? `${row.record.totalHours}s` : <span className="text-slate-300">-</span>}
+                  <td className="px-6 py-4 text-right font-bold text-ink">
+                    {row.record ? `${row.record.totalHours}s` : <span className="text-faint">-</span>}
                   </td>
                   <td className="px-6 py-4 text-right font-medium">
                     {row.record ? (
                       row.record.grossAmount !== null ? (
-                        <span className="text-slate-900">{row.record.grossAmount.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</span>
+                        <span className="text-ink">{row.record.grossAmount.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-xs text-rose-500 font-semibold" title="Personele saatlik ücret tanımlanmamış">
+                        <span className="inline-flex items-center gap-1 text-xs text-red-500 font-semibold" title="Personele saatlik ücret tanımlanmamış">
                           <AlertTriangle className="h-3 w-3" /> Ücret Yok
                         </span>
                       )
                     ) : (
-                      <span className="text-slate-300">-</span>
+                      <span className="text-faint">-</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-center">
                     {!row.record ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-500">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-paper-deep px-2.5 py-1 text-xs font-bold text-muted">
                         Hesaplanmadı
                       </span>
                     ) : row.record.isLocked ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-sage-soft px-2.5 py-1 text-xs font-bold text-sage-deep ring-1 ring-inset ring-sage/30">
                         <Lock className="h-3 w-3" /> Kilitli
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-cream px-2.5 py-1 text-xs font-bold text-signal-deep ring-1 ring-inset ring-signal/30">
                         <Unlock className="h-3 w-3" /> Düzeltmeye Açık
                       </span>
                     )}
@@ -266,25 +266,25 @@ export default function PayrollBoard({
                       <button
                         onClick={() => handleUnlock(row.record!.id)}
                         disabled={loading !== null}
-                        className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm hover:bg-slate-50 hover:text-amber-600 transition-all disabled:opacity-50"
+                        className="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-muted shadow-card hover:bg-paper hover:text-signal-deep transition-all disabled:opacity-50"
                       >
                         {loading === `unlock-${row.record.id}` ? <Unlock className="h-3 w-3 animate-spin" /> : <Unlock className="h-3 w-3" />}
                         Kilidi Aç
                       </button>
                     )}
                     {!row.record?.isLocked && row.record && (
-                      <span className="text-xs text-slate-400 italic">Kapatma Bekliyor</span>
+                      <span className="text-xs text-faint italic">Kapatma Bekliyor</span>
                     )}
                   </td>
                 </tr>
               ))}
             </tbody>
-            <tfoot className="border-t-2 border-slate-200 bg-slate-50/50">
+            <tfoot className="border-t-2 border-line bg-paper">
               <tr>
-                <td colSpan={2} className="px-6 py-4 font-bold text-slate-900 text-right">Aylık Toplam:</td>
-                <td className="px-6 py-4 text-right font-bold text-slate-700">{totalNormal}s</td>
-                <td className="px-6 py-4 text-right font-bold text-amber-700">{totalOvertime}s</td>
-                <td className="px-6 py-4 text-right font-bold text-slate-900 text-lg">{totalGrand}s</td>
+                <td colSpan={2} className="px-6 py-4 font-bold text-ink text-right">Aylık Toplam:</td>
+                <td className="px-6 py-4 text-right font-bold text-muted">{totalNormal}s</td>
+                <td className="px-6 py-4 text-right font-bold text-signal-deep">{totalOvertime}s</td>
+                <td className="px-6 py-4 text-right font-bold text-ink text-lg">{totalGrand}s</td>
                 <td colSpan={3}></td>
               </tr>
             </tfoot>

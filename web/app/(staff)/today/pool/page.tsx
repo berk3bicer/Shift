@@ -22,10 +22,10 @@ export default async function StaffPoolPage() {
 
   return (
     <div className="space-y-4">
-      <Link href="/today" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900">
+      <Link href="/today" className="inline-flex items-center gap-1 text-sm text-muted hover:text-ink">
         <ChevronLeft className="h-4 w-4" /> Bugün
       </Link>
-      <h1 className="text-xl font-semibold text-gray-900">Vardiya Havuzu</h1>
+      <h1 className="font-display text-xl font-bold text-ink">Vardiya Havuzu</h1>
       <StaffPool offerable={offerable} pool={pool} myName={me.name} />
     </div>
   );

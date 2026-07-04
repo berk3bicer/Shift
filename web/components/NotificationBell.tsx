@@ -37,7 +37,7 @@ export default function NotificationBell({ initialNotifications }: { initialNoti
         // Rollback on fail silently
       }
     }
-    
+
     setIsOpen(false);
 
     const target = NOTIFICATION_META[notif.type]?.href;
@@ -48,54 +48,55 @@ export default function NotificationBell({ initialNotifications }: { initialNoti
 
   return (
     <div className="relative">
-      <button 
+      <button
         onClick={handleOpen}
-        className="relative p-2 text-gray-600 hover:text-gray-900 focus:outline-none transition-colors rounded-full hover:bg-gray-100"
+        aria-label="Bildirimler"
+        className="relative flex h-11 w-11 items-center justify-center rounded-full text-muted transition-colors hover:bg-paper-deep hover:text-ink focus:outline-none"
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500 border border-white"></span>
+          <span className="absolute right-2 top-2 flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-75"></span>
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full border border-surface bg-signal-deep"></span>
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
-          <div className="p-3 border-b border-gray-100 flex justify-between items-center bg-slate-50">
-            <h3 className="text-sm font-bold text-gray-900">Bildirimler</h3>
+        <div className="absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-xl border border-line bg-surface shadow-float">
+          <div className="flex items-center justify-between border-b border-line bg-paper p-3">
+            <h3 className="text-sm font-bold text-ink">Bildirimler</h3>
             {unreadCount > 0 && (
-              <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-semibold">
+              <span className="rounded-full bg-cream px-2 py-0.5 text-xs font-semibold text-signal-deep">
                 {unreadCount} yeni
               </span>
             )}
           </div>
-          
+
           <div className="max-h-[300px] overflow-y-auto">
             {notifications.length === 0 ? (
-              <div className="p-6 text-center text-sm text-gray-500">
+              <div className="p-6 text-center text-sm text-muted">
                 Hiç bildiriminiz yok.
               </div>
             ) : (
-              <div className="divide-y divide-gray-50">
+              <div className="divide-y divide-line">
                 {notifications.map(notif => (
                   <button
                     key={notif.id}
                     onClick={() => handleNotificationClick(notif)}
-                    className={`w-full text-left p-4 hover:bg-slate-50 transition-colors flex gap-3 ${!notif.isRead ? 'bg-indigo-50/30' : ''}`}
+                    className={`flex w-full gap-3 p-4 text-left transition-colors hover:bg-paper ${!notif.isRead ? 'bg-cream/50' : ''}`}
                   >
                     {!notif.isRead && (
-                      <div className="mt-1.5 w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0" />
+                      <div className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-signal" />
                     )}
                     <div className={!notif.isRead ? 'ml-0' : 'ml-5'}>
-                      <p className={`text-sm ${!notif.isRead ? 'font-bold text-gray-900' : 'font-medium text-gray-700'}`}>
+                      <p className={`text-sm ${!notif.isRead ? 'font-bold text-ink' : 'font-medium text-muted'}`}>
                         {NOTIFICATION_META[notif.type]?.label ?? "Bildirim"}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                      <p className="mt-1 line-clamp-2 text-xs text-muted">
                         {notif.message}
                       </p>
-                      <p className="text-[10px] text-gray-400 mt-2 font-semibold">
+                      <p className="mt-2 text-[10px] font-semibold text-faint">
                         {new Date(notif.createdAt).toLocaleDateString("tr-TR", { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>

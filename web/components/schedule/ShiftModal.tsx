@@ -73,29 +73,29 @@ export default function ShiftModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
       onClick={onClose}
     >
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={onSubmit}
-        className="w-full max-w-sm space-y-4 rounded-xl bg-white p-6 shadow-xl"
+        className="w-full max-w-sm space-y-4 rounded-2xl border border-line bg-surface p-6 shadow-float"
       >
         <div className="flex items-baseline justify-between">
-          <h2 className="text-base font-semibold text-gray-900">Yeni Vardiya</h2>
-          <span className="text-xs text-gray-400">{dayIso}</span>
+          <h2 className="font-display text-base font-bold text-ink">Yeni Vardiya</h2>
+          <span className="font-mono text-xs text-faint">{dayIso}</span>
         </div>
 
         {error && (
-          <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
+          <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
         )}
 
         <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700">Pozisyon</label>
+          <label className="text-sm font-medium text-ink">Pozisyon</label>
           <select
             value={positionId}
             onChange={(e) => setPositionId(e.target.value)}
-            className="w-full rounded-md border border-gray-300 bg-white px-2 py-2 text-sm text-slate-900 outline-none focus:border-gray-900"
+            className="w-full rounded-lg border border-line-strong bg-surface px-2 py-2 text-sm text-ink outline-none focus:border-signal"
           >
             {positions.map((p) => (
               <option key={p.id} value={p.id}>{p.name}</option>
@@ -105,31 +105,31 @@ export default function ShiftModal({
 
         <div className="flex gap-3">
           <div className="flex-1 space-y-1">
-            <label className="text-sm font-medium text-gray-700">Başlangıç</label>
+            <label className="text-sm font-medium text-ink">Başlangıç</label>
             <input
               type="time"
               value={start}
               onChange={(e) => setStart(e.target.value)}
-              className="w-full rounded-md border border-gray-300 bg-white px-2 py-2 text-sm text-slate-900 outline-none focus:border-gray-900"
+              className="w-full rounded-lg border border-line-strong bg-surface px-2 py-2 text-sm text-ink outline-none focus:border-signal"
             />
           </div>
           <div className="flex-1 space-y-1">
-            <label className="text-sm font-medium text-gray-700">Bitiş</label>
+            <label className="text-sm font-medium text-ink">Bitiş</label>
             <input
               type="time"
               value={end}
               onChange={(e) => setEnd(e.target.value)}
-              className="w-full rounded-md border border-gray-300 bg-white px-2 py-2 text-sm text-slate-900 outline-none focus:border-gray-900"
+              className="w-full rounded-lg border border-line-strong bg-surface px-2 py-2 text-sm text-ink outline-none focus:border-signal"
             />
           </div>
         </div>
 
         <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700">Kişi</label>
+          <label className="text-sm font-medium text-ink">Kişi</label>
           <select
             value={userId}
             onChange={(e) => setUserId(e.target.value)}
-            className="w-full rounded-md border border-gray-300 bg-white px-2 py-2 text-sm text-slate-900 outline-none focus:border-gray-900"
+            className="w-full rounded-lg border border-line-strong bg-surface px-2 py-2 text-sm text-ink outline-none focus:border-signal"
           >
             <option value="">Açık vardiya (atama yok)</option>
             {staff.map((m) => (
@@ -144,14 +144,14 @@ export default function ShiftModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100"
+            className="rounded-lg border border-line-strong px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-paper-deep hover:text-ink"
           >
             Vazgeç
           </button>
           <button
             type="submit"
             disabled={saving}
-            className="rounded-md bg-gray-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-60"
+            className="rounded-lg bg-signal px-4 py-2 text-sm font-bold text-ink shadow-card transition-colors hover:bg-signal-deep hover:text-white disabled:opacity-60"
           >
             {saving ? "Ekleniyor…" : "Ekle"}
           </button>

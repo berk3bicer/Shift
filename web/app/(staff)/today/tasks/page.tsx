@@ -9,10 +9,10 @@ export default async function StaffTasksPage() {
 
   return (
     <div className="space-y-4">
-      <Link href="/today" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900">
+      <Link href="/today" className="inline-flex items-center gap-1 text-sm text-muted hover:text-ink">
         <ChevronLeft className="h-4 w-4" /> Bugün
       </Link>
-      <h1 className="text-xl font-semibold text-gray-900">Görevlerim</h1>
+      <h1 className="font-display text-xl font-bold text-ink">Görevlerim</h1>
       <StaffTasks initialTasks={tasks} />
     </div>
   );

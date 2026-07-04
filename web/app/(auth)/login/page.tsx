@@ -39,22 +39,22 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+    <main className="flex min-h-screen items-center justify-center bg-paper p-4">
       <form
         onSubmit={onSubmit}
-        className="w-full max-w-sm space-y-5 rounded-xl border border-gray-200 bg-white p-8 shadow-sm"
+        className="w-full max-w-sm space-y-5 rounded-xl border border-line bg-surface p-8 shadow-card"
       >
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Shift</h1>
-          <p className="text-sm text-gray-500">Yönetici girişi</p>
+          <h1 className="font-display text-xl font-bold text-ink">Shift<span className="text-signal">.</span></h1>
+          <p className="text-sm text-muted">Yönetici girişi</p>
         </div>
 
         {error && (
-          <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
+          <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
         )}
 
         <div className="space-y-1">
-          <label htmlFor="email" className="text-sm font-medium text-gray-700">
+          <label htmlFor="email" className="text-sm font-medium text-muted">
             E-posta
           </label>
           <input
@@ -63,13 +63,13 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-gray-900 placeholder:text-gray-400"
+            className="w-full rounded-lg border border-line-strong bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-signal placeholder:text-faint"
             placeholder="ornek@kafe.com"
           />
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="password" className="text-sm font-medium text-gray-700">
+          <label htmlFor="password" className="text-sm font-medium text-muted">
             Şifre
           </label>
           <input
@@ -78,7 +78,7 @@ export default function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-gray-900 placeholder:text-gray-400"
+            className="w-full rounded-lg border border-line-strong bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-signal placeholder:text-faint"
             placeholder="••••••••"
           />
         </div>
@@ -86,14 +86,14 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-60"
+          className="w-full rounded-lg bg-signal px-4 py-2.5 text-sm font-bold text-ink shadow-card transition-colors hover:bg-signal-deep hover:text-white disabled:opacity-60"
         >
           {loading ? "Giriş yapılıyor…" : "Giriş yap"}
         </button>
 
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-muted">
           Hesabın yok mu?{" "}
-          <Link href="/register" className="font-medium text-gray-900 hover:underline">
+          <Link href="/register" className="font-semibold text-signal-deep hover:underline">
             Kayıt ol
           </Link>
         </p>

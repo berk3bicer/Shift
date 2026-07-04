@@ -96,37 +96,37 @@ export default function ShiftNotesBoard({
       
       {/* Başlık Alanı */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Vardiya Defteri</h1>
-        <p className="mt-1 text-sm text-slate-500 flex items-center gap-2">
-          {branch.name} şubesi operasyonel handoff notları • {noteDate}
+        <h1 className="font-display text-2xl font-bold text-ink">Vardiya Defteri</h1>
+        <p className="mt-1 text-sm text-muted flex items-center gap-2">
+          {branch.name} — vardiya devir notları • {noteDate}
         </p>
       </div>
 
       {error && (
-        <div className="rounded-lg bg-rose-50 p-4 flex items-center gap-3 text-sm font-medium text-rose-800 border border-rose-200">
+        <div className="rounded-lg bg-red-50 p-4 flex items-center gap-3 text-sm font-medium text-red-800 border border-red-200">
           <AlertCircle className="h-5 w-5" />
           {error}
         </div>
       )}
 
       {/* Yeni Not Ekleme Alanı (En üstte) */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+      <div className="bg-surface rounded-xl shadow-card border border-line p-4">
         <form onSubmit={handleAddNote} className="flex flex-col gap-3">
           <textarea
             value={newContent}
             onChange={(e) => setNewContent(e.target.value)}
             placeholder="Bir sonraki vardiya veya ekip arkadaşlarınız için not bırakın..."
-            className="w-full rounded-lg border border-slate-300 bg-white text-slate-900 px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 min-h-[100px] resize-none placeholder:text-slate-400"
+            className="w-full rounded-lg border border-line-strong bg-surface text-ink px-4 py-3 text-sm focus:border-signal focus:outline-none focus:ring-1 focus:ring-signal min-h-[100px] resize-none placeholder:text-faint"
             required
           />
           <div className="flex justify-between items-center">
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-faint">
               Not: Yazılan notlar düzenlenemez. Yanlışsa silip yenisini ekleyin.
             </span>
             <button
               type="submit"
               disabled={isSubmitting || !newContent.trim()}
-              className="flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-indigo-500 transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 rounded-lg bg-signal px-6 py-2.5 text-sm font-bold text-ink hover:bg-signal-deep hover:text-white transition-colors disabled:opacity-50"
             >
               <Send className="h-4 w-4" />
               Not Bırak
@@ -138,8 +138,8 @@ export default function ShiftNotesBoard({
       {/* Akış (Feed) */}
       <div className="space-y-4 pt-4">
         {sortedNotes.length === 0 ? (
-          <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-10 text-center">
-            <p className="text-slate-500 font-medium">Bu tarihte henüz bir not bırakılmamış.</p>
+          <div className="bg-paper border-2 border-dashed border-line rounded-xl p-10 text-center">
+            <p className="text-muted font-medium">Bu tarihte henüz bir not bırakılmamış.</p>
           </div>
         ) : (
           sortedNotes.map(note => {
@@ -147,19 +147,19 @@ export default function ShiftNotesBoard({
             const canDelete = canDeleteAny || isMine;
 
             return (
-              <div key={note.id} className={`bg-white rounded-xl shadow-sm border ${isMine ? 'border-indigo-200' : 'border-slate-200'} p-5 relative group transition-all hover:shadow-md`}>
+              <div key={note.id} className={`bg-surface rounded-xl shadow-card border ${isMine ? 'border-signal/30' : 'border-line'} p-5 relative group transition-all hover:shadow-card`}>
                 
                 {/* Header */}
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex items-center gap-3">
-                    <div className={`h-8 w-8 rounded-full flex items-center justify-center font-bold text-xs ${isMine ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-700'}`}>
+                    <div className={`h-8 w-8 rounded-full flex items-center justify-center font-bold text-xs ${isMine ? 'bg-cream text-signal-deep' : 'bg-paper-deep text-muted'}`}>
                       {note.createdByUserName ? note.createdByUserName.charAt(0) : '?'}
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-slate-900">
+                      <h4 className="text-sm font-bold text-ink">
                         {note.createdByUserName ?? "Bilinmeyen kullanıcı"}
                       </h4>
-                      <div className="flex items-center gap-1 text-xs text-slate-500 mt-0.5">
+                      <div className="flex items-center gap-1 text-xs text-muted mt-0.5">
                         <Clock className="h-3 w-3" />
                         {new Date(note.createdAt).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}
                       </div>
@@ -170,7 +170,7 @@ export default function ShiftNotesBoard({
                   {canDelete && (
                     <button
                       onClick={() => handleDeleteNote(note.id)}
-                      className="text-slate-300 hover:text-rose-500 transition-colors p-2 rounded-md hover:bg-rose-50 opacity-0 group-hover:opacity-100 focus:opacity-100"
+                      className="text-faint hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-50 opacity-0 group-hover:opacity-100 focus:opacity-100"
                       title="Notu Sil"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -179,7 +179,7 @@ export default function ShiftNotesBoard({
                 </div>
 
                 {/* Content */}
-                <div className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed pl-11">
+                <div className="text-sm text-ink whitespace-pre-wrap leading-relaxed pl-11">
                   {note.content}
                 </div>
                 

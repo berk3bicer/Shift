@@ -129,18 +129,18 @@ export default function TasksBoard({
   };
 
   const columns: { id: number; label: string; bgColor: string }[] = [
-    { id: 0, label: "Yapılacak", bgColor: "bg-slate-100" },
-    { id: 1, label: "Devam Ediyor", bgColor: "bg-blue-50/50" },
-    { id: 2, label: "Tamamlandı", bgColor: "bg-emerald-50/50" },
+    { id: 0, label: "Yapılacak", bgColor: "bg-paper-deep" },
+    { id: 1, label: "Devam Ediyor", bgColor: "bg-paper" },
+    { id: 2, label: "Tamamlandı", bgColor: "bg-sage-soft/60" },
   ];
 
   const getPriorityLabel = (p: number) => {
     switch(p) {
-      case 0: return { label: "Düşük", color: "text-slate-600 bg-slate-100" };
-      case 1: return { label: "Orta", color: "text-amber-700 bg-amber-100" };
-      case 2: return { label: "Yüksek", color: "text-rose-700 bg-rose-100" };
+      case 0: return { label: "Düşük", color: "text-muted bg-paper-deep" };
+      case 1: return { label: "Orta", color: "text-signal-deep bg-cream" };
+      case 2: return { label: "Yüksek", color: "text-red-700 bg-red-100" };
       case 3: return { label: "Acil", color: "text-white bg-red-600" };
-      default: return { label: "Orta", color: "text-amber-700 bg-amber-100" };
+      default: return { label: "Orta", color: "text-signal-deep bg-cream" };
     }
   };
 
@@ -148,14 +148,14 @@ export default function TasksBoard({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Görev Panosu</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            {branch.name} şubesi için görev yönetimi
+          <h1 className="font-display text-2xl font-bold text-ink">Görev Panosu</h1>
+          <p className="mt-1 text-sm text-muted">
+            {branch.name} için görev yönetimi
           </p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 transition-colors"
+          className="flex items-center gap-2 rounded-lg bg-signal px-4 py-2 text-sm font-bold text-ink shadow-card hover:bg-signal-deep hover:text-white transition-colors"
         >
           <Plus className="h-4 w-4" />
           Yeni Görev
@@ -163,7 +163,7 @@ export default function TasksBoard({
       </div>
 
       {error && (
-        <div className="rounded-lg bg-rose-50 p-4 text-sm font-medium text-rose-800 border border-rose-200">
+        <div className="rounded-lg bg-red-50 p-4 text-sm font-medium text-red-800 border border-red-200">
           {error}
         </div>
       )}
@@ -173,13 +173,13 @@ export default function TasksBoard({
         {columns.map((col) => (
           <div
             key={col.id}
-            className={`flex flex-col rounded-xl border border-slate-200 ${col.bgColor}`}
+            className={`flex flex-col rounded-xl border border-line ${col.bgColor}`}
             onDragOver={handleDragOver}
             onDrop={(e) => handleDrop(e, col.id)}
           >
-            <div className="p-4 border-b border-slate-200/50 flex items-center justify-between bg-white/50 rounded-t-xl">
-              <h3 className="font-bold text-slate-800">{col.label}</h3>
-              <span className="flex items-center justify-center h-6 min-w-6 px-1.5 rounded-full bg-white text-xs font-bold text-slate-600 shadow-sm border border-slate-200">
+            <div className="p-4 border-b border-line flex items-center justify-between bg-surface/50 rounded-t-xl">
+              <h3 className="font-display font-bold text-ink">{col.label}</h3>
+              <span className="flex items-center justify-center h-6 min-w-6 px-1.5 rounded-full bg-surface text-xs font-bold text-muted shadow-card border border-line">
                 {tasks.filter(t => t.status === col.id).length}
               </span>
             </div>
@@ -194,21 +194,21 @@ export default function TasksBoard({
                     draggable
                     onDragStart={(e) => handleDragStart(e, task.id)}
                     onDragEnd={handleDragEnd}
-                    className={`group bg-white rounded-xl p-4 border ${isDone ? 'border-emerald-200/50 opacity-80' : 'border-slate-200'} shadow-sm hover:shadow-md transition-all cursor-grab active:cursor-grabbing relative`}
+                    className={`group bg-surface rounded-xl p-4 border ${isDone ? 'border-sage/30 opacity-80' : 'border-line'} shadow-card hover:shadow-float transition-all cursor-grab active:cursor-grabbing relative`}
                   >
                     {/* Drag Handle Icon */}
-                    <div className="absolute top-4 right-3 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute top-4 right-3 text-faint opacity-0 group-hover:opacity-100 transition-opacity">
                       <GripVertical className="h-4 w-4" />
                     </div>
 
                     <div className="flex items-start justify-between gap-2 mb-2 pr-6">
-                      <h4 className={`font-semibold leading-tight ${isDone ? 'text-slate-500 line-through' : 'text-slate-900'}`}>
+                      <h4 className={`font-semibold leading-tight ${isDone ? 'text-muted line-through' : 'text-ink'}`}>
                         {task.title}
                       </h4>
                     </div>
                     
                     {task.description && (
-                      <p className="text-sm text-slate-500 mb-4 line-clamp-2 leading-relaxed">{task.description}</p>
+                      <p className="text-sm text-muted mb-4 line-clamp-2 leading-relaxed">{task.description}</p>
                     )}
                     
                     <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -219,38 +219,38 @@ export default function TasksBoard({
 
                     {/* Fotoğraf Önizlemesi */}
                     {task.photoUrl && (
-                      <div className="mb-4 relative group rounded-lg overflow-hidden border border-slate-200">
+                      <div className="mb-4 relative group rounded-lg overflow-hidden border border-line">
                         <img src={task.photoUrl} alt="Görev Kanıtı" className="w-full h-24 object-cover" />
-                        <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <ImageIcon className="h-5 w-5 text-white shadow-sm" />
+                        <div className="absolute inset-0 bg-ink/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <ImageIcon className="h-5 w-5 text-white shadow-card" />
                         </div>
                       </div>
                     )}
 
-                    <div className="mt-4 flex items-center justify-between text-xs font-semibold text-slate-500 pt-3 border-t border-slate-100">
+                    <div className="mt-4 flex items-center justify-between text-xs font-semibold text-muted pt-3 border-t border-line">
                       <div className="flex items-center gap-1.5">
                         {task.assignedUserName ? (
                           <>
-                            <div className="h-5 w-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-[10px]">
+                            <div className="h-5 w-5 rounded-full bg-cream text-signal-deep flex items-center justify-center font-bold text-[10px]">
                               {task.assignedUserName.charAt(0)}
                             </div>
-                            <span className="text-slate-700">{task.assignedUserName}</span>
+                            <span className="text-muted">{task.assignedUserName}</span>
                           </>
                         ) : task.assignedPositionName ? (
-                          <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">
+                          <span className="bg-paper-deep px-2 py-0.5 rounded text-muted">
                             Rol: {task.assignedPositionName}
                           </span>
                         ) : (
-                          <span className="text-slate-400">Atanmadı</span>
+                          <span className="text-faint">Atanmadı</span>
                         )}
                       </div>
                       
                       <div className="flex items-center gap-2">
                         {/* Fotoğraf Yükleme Butonu */}
                         {uploadingTaskId === task.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin text-indigo-500" />
+                          <Loader2 className="h-4 w-4 animate-spin text-signal-deep" />
                         ) : (
-                          <label className="cursor-pointer text-slate-400 hover:text-indigo-600 transition-colors" title="Kanıt Fotoğrafı Yükle">
+                          <label className="cursor-pointer text-faint hover:text-signal-deep transition-colors" title="Kanıt Fotoğrafı Yükle">
                             <Camera className="h-4 w-4" />
                             <input 
                               type="file" 
@@ -266,7 +266,7 @@ export default function TasksBoard({
                             e.stopPropagation();
                             handleDelete(task.id);
                           }}
-                          className="text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded p-1.5 transition-colors opacity-0 group-hover:opacity-100"
+                          className="text-faint hover:text-red-600 hover:bg-red-50 rounded p-1.5 transition-colors opacity-0 group-hover:opacity-100"
                           title="Sil"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -278,8 +278,8 @@ export default function TasksBoard({
               })}
               
               {tasks.filter(t => t.status === col.id).length === 0 && (
-                <div className="absolute inset-4 flex items-center justify-center border-2 border-dashed border-slate-300/50 rounded-xl pointer-events-none">
-                  <span className="text-sm font-medium text-slate-400">Görev sürükleyin</span>
+                <div className="absolute inset-4 flex items-center justify-center border-2 border-dashed border-line-strong rounded-xl pointer-events-none">
+                  <span className="text-sm font-medium text-faint">Görev sürükleyin</span>
                 </div>
               )}
             </div>
@@ -289,40 +289,40 @@ export default function TasksBoard({
 
       {/* Create Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl p-6">
-            <h2 className="text-xl font-bold text-slate-900 mb-6">Yeni Görev</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl bg-surface shadow-float p-6">
+            <h2 className="font-display text-xl font-bold text-ink mb-6">Yeni Görev</h2>
             
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Başlık</label>
+                <label className="block text-sm font-medium text-muted mb-1">Başlık</label>
                 <input
                   required
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="w-full rounded-lg border border-line-strong bg-surface text-ink placeholder:text-faint px-3 py-2 text-sm focus:border-signal focus:outline-none focus:ring-1 focus:ring-signal"
                   placeholder="Örn: Mutfak derin temizliği"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Açıklama (İsteğe bağlı)</label>
+                <label className="block text-sm font-medium text-muted mb-1">Açıklama (İsteğe bağlı)</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="w-full rounded-lg border border-line-strong bg-surface text-ink placeholder:text-faint px-3 py-2 text-sm focus:border-signal focus:outline-none focus:ring-1 focus:ring-signal"
                   rows={3}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Öncelik</label>
+                  <label className="block text-sm font-medium text-muted mb-1">Öncelik</label>
                   <select
                     value={priority}
                     onChange={(e) => setPriority(Number(e.target.value))}
-                    className="w-full rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full rounded-lg border border-line-strong bg-surface text-ink placeholder:text-faint px-3 py-2 text-sm focus:border-signal focus:outline-none focus:ring-1 focus:ring-signal"
                   >
                     <option value={0}>Düşük</option>
                     <option value={1}>Orta</option>
@@ -331,11 +331,11 @@ export default function TasksBoard({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Kategori</label>
+                  <label className="block text-sm font-medium text-muted mb-1">Kategori</label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(Number(e.target.value))}
-                    className="w-full rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full rounded-lg border border-line-strong bg-surface text-ink placeholder:text-faint px-3 py-2 text-sm focus:border-signal focus:outline-none focus:ring-1 focus:ring-signal"
                   >
                     <option value={0}>Temizlik</option>
                     <option value={1}>Servis</option>
@@ -347,14 +347,14 @@ export default function TasksBoard({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Kime Atanacak?</label>
+                <label className="block text-sm font-medium text-muted mb-1">Kime Atanacak?</label>
                 <select
                   value={assigneeType}
                   onChange={(e) => {
                     setAssigneeType(e.target.value as any);
                     setAssigneeId("");
                   }}
-                  className="w-full rounded-lg border border-slate-300 bg-white text-slate-900 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 mb-2"
+                  className="w-full rounded-lg border border-line-strong bg-surface text-ink px-3 py-2 text-sm focus:border-signal focus:outline-none focus:ring-1 focus:ring-signal mb-2"
                 >
                   <option value="none">Atanmamış (Havuz)</option>
                   <option value="user">Bir Personele</option>
@@ -366,7 +366,7 @@ export default function TasksBoard({
                     required
                     value={assigneeId}
                     onChange={(e) => setAssigneeId(e.target.value)}
-                    className="w-full rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full rounded-lg border border-line-strong bg-surface text-ink placeholder:text-faint px-3 py-2 text-sm focus:border-signal focus:outline-none focus:ring-1 focus:ring-signal"
                   >
                     <option value="">Personel Seçin</option>
                     {staff.map(s => <option key={s.id} value={s.id}>{s.fullName}</option>)}
@@ -378,7 +378,7 @@ export default function TasksBoard({
                     required
                     value={assigneeId}
                     onChange={(e) => setAssigneeId(e.target.value)}
-                    className="w-full rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full rounded-lg border border-line-strong bg-surface text-ink placeholder:text-faint px-3 py-2 text-sm focus:border-signal focus:outline-none focus:ring-1 focus:ring-signal"
                   >
                     <option value="">Pozisyon Seçin</option>
                     {positions.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -390,14 +390,14 @@ export default function TasksBoard({
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                  className="rounded-lg px-4 py-2 text-sm font-semibold text-muted hover:bg-paper-deep transition-colors"
                 >
                   İptal
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="rounded-lg bg-emerald-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 disabled:opacity-50 transition-colors"
+                  className="rounded-lg bg-signal px-6 py-2 text-sm font-bold text-ink shadow-card hover:bg-signal-deep hover:text-white disabled:opacity-50 transition-colors"
                 >
                   {isSubmitting ? "Oluşturuluyor..." : "Oluştur"}
                 </button>

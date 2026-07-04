@@ -28,11 +28,13 @@ export default async function StaffLayout({ children }: { children: React.ReactN
   if (manager) redirect("/dashboard");
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
+    <div className="min-h-screen bg-paper">
+      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-line bg-surface px-4">
         <div className="flex items-baseline gap-2">
-          <span className="text-lg font-semibold text-gray-900">Shift</span>
-          <span className="text-xs text-gray-400">{name ?? ""}</span>
+          <span className="font-display text-lg font-bold text-ink">
+            Shift<span className="text-signal">.</span>
+          </span>
+          <span className="text-xs font-medium text-faint">{name ?? ""}</span>
         </div>
         <div className="flex items-center gap-2">
           <NotificationBell initialNotifications={notifications} />

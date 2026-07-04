@@ -22,11 +22,11 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-sm space-y-5 rounded-xl border border-gray-200 bg-white p-8 shadow-sm text-center">
+    <main className="flex min-h-screen items-center justify-center bg-paper p-4">
+      <div className="w-full max-w-sm space-y-5 rounded-xl border border-line bg-surface p-8 shadow-card text-center">
         <div className="space-y-1">
-          <h1 className="text-xl font-semibold text-gray-900">Sunucuya ulaşılamıyor</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="font-display text-xl font-bold text-ink">Sunucuya ulaşılamıyor</h1>
+          <p className="text-sm text-muted">
             Uygulama sunucusuna (API) şu an bağlanılamıyor. Backend çalışıyor mu?
             Birkaç saniye sonra tekrar deneyin.
           </p>
@@ -35,13 +35,13 @@ export default function Error({
         <button
           type="button"
           onClick={() => unstable_retry()}
-          className="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+          className="w-full rounded-lg bg-signal px-4 py-2.5 text-sm font-bold text-ink shadow-card transition-colors hover:bg-signal-deep hover:text-white"
         >
           Tekrar dene
         </button>
 
-        <p className="text-center text-sm text-gray-500">
-          <Link href="/login" className="font-medium text-gray-900 hover:underline">
+        <p className="text-center text-sm text-muted">
+          <Link href="/login" className="font-semibold text-signal-deep hover:underline">
             Giriş ekranına dön
           </Link>
         </p>

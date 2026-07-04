@@ -9,7 +9,7 @@ export const metadata = {
 export default async function DashboardPage() {
   const branches = await getBranches();
   if (branches.length === 0) {
-    return <div className="p-4 text-rose-500">Önce bir şube eklemelisiniz.</div>;
+    return <div className="p-4 text-sm text-muted">Önce bir şube eklemelisiniz.</div>;
   }
   
   const branch = (await selectBranch(branches))!;

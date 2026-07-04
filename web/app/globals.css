@@ -1,26 +1,78 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* ── Panel tasarım token'ları (Tur 9) — pazarlama sitesiyle AYNI AİLE ──
+   Kaynak: marketing/app/globals.css (Tur 8 sıcak/premium palet). Panel, sitenin
+   sakin/olgun versiyonu: aynı kâğıt zemin + amber sinyal + sıcak çizgiler ama
+   süs yok (grain / Caveat script / el-çizimi SVG BİLEREK taşınmadı — iş aracı).
+   Panel açık tema; dark mode media-query kaldırıldı (yarım dark tema jenerik
+   ve okunmaz sonuç veriyordu). */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Metin */
+  --color-ink: #2a2521;          /* sıcak antrasit: ana metin + koyu buton */
+  --color-ink-soft: #423b32;     /* koyu buton hover'ı */
+  --color-muted: #6d655b;        /* sıcak ikincil metin */
+  --color-faint: #a39889;        /* üçüncül: placeholder/boş-durum (açık zeminde AA-large) */
+
+  /* Zemin */
+  --color-paper: #faf7f2;        /* sıcak kağıt beyazı: ana zemin */
+  --color-paper-deep: #f2ece2;   /* sıcak ikinci ton: sütun/iç zemin */
+  --color-cream: #fdf3e7;        /* sıcak krem aksan zemini (rozet/vurgu) */
+  --color-surface: #ffffff;      /* kart yüzeyi */
+  --color-line: #ece4d8;         /* sıcak ince çizgi */
+  --color-line-strong: #ded3c2;  /* daha belirgin çizgi (input kenarı) */
+
+  /* Marka sinyali — amber */
+  --color-signal: #f59e0b;       /* birincil eylem / vurgu */
+  --color-signal-deep: #d97706;  /* hover / koyu amber metin (AA, cream zeminde) */
+
+  /* Ara aksanlar (ölçülü) */
+  --color-sage: #64805a;         /* adaçayı — başarı/olumlu ton */
+  --color-sage-deep: #46603e;    /* AA uyumlu yeşil metin */
+  --color-sage-soft: #e3ead9;    /* pastel adaçayı zemini */
+  --color-terra: #a8542f;        /* terracotta — AA uyumlu sıcak metin aksanı */
+  --color-terra-soft: #f3ddcd;   /* pastel toprak zemini */
+
+  /* Pozisyon renkleri (çizelge veri paleti — siteyle aynı) */
+  --color-barista: #16a34a;
+  --color-kasiyer: #2563eb;
+  --color-komi: #e08a06;
+
+  --font-sans: var(--font-plex-sans);
+  --font-display: var(--font-jakarta);
+  --font-mono: var(--font-plex-mono);
+
+  /* Sıcak-tonlu, yumuşak gölgeler (soğuk siyah gölge değil) */
+  --shadow-card: 0 1px 2px rgb(60 50 40 / 0.04), 0 12px 30px -14px rgb(70 55 40 / 0.16);
+  --shadow-float: 0 30px 60px -22px rgb(60 45 30 / 0.30), 0 12px 26px -16px rgb(60 45 30 / 0.18);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  color-scheme: light;
+}
+
+* {
+  border-color: var(--color-line);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-plex-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Display başlıklar — Jakarta, hafif sıkı tracking. Sınıf olarak da tanımlı:
+   @theme'deki --font-display next/font değişkenine inline çözülemezse utility
+   sessizce sans'a düşüyor (pazarlama Tur 8 kök nedeni) — bu sınıf garanti. */
+.font-display {
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Görünür klavye focus'u — marka aksanıyla halka */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+  border-radius: 6px;
 }

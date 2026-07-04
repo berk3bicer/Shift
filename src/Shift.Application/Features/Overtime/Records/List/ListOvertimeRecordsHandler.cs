@@ -47,8 +47,14 @@ public class ListOvertimeRecordsHandler
                     o.TotalHours,
                     o.NormalHours,
                     o.OvertimeHours,
+                    o.AppliedHourlyRate,
+                    o.OvertimeMultiplier,
+                    o.NightPremium,
+                    o.WeekendPremium,
+                    o.GrossAmount,
                     o.IsLocked,
-                    o.LockedAt))
+                    o.LockedAt,
+                    o.UnlockedAt))
             .ToListAsync(ct);
 
         return items;

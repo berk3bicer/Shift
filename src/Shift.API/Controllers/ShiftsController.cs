@@ -5,6 +5,7 @@ using Shift.Application.Features.Shifts.Create;
 using Shift.Application.Features.Shifts.Update;
 using Shift.Application.Features.Shifts.Delete;
 using Shift.Application.Features.Shifts.List;
+using Shift.Application.Features.Shifts.Mine;
 using Shift.Application.Features.Shifts.PublishShift;
 using Shift.Application.Features.Shifts.PublishWeek;
 
@@ -40,6 +41,19 @@ public class ShiftsController : ControllerBase
         [FromQuery] DateTime rangeEnd)
     {
         var result = await _mediator.Send(new ListShiftsQuery(branchId, rangeStart, rangeEnd));
+        return Ok(result);
+    }
+
+    // Personelin KENDİ vardiyaları (salt-okuma). Owner/Manager listeleme ucundan AYRI:
+    // yetki [Authorize] (herhangi kimlikli kullanıcı), veri handler'da JWT userId ile
+    // sınırlanır — başka personelin vardiyası dönmez.
+    [Authorize]
+    [HttpGet("mine")]
+    public async Task<IActionResult> Mine(
+        [FromQuery] DateTime rangeStart,
+        [FromQuery] DateTime rangeEnd)
+    {
+        var result = await _mediator.Send(new MyShiftsQuery(rangeStart, rangeEnd));
         return Ok(result);
     }
 

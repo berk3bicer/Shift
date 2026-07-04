@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Shift.Application.Common.Exceptions;
 
 namespace Shift.API.Middleware;
 
@@ -15,6 +16,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         {
             ValidationException => (StatusCodes.Status400BadRequest, "Doğrulama hatası"),
             UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "Yetkisiz"),
+            ForbiddenAccessException => (StatusCodes.Status403Forbidden, "Yetkisiz erişim"),
             InvalidOperationException => (StatusCodes.Status400BadRequest, "Geçersiz işlem"),
             KeyNotFoundException => (StatusCodes.Status404NotFound, "Bulunamadı"),
             _ => (StatusCodes.Status500InternalServerError, "Sunucu hatası")

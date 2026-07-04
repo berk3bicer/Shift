@@ -12,6 +12,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ title: "E-posta ve şifre gerekli." }, { status: 400 });
   }
 
+  // MOCK LOGIN FALLBACK FOR UI TESTING
+  const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK === "true";
+  if (isMockMode) {
+    console.log("[MOCK] Logging in with fake token");
+    await setSession("fake-jwt-token-for-testing");
+    return NextResponse.json({ ok: true });
+  }
+
   const res = await fetch(`${BASE_URL}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

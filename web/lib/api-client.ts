@@ -1,4 +1,4 @@
-import type { ShiftDto } from "./types";
+import type { ShiftDto, NotificationDto } from "./types";
 
 // Client (tarayıcı) tarafı mutation'lar — hepsi BFF proxy üzerinden (same-origin → CORS
 // yok; token sunucuda eklenir). Server'daki api-server.ts'in client kardeşi.
@@ -12,10 +12,51 @@ export class ApiClientError extends Error {
   }
 }
 
-// Vardiyayı günceller (gün-taşıma VEYA kişi-atama). PUT FULL update ister (patch değil)
-// → ShiftDto'nun tüm alanlarını geri gönderir, yalnız overrides'taki alan(lar)ı değiştirir.
-// userId null verilebilir (açık vardiya / atama kaldır). Dönüş: backend Warnings[]
-// (İş Kanunu limitleri — engellemez). 4xx → throw (çakışma → çağıran geri alır).
+// Ortak hata fırlatıcı — !ok ise ProblemDetails'i çözüp ApiClientError atar.
+async function ensureOk(res: Response, fallback: string): Promise<void> {
+  if (res.ok) return;
+  const problem = await res.json().catch(() => null);
+  throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `${fallback} (${res.status}).`);
+}
+
+// ── Kurulum Sihirbazı (Onboarding) ──
+// Kayıt sonrası sahip şubesiz/pozisyonsuz düşer; wizard bunları client'tan kurar.
+// DTO tuzağı: CreateBranch → {branchId}, CreatePosition → {positionId} döner
+// (LIST uçları `id` döner — parse'ı buna göre ayrı tut).
+
+export async function createBranch(payload: {
+  name: string;
+  address: string | null;
+  latitude: number | null;
+  longitude: number | null;
+}): Promise<{ branchId: string }> {
+  const res = await fetch(`/api/proxy/api/branches`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  await ensureOk(res, "Şube oluşturulamadı");
+  const data = await res.json();
+  return { branchId: data.branchId };
+}
+
+export async function createPosition(payload: {
+  name: string;
+  colorCode: string | null;
+  hourlyRate: number | null;
+}): Promise<{ positionId: string }> {
+  const res = await fetch(`/api/proxy/api/positions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  await ensureOk(res, "Pozisyon oluşturulamadı");
+  const data = await res.json();
+  return { positionId: data.positionId };
+}
+
+// ── Vardiya (Shift) ──
+
 export async function updateShift(
   shift: ShiftDto,
   overrides: { startTime?: string; endTime?: string; userId?: string | null },
@@ -25,43 +66,66 @@ export async function updateShift(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       positionId: shift.positionId,
-      // userId override'ı null OLABİLİR → 'in' kontrolüyle ayır (undefined=değişme).
       userId: "userId" in overrides ? overrides.userId : shift.userId,
       startTime: overrides.startTime ?? shift.startTime,
       endTime: overrides.endTime ?? shift.endTime,
       notes: shift.notes,
     }),
   });
-
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(
-      res.status,
-      problem?.detail ?? problem?.title ?? `İşlem başarısız (${res.status}).`,
-    );
-  }
-
+  await ensureOk(res, "İşlem başarısız");
   const data = await res.json().catch(() => ({}));
   return { warnings: Array.isArray(data?.warnings) ? data.warnings : [] };
 }
 
-// ── Kanban görev ──
+export async function createShift(payload: {
+  branchId: string;
+  positionId: string;
+  userId: string | null;
+  startTime: string;
+  endTime: string;
+  notes: string | null;
+}): Promise<{ shiftId: string; warnings: string[] }> {
+  const res = await fetch(`/api/proxy/api/shifts`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  await ensureOk(res, "Oluşturulamadı");
+  const data = await res.json();
+  return { shiftId: data.shiftId, warnings: Array.isArray(data?.warnings) ? data.warnings : [] };
+}
 
-// Görevi başka kolona taşı (status değişir). Backend serbest hareket + Done yan etkileri.
-// Sonuç warnings taşımaz; hata (nadir 400 / ağ) → throw → hook geri alır.
+export async function deleteShift(id: string): Promise<void> {
+  const res = await fetch(`/api/proxy/api/shifts/${id}`, { method: "DELETE" });
+  await ensureOk(res, "Silinemedi");
+}
+
+export async function publishWeek(
+  branchId: string,
+  rangeStartIso: string,
+  rangeEndIso: string,
+): Promise<{ publishedCount: number; notifiedUserCount: number }> {
+  const res = await fetch(`/api/proxy/api/shifts/publish-week`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ branchId, rangeStart: rangeStartIso, rangeEnd: rangeEndIso }),
+  });
+  await ensureOk(res, "Yayınlanamadı");
+  const data = await res.json();
+  return { publishedCount: data.publishedCount ?? 0, notifiedUserCount: data.notifiedUserCount ?? 0 };
+}
+
+// ── Kanban görev ──
+// Backend MoveTaskCommand TaskItemStatus enum'unu int olarak alır (0/1/2). newStatus number.
 export async function moveTask(id: string, newStatus: number): Promise<void> {
   const res = await fetch(`/api/proxy/api/tasks/${id}/move`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ newStatus }),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Taşınamadı (${res.status}).`);
-  }
+  await ensureOk(res, "Taşınamadı");
 }
 
-// Yeni görev oluştur (her zaman ToDo'da doğar). Dönüş: { taskId }.
 export async function createTask(payload: {
   branchId: string;
   title: string;
@@ -76,64 +140,344 @@ export async function createTask(payload: {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ ...payload, dueDate: null }),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Oluşturulamadı (${res.status}).`);
-  }
+  await ensureOk(res, "Oluşturulamadı");
   const data = await res.json();
   return { taskId: data.taskId };
 }
 
-// Yeni vardiya oluştur. userId null = açık vardiya. Dönüş: { shiftId, warnings }.
-// Çakışma → 4xx throw (modal'da gösterilir).
-export async function createShift(payload: {
+export async function deleteTask(id: string): Promise<void> {
+  const res = await fetch(`/api/proxy/api/tasks/${id}`, { method: "DELETE" });
+  await ensureOk(res, "Silinemedi");
+}
+
+// ── Kontrol Listeleri (Checklists) ──
+
+export async function startChecklistRun(payload: {
   branchId: string;
-  positionId: string;
-  userId: string | null;
-  startTime: string;
-  endTime: string;
-  notes: string | null;
-}): Promise<{ shiftId: string; warnings: string[] }> {
-  const res = await fetch(`/api/proxy/api/shifts`, {
+  checklistId: string;
+  runDate: string; // YYYY-MM-DD
+}): Promise<{ runId: string }> {
+  const res = await fetch(`/api/proxy/api/checklistruns`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Oluşturulamadı (${res.status}).`);
-  }
+  await ensureOk(res, "Başlatılamadı");
   const data = await res.json();
-  return { shiftId: data.shiftId, warnings: Array.isArray(data?.warnings) ? data.warnings : [] };
+  return { runId: data.runId };
 }
 
-// Vardiya sil (HARD delete — geri alınamaz). 204 döner.
-export async function deleteShift(id: string): Promise<void> {
-  const res = await fetch(`/api/proxy/api/shifts/${id}`, { method: "DELETE" });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Silinemedi (${res.status}).`);
-  }
-}
-
-// Haftanın TÜM Draft vardiyalarını yayınla. Backend kişi başına tek özet bildirim atar.
-export async function publishWeek(
-  branchId: string,
-  rangeStartIso: string,
-  rangeEndIso: string,
-): Promise<{ publishedCount: number; notifiedUserCount: number }> {
-  const res = await fetch(`/api/proxy/api/shifts/publish-week`, {
+// Backend route: checklistruns/{runId}/items/{itemId}/check  (check-item DEĞİL).
+export async function checkChecklistItem(
+  runId: string,
+  itemId: string,
+  isChecked: boolean,
+): Promise<void> {
+  const res = await fetch(`/api/proxy/api/checklistruns/${runId}/items/${itemId}/check`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ branchId, rangeStart: rangeStartIso, rangeEnd: rangeEndIso }),
+    body: JSON.stringify({ isChecked }),
   });
-  if (!res.ok) {
-    const problem = await res.json().catch(() => null);
-    throw new ApiClientError(res.status, problem?.detail ?? problem?.title ?? `Yayınlanamadı (${res.status}).`);
-  }
+  await ensureOk(res, "İşaretlenemedi");
+}
+
+// Backend CreateChecklistCommand.Items = string[] (madde metinleri; sıra=indeks).
+// FE eskiden [{text,orderIndex}] yolluyordu → 400 ("could not be converted to String").
+export async function createChecklist(payload: {
+  name: string;
+  type: number;
+  items: string[];
+}): Promise<{ checklistId: string }> {
+  const res = await fetch(`/api/proxy/api/checklists`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  await ensureOk(res, "Şablon oluşturulamadı");
   const data = await res.json();
-  return {
-    publishedCount: data.publishedCount ?? 0,
-    notifiedUserCount: data.notifiedUserCount ?? 0,
-  };
+  return { checklistId: data.checklistId };
+}
+
+export async function updateChecklist(id: string, payload: {
+  name: string;
+  type: number;
+  items: string[];
+}): Promise<void> {
+  const res = await fetch(`/api/proxy/api/checklists/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  await ensureOk(res, "Liste güncellenemedi");
+}
+
+export async function deleteChecklist(id: string): Promise<void> {
+  const res = await fetch(`/api/proxy/api/checklists/${id}`, { method: "DELETE" });
+  await ensureOk(res, "Liste silinemedi");
+}
+
+// ── Vardiya Defteri (Shift Notes) ──
+
+export async function createShiftNote(payload: {
+  branchId: string;
+  noteDate: string;
+  content: string;
+}): Promise<{ noteId: string }> {
+  const res = await fetch(`/api/proxy/api/shiftnotes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  await ensureOk(res, "Not eklenemedi");
+  const data = await res.json();
+  return { noteId: data.noteId };
+}
+
+export async function deleteShiftNote(id: string): Promise<void> {
+  const res = await fetch(`/api/proxy/api/shiftnotes/${id}`, { method: "DELETE" });
+  await ensureOk(res, "Not silinemedi");
+}
+
+// ── İletişim ve Duyuru (Announcements) ──
+
+export async function createAnnouncement(payload: {
+  branchId: string;
+  title: string;
+  body: string;
+  targetRole: number | null;
+}): Promise<{ announcementId: string }> {
+  const res = await fetch(`/api/proxy/api/announcements`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  await ensureOk(res, "Duyuru paylaşılamadı");
+  const data = await res.json();
+  return { announcementId: data.announcementId };
+}
+
+// ── Vardiya Havuzu (Shift Pool) — Give/Take (Faz 2 Tur #2 FE) ──
+// UserId token'dan (IDOR); client yalnızca shiftId söyler. ShiftId'nin sahibi/pozisyonu
+// backend'de doğrulanır (403/400). Onay modu ApprovalRequired ise swap Pending kalır.
+
+export async function giveShift(shiftId: string): Promise<void> {
+  const res = await fetch(`/api/proxy/api/shift-pool/give`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ shiftId }),
+  });
+  await ensureOk(res, "Vardiya havuza sunulamadı");
+}
+
+export async function takeShift(shiftId: string): Promise<void> {
+  const res = await fetch(`/api/proxy/api/shift-pool/take`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ shiftId }),
+  });
+  await ensureOk(res, "Vardiya alınamadı");
+}
+
+export async function markNotificationAsRead(id: string): Promise<void> {
+  const res = await fetch(`/api/proxy/api/notifications/${id}/read`, { method: "POST" });
+  await ensureOk(res, "Bildirim okundu işaretlenemedi");
+}
+
+// Zilin canlı tazelenmesi için client-side çekim (layout server prop'u yalnız ilk
+// yüklemede gelir; yeni duyuru/bildirim F5'siz düşsün diye zil bunu aralıkla çağırır).
+export async function fetchNotifications(): Promise<NotificationDto[]> {
+  const res = await fetch(`/api/proxy/api/notifications`, { cache: "no-store" });
+  await ensureOk(res, "Bildirimler alınamadı");
+  return res.json();
+}
+
+// ── Müsaitlik (Availability) — route api/availabilities (çoğul) ──
+
+export async function createAvailability(payload: {
+  userId: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+  reason: string | null;
+}): Promise<{ id: string }> {
+  const res = await fetch(`/api/proxy/api/availabilities`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  await ensureOk(res, "Eklenemedi");
+  const data = await res.json();
+  // Backend CreateAvailabilityResult.AvailabilityId döner (`id` DEĞİL). `data.id`
+  // okumak undefined veriyordu → optimistic kart id'siz → React key uyarısı.
+  return { id: data.availabilityId ?? data.id };
+}
+
+export async function deleteAvailability(id: string): Promise<void> {
+  const res = await fetch(`/api/proxy/api/availabilities/${id}`, { method: "DELETE" });
+  await ensureOk(res, "Silinemedi");
+}
+
+// ── İzin (Time Off) ──
+
+// Backend CreateTimeOffCommand(StartDate, EndDate, Type, Reason) — UserId YOK (token'dan).
+// FE 'note' → backend 'reason'. userId gövdede gönderilmez (backend yok sayar; talep
+// her zaman login olan kullanıcı içindir).
+export async function createTimeOffRequest(payload: {
+  userId: string;
+  startDate: string;
+  endDate: string;
+  type: number;
+  note: string | null;
+}): Promise<{ id: string }> {
+  const res = await fetch(`/api/proxy/api/timeoffrequests`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+      type: payload.type,
+      reason: payload.note,
+    }),
+  });
+  await ensureOk(res, "Talep oluşturulamadı");
+  const data = await res.json();
+  return { id: data.timeOffRequestId ?? data.id };
+}
+
+export async function decideTimeOffRequest(
+  id: string,
+  decision: "Approve" | "Reject",
+  note?: string,
+): Promise<void> {
+  // Backend DecideTimeOffBody(DecisionNote) — FE 'note' → 'decisionNote'.
+  const path = decision === "Approve" ? "approve" : "reject";
+  const res = await fetch(`/api/proxy/api/timeoffrequests/${id}/${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ decisionNote: note }),
+  });
+  await ensureOk(res, "Karar işlenemedi");
+}
+
+// ── Giriş-Çıkış (Time Clock) ──
+
+// Backend ClockInCommand(BranchId, Method). ClockMethod: QR=0 (kendi telefonu),
+// PIN=1 (paylaşılan tablet). Giriş yapan KENDİ token'ıyla damgalanır.
+export async function clockIn(branchId: string, method: number = 0): Promise<void> {
+  const res = await fetch(`/api/proxy/api/timeclocks/clock-in`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ branchId, method }),
+  });
+  await ensureOk(res, "Giriş yapılamadı");
+}
+
+export async function clockOut(): Promise<void> {
+  const res = await fetch(`/api/proxy/api/timeclocks/clock-out`, { method: "POST" });
+  await ensureOk(res, "Çıkış yapılamadı");
+}
+
+// ── Mesai Ayarları (Overtime) ──
+
+// Backend UpdateOvertimeSettingsCommand nightStart/nightEnd'i ZORUNLU "HH:mm" string
+// bekler (validator TimeOnly.TryParse). Göndermezsek 400 alırdık. Tolerans alanları
+// backend'de YOK — kozmetik yalandı, kaldırıldı (bkz. gap listesi: tolerans=kapsam).
+export async function updateOvertimeSettings(payload: {
+  weeklyOvertimeThresholdHours: number;
+  overtimeMultiplier: number;
+  nightMultiplier: number;
+  nightStart: string;
+  nightEnd: string;
+  weekendMultiplier: number;
+  holidayMultiplier: number;
+}): Promise<void> {
+  const res = await fetch(`/api/proxy/api/overtime-settings`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  await ensureOk(res, "Ayarlar güncellenemedi");
+}
+
+// ── Bordro (Payroll / OvertimeRecord) ──
+
+// Dönem kapat. Backend CloseOvertimePeriodCommand {UserId, From, To} bekler ve
+// From/To DateOnly'dir → "yyyy-MM-dd" gönder (ISO datetime DEĞİL; datetime DateOnly'ye
+// bind OLMAZ, sessizce 0001-01-01 çöp kayıt yazılırdı). Anahtarlar from/to olmalı.
+export async function closePeriod(payload: {
+  userId: string;
+  from: string; // "2026-06-01"
+  to: string;   // "2026-06-30"
+}): Promise<{ recordId: string }> {
+  const res = await fetch(`/api/proxy/api/overtime/close`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  await ensureOk(res, "Dönem kapatılamadı");
+  return res.json();
+}
+
+export async function unlockRecord(id: string): Promise<void> {
+  const res = await fetch(`/api/proxy/api/overtime/records/${id}/unlock`, { method: "POST" });
+  await ensureOk(res, "Kilit açılamadı");
+}
+
+// Gerçek CSV export: backend /records/export ucundan indir (InvariantCulture, BOM,
+// sadece kilitli kayıtlar — Logo/Mikro/Paraşüt import için). Client-side CSV ÜRETME;
+// brüt/prim hesabı tek kaynaktan (backend snapshot) gelsin. Dosyayı blob ile indirir.
+export async function exportOvertimeCsv(from: string, to: string): Promise<void> {
+  const qs = new URLSearchParams({ from, to });
+  const res = await fetch(`/api/proxy/api/overtime/records/export?${qs.toString()}`);
+  await ensureOk(res, "CSV dışa aktarılamadı");
+
+  const blob = await res.blob();
+  // Dosya adını backend Content-Disposition'dan al (bordro_<from>_<to>.csv).
+  const disp = res.headers.get("Content-Disposition") ?? "";
+  const match = disp.match(/filename="?([^"]+)"?/);
+  const fileName = match?.[1] ?? `bordro_${from}_${to}.csv`;
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+// ── Fotoğraf eki (presigned URL akışı) ──
+// AttachmentOwnerType: Task=0, ChecklistRunItem=1.
+// 1) upload-url al → 2) dosyayı (proxy üzerinden) yükle → 3) confirm ile kalıcı kaydet.
+// Anlık önizleme için objectURL döner (reload'da List+downloadUrl ile gelir — Adım C).
+export async function uploadPhoto(
+  file: File,
+  entityType: "task" | "checklist",
+  entityId: string,
+): Promise<string> {
+  const ownerType = entityType === "task" ? 0 : 1;
+
+  const urlRes = await fetch(`/api/proxy/api/attachments/upload-url`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ownerType, ownerId: entityId, contentType: file.type, fileName: file.name }),
+  });
+  await ensureOk(urlRes, "Yükleme adresi alınamadı");
+  const { key, uploadUrl, method } = await urlRes.json();
+
+  // Mock presigned URL backend'in kendi ucuna işaret eder (localhost:5203) → CORS'tan
+  // kaçınmak için proxy üzerinden gönder (mutlak adresi /api/proxy önekine çevir).
+  const proxied = uploadUrl.replace(/^https?:\/\/[^/]+/, "/api/proxy");
+  const putRes = await fetch(proxied, { method: method ?? "PUT", headers: { "Content-Type": file.type }, body: file });
+  if (!putRes.ok) throw new ApiClientError(putRes.status, "Dosya yüklenemedi.");
+
+  const confirmRes = await fetch(`/api/proxy/api/attachments`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ownerType, ownerId: entityId, storageKey: key, contentType: file.type, fileName: file.name }),
+  });
+  await ensureOk(confirmRes, "Fotoğraf kaydedilemedi");
+
+  return URL.createObjectURL(file);
 }

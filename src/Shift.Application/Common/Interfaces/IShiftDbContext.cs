@@ -27,6 +27,8 @@ public interface IShiftDbContext
     DbSet<UserRole> UserRoles { get; }
     DbSet<UserBranch> UserBranches { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
+    DbSet<ShiftSwap> ShiftSwaps { get; }
+    DbSet<ShiftPoolSettings> ShiftPoolSettings { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

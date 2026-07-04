@@ -15,8 +15,10 @@ async function forward(req: NextRequest, ctx: { params: Promise<{ path: string[]
   const { path } = await ctx.params;
   const url = `${BASE_URL}/${path.join("/")}${req.nextUrl.search}`;
 
+  // Gövde arrayBuffer ile iletilir (JSON da binary de — foto upload bozulmasın; text()
+  // binary'i korur etmez).
   const hasBody = req.method !== "GET" && req.method !== "HEAD";
-  const body = hasBody ? await req.text() : undefined;
+  const reqBody = hasBody ? await req.arrayBuffer() : undefined;
 
   const upstream = await fetch(url, {
     method: req.method,
@@ -24,14 +26,14 @@ async function forward(req: NextRequest, ctx: { params: Promise<{ path: string[]
       Authorization: `Bearer ${token}`, // sunucu tarafı; client görmez
       "Content-Type": req.headers.get("content-type") ?? "application/json",
     },
-    body,
+    body: reqBody && reqBody.byteLength > 0 ? reqBody : undefined,
     cache: "no-store",
   });
 
-  // Yalnız gövde + content-type yansıtılır. Set-Cookie/token ASLA kopyalanmaz.
-  // 204/304 (ve boş gövde) için body NULL olmalı — yoksa Response ctor patlar (→500).
-  const text = await upstream.text();
-  return new NextResponse(text === "" ? null : text, {
+  // Yanıt da arrayBuffer ile yansıtılır (indirilen görsel/PDF binary bozulmasın).
+  // Set-Cookie/token ASLA kopyalanmaz. 204/304/boş → body NULL (Response ctor patlamasın).
+  const resBuf = await upstream.arrayBuffer();
+  return new NextResponse(resBuf.byteLength === 0 ? null : resBuf, {
     status: upstream.status,
     headers: { "content-type": upstream.headers.get("content-type") ?? "application/json" },
   });

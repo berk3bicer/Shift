@@ -742,6 +742,75 @@ namespace Shift.Infrastructure.Migrations
                     b.ToTable("ShiftNotes");
                 });
 
+            modelBuilder.Entity("Shift.Domain.Entities.ShiftPoolSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ApprovalMode")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId")
+                        .IsUnique();
+
+                    b.ToTable("ShiftPoolSettings");
+                });
+
+            modelBuilder.Entity("Shift.Domain.Entities.ShiftSwap", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("RequestedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ShiftId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("TargetUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestedByUserId");
+
+                    b.HasIndex("ShiftId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("TargetUserId");
+
+                    b.ToTable("ShiftSwaps");
+                });
+
             modelBuilder.Entity("Shift.Domain.Entities.TaskItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1271,6 +1340,32 @@ namespace Shift.Infrastructure.Migrations
                     b.Navigation("Branch");
 
                     b.Navigation("CreatedByUser");
+                });
+
+            modelBuilder.Entity("Shift.Domain.Entities.ShiftSwap", b =>
+                {
+                    b.HasOne("Shift.Domain.Entities.User", "RequestedByUser")
+                        .WithMany()
+                        .HasForeignKey("RequestedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Shift.Domain.Entities.Shift", "Shift")
+                        .WithMany()
+                        .HasForeignKey("ShiftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shift.Domain.Entities.User", "TargetUser")
+                        .WithMany()
+                        .HasForeignKey("TargetUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("RequestedByUser");
+
+                    b.Navigation("Shift");
+
+                    b.Navigation("TargetUser");
                 });
 
             modelBuilder.Entity("Shift.Domain.Entities.TaskItem", b =>

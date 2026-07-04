@@ -74,20 +74,20 @@ export const STATS: {
   { to: 11, label: "modül, vardiyadan hijyene tek çatı" },
 ];
 
-// Neden Shift — farklılaştırıcı kartlar (spec 1.5 / 2.3 / 2.4). "7shifts'te yok" vurgusu
-// ile Türkiye kazanan kartları. İkon adları lucide-react'ten.
+// Neden Shift — farklılaştırıcı kartlar (spec 1.5 / 2.3 / 2.4). Tur 8 kuralı: rakip ismi
+// YOK — Shift'in yaptığı güçlü ve pozitif anlatılır. İkon adları lucide-react'ten.
 export const WHY_CARDS = [
   {
     icon: "Scale",
     title: "İş Kanunu'na göre mesai",
-    detail: "Fazla mesai, gece/tatil çarpanı, günlük 11s / haftalık 45s limiti otomatik. ABD kurallarına göre değil, buraya göre.",
-    badge: "7shifts'te yok",
+    detail: "Fazla mesai, gece/tatil çarpanı, günlük 11s / haftalık 45s limiti otomatik. Başka coğrafyanın kurallarına göre değil, buraya göre.",
+    badge: "Türkiye'ye göre",
   },
   {
     icon: "ShieldCheck",
     title: "KVKK, tedarik, hijyen",
-    detail: "Verilerin Avrupa / Türkiye'de. Stok, tedarik ve HACCP denetimi 7shifts'te yok — Shift'te var.",
-    badge: "7shifts'te yok",
+    detail: "Verilerin Avrupa / Türkiye'de. Stok, tedarik ve HACCP denetimi de aynı çatıda — ekip için ayrı, mutfak için ayrı araç gerekmez.",
+    badge: "Tek çatı",
   },
   {
     icon: "MessagesSquare",
@@ -113,43 +113,47 @@ export const MORE_MODULES = [
   "Çok Şube",
 ];
 
-// Spec 1.5 — Rakip Konumlandırma Özeti (sadeleştirilmiş; farklılaştırıcı satırlar öne).
+// Spec 1.5'ten türetilmiş KAVRAMSAL karşılaştırma (Tur 8 kuralı: marka değil KATEGORİ).
+// "Tipik vardiya aracı" = yurt dışı odaklı vardiya/ekip uygulamaları kategorisi;
+// "Tipik POS / adisyon" = satış odaklı yerli sistemler kategorisi.
 // value: "full" | "partial" | "none" | metin. Shift sütunu vurgulanır.
+// DÜRÜSTLÜK: henüz inşa edilmemiş modüller Shift sütununda faz etiketiyle ("var" gibi sunulmaz).
 export const COMPARISON = {
-  competitors: ["Shift", "7shifts", "Yerli POS*"],
+  competitors: ["Shift", "Tipik vardiya aracı", "Tipik POS / adisyon"],
   rows: [
     { feature: "Vardiya & Havuz", values: ["full", "full", "none"] },
     { feature: "Görev (Kanban + foto)", values: ["full", "partial", "none"] },
-    { feature: "Stok & Tedarik", values: ["full", "none", "none"] },
-    { feature: "Hijyen / HACCP", values: ["full", "none", "none"] },
+    { feature: "Stok & Tedarik", values: ["Faz 2", "none", "partial"] },
+    { feature: "Hijyen / HACCP", values: ["Faz 3", "none", "none"] },
     { feature: "İş Kanunu Uyumu", values: ["full", "none", "partial"] },
     { feature: "KVKK Uyumu", values: ["full", "none", "full"] },
     { feature: "Türkçe Destek", values: ["full", "none", "full"] },
   ],
-  footnote: "* Restomenum, Menulux, KarekodGarson gibi POS/adisyon sistemleri yalnız satış tarafını çözer. Kaynak: Ürün Spesifikasyonu 1.5.",
+  footnote:
+    "Marka değil kategori karşılaştırması: \"Tipik vardiya aracı\" = yurt dışı odaklı ekip/vardiya uygulamaları, \"Tipik POS / adisyon\" = satış odaklı sistemler. \"Faz 2/3\" = Shift yol haritasında, henüz yayında değil. Kaynak: Ürün Spesifikasyonu 1.5.",
 };
 
-// Spec 1.5 — TAM rakip matrisi (/neden-shift sayfası, Tur 7). Landing'deki sade COMPARISON'ın
-// genişletilmişi: 4 sütun + 11 satır, spec tablosuyla birebir. DÜRÜSTLÜK: spec Shift vizyonunu
+// Spec 1.5 — TAM matris (/neden-shift sayfası). Landing'deki sade COMPARISON'ın genişletilmişi:
+// 11 satır. Tur 8: kolonlar kavramsal kategori (marka ismi YOK). DÜRÜSTLÜK: spec Shift vizyonunu
 // "Tam" yazar ama stok/tedarik/hijyen/İK henüz İNŞA EDİLMEDİ → Shift hücresinde faz etiketi
 // gösterilir ("var" gibi sunulmaz).
 export const COMPARISON_FULL = {
-  competitors: ["Shift", "7shifts", "Restomenum", "KarekodGarson"],
+  competitors: ["Shift", "Tipik vardiya aracı", "Tipik POS / adisyon"],
   rows: [
-    { feature: "Vardiya Planlama", values: ["full", "full", "temel", "AI önerili"] },
-    { feature: "Vardiya Havuzu / Takas", values: ["full", "full", "none", "none"] },
-    { feature: "Görev (Kanban + foto)", values: ["full", "temel", "none", "none"] },
-    { feature: "Giriş-Çıkış & Mesai", values: ["full", "full", "kısmi", "kısmi"] },
-    { feature: "Stok Takibi", values: ["Faz 2", "none", "uyarı bazlı", "temel"] },
-    { feature: "Tedarik Yönetimi", values: ["Faz 2", "none", "none", "none"] },
-    { feature: "Hijyen / HACCP", values: ["Faz 3", "none", "none", "none"] },
-    { feature: "İK / Personel", values: ["Faz 3", "temel", "none", "none"] },
-    { feature: "İş Kanunu Uyumu", values: ["full", "none", "kısmi", "kısmi"] },
-    { feature: "KVKK Uyumu", values: ["full", "none", "full", "full"] },
-    { feature: "Türkçe Destek", values: ["full", "none", "full", "full"] },
+    { feature: "Vardiya Planlama", values: ["full", "full", "temel"] },
+    { feature: "Vardiya Havuzu / Takas", values: ["full", "full", "none"] },
+    { feature: "Görev (Kanban + foto)", values: ["full", "temel", "none"] },
+    { feature: "Giriş-Çıkış & Mesai", values: ["full", "full", "kısmi"] },
+    { feature: "Stok Takibi", values: ["Faz 2", "none", "temel"] },
+    { feature: "Tedarik Yönetimi", values: ["Faz 2", "none", "none"] },
+    { feature: "Hijyen / HACCP", values: ["Faz 3", "none", "none"] },
+    { feature: "İK / Personel", values: ["Faz 3", "temel", "none"] },
+    { feature: "İş Kanunu Uyumu", values: ["full", "none", "kısmi"] },
+    { feature: "KVKK Uyumu", values: ["full", "none", "full"] },
+    { feature: "Türkçe Destek", values: ["full", "none", "full"] },
   ],
   footnote:
-    "Kaynak: Ürün Spesifikasyonu 1.5. \"Faz 2/3\" = Shift yol haritasında, henüz yayında değil — dürüst etiket. Restomenum ve KarekodGarson POS/adisyon odaklıdır; ekip operasyonu tarafı sınırlıdır.",
+    "Marka değil kategori karşılaştırması — her kategori kendi işini iyi yapar; tablo kapsam farkını gösterir. \"Faz 2/3\" = Shift yol haritasında, henüz yayında değil — dürüst etiket. Kaynak: Ürün Spesifikasyonu 1.5.",
 };
 
 // Spec 12.3 — Fiyatlandırma (referans). Kapsamlar tabloyla birebir.
@@ -187,6 +191,6 @@ export const PRICING = [
 // Spec 2.3 / 10.3 / 12.1 — güven unsurları.
 export const TRUST = [
   { title: "İş Kanunu uyumlu", detail: "Günlük 11s, haftalık 45s limiti; fazla mesai %50 zamlı — otomatik hesap ve uyarı." },
-  { title: "KVKK uyumlu", detail: "Verileriniz Avrupa / Türkiye veri merkezinde (Hetzner) tutulur." },
+  { title: "KVKK uyumlu", detail: "Verileriniz Avrupa / Türkiye veri merkezinde tutulur." },
   { title: "Türkçe, kafe diliyle", detail: "Arayüz ve jargon kafe operasyonuna göre kalibre — 10 dakikada başlayın." },
 ];

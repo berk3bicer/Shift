@@ -1,15 +1,24 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, IBM_Plex_Sans, IBM_Plex_Mono, Caveat } from "next/font/google";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import "./globals.css";
 
 // Display: Plus Jakarta Sans — sıcak, humanist, yuvarlak hatlı sans. Space Grotesk'in
-// teknik/geometrik hissi yerine daha DAVETKÂR bir başlık sesi (7shifts aydınlık yönü).
+// teknik/geometrik hissi yerine daha DAVETKÂR bir başlık sesi.
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
   subsets: ["latin", "latin-ext"], // latin-ext = Türkçe ş/ğ/ı/İ/ö/ü/ç
   weight: ["500", "600", "700", "800"],
+  display: "swap",
+});
+
+// Script: Caveat — el yazısı VURGU fontu (Tur 8). SADECE seçili kelimeler ve küçük
+// işaretleme notları; gövde/başlık ana metni asla. latin-ext ile ş/ğ/ı/İ/ö/ü/ç tam.
+const caveat = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin", "latin-ext"],
+  weight: ["500", "600", "700"],
   display: "swap",
 });
 
@@ -61,7 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="tr">
       {/* Tur 7: ortak Nav + Footer layout'ta — her route'ta aynı iskelet, sayfalar yalnız içerik */}
-      <body className={`${jakarta.variable} ${plexSans.variable} ${plexMono.variable}`}>
+      <body className={`${jakarta.variable} ${plexSans.variable} ${plexMono.variable} ${caveat.variable}`}>
         <Nav />
         {children}
         <Footer />

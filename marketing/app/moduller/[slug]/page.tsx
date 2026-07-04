@@ -16,6 +16,7 @@ import type { ReactNode } from "react";
 import { MODULE_PAGES, getModule } from "@/lib/modules";
 import { REGISTER_URL } from "@/lib/config";
 import Reveal, { RevealX, RevealStagger, RevealItem } from "@/components/Reveal";
+import Scribble from "@/components/Scribble";
 import CtaBand from "@/components/CtaBand";
 import ShiftGrid from "@/components/ShiftGrid";
 import { KanbanMock, TimeclockMock, PoolMock, StockMock, HygieneMock } from "@/components/FeatureMocks";
@@ -178,9 +179,13 @@ export default async function ModuleDetailPage({ params }: { params: Promise<{ s
       <section className="bg-[var(--color-paper)] py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
           <Reveal className="max-w-2xl">
-            <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-signal-deep)]">Nasıl çalışır</span>
+            <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-sage-deep)]">Nasıl çalışır</span>
             <h2 className="font-display mt-3 text-2xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-3xl">
-              Üç adımda iş başında.
+              <span className="relative inline-block whitespace-nowrap">
+                <span className="font-script font-bold text-[var(--color-signal-deep)]">Üç adımda</span>
+                <Scribble shape="underline" className="absolute -bottom-1.5 left-0 w-full" delay={0.35} />
+              </span>{" "}
+              iş başında.
             </h2>
           </Reveal>
           <RevealStagger className="mt-10 grid gap-4 md:grid-cols-3" stagger={0.1}>

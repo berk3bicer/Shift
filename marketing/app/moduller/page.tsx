@@ -12,6 +12,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { MODULE_PAGES, ROADMAP_MODULES } from "@/lib/modules";
 import Reveal, { RevealStagger, RevealItem } from "@/components/Reveal";
+import ScriptWord from "@/components/ScriptWord";
 import CtaBand from "@/components/CtaBand";
 
 // /moduller — tüm modüllerin özeti (Tur 7). Detay sayfası olan 6 modül büyük kart + link;
@@ -53,7 +54,7 @@ export default function ModulesIndexPage() {
             Modüller
           </span>
           <h1 className="anim-rise font-display mt-3 max-w-3xl text-4xl font-extrabold leading-[1.08] text-[var(--color-ink)] sm:text-5xl" style={{ animationDelay: "120ms" }}>
-            Operasyonun her parçası için bir modül.
+            Operasyonun <ScriptWord>her parçası</ScriptWord> için bir modül.
           </h1>
           <p className="anim-rise mt-5 max-w-2xl text-lg leading-relaxed text-[var(--color-muted)]" style={{ animationDelay: "200ms" }}>
             Önce çekirdek: vardiya, görev, giriş-çıkış ve havuz bugün hazır. Stok, tedarik ve hijyen

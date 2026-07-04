@@ -2,10 +2,19 @@ import { Scale, ShieldCheck, Zap, MessagesSquare, Check, Minus } from "lucide-re
 import type { LucideIcon } from "lucide-react";
 import { WHY_CARDS, COMPARISON } from "@/lib/content";
 import Reveal, { RevealStagger, RevealItem } from "./Reveal";
+import Scribble from "./Scribble";
 
-// Neden Shift — spec 1.5 / 2.4. TR kazanan kartları öne çıkan görsel kartlar (düz tablo DEĞİL),
-// altında sadeleştirilmiş rakip matrisi. "7shifts'te yok" vurgusu.
+// Neden Shift — spec 1.5 / 2.4. Tur 8 kuralı: rakip/marka ismi YOK; Shift'in çözümü pozitif
+// ve kendinden emin anlatılır, matris kavramsal kategorilerle. Script vurgu: "bütününü".
 const ICONS: Record<string, LucideIcon> = { Scale, ShieldCheck, MessagesSquare, Zap };
+
+// Rozet renkleri — zengin sıcak palet: toprak / adaçayı / amber (tek-amber monotonluğu kırılır)
+export const BADGE_STYLE: Record<string, string> = {
+  "Türkiye'ye göre": "bg-[var(--color-terra-soft)] text-[var(--color-terra)]",
+  "Tek çatı": "bg-[var(--color-sage-soft)] text-[var(--color-sage-deep)]",
+  "Yerel kazanç": "bg-[var(--color-sage-soft)] text-[var(--color-sage-deep)]",
+  default: "bg-[var(--color-signal)]/15 text-[var(--color-signal-deep)]",
+};
 
 function Cell({ value, isShift }: { value: string; isShift: boolean }) {
   if (value === "full") {
@@ -95,39 +104,39 @@ export function ComparisonTable({
 
 export default function WhyShift() {
   return (
-    <section id="neden" className="bg-[var(--color-paper)] py-20 sm:py-28">
+    <section id="neden" className="bg-[var(--color-paper)] py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <Reveal className="max-w-2xl">
-          <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-signal-deep)]">
+          <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-sage-deep)]">
             Neden Shift
           </span>
           <h2 className="font-display mt-3 text-3xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-4xl">
-            7shifts&apos;in bıraktığı yerde, Türkiye için.
+            Çoğu araç bir parçayı çözer.{" "}
+            <span className="relative inline-block whitespace-nowrap">
+              Shift, <span className="font-script font-bold text-[var(--color-signal-deep)]">bütününü</span>
+              <Scribble shape="underline" className="absolute -bottom-1.5 left-0 w-full" delay={0.4} />
+            </span>
+            .
           </h2>
-          <p className="mt-4 text-lg text-[var(--color-muted)]">
-            7shifts vardiya ve ekip yönetiminde dünya lideri — ama stok, tedarik ve hijyene hiç girmez,
-            İş Kanunu&apos;nu bilmez, Türkçe konuşmaz. Shift tam burada devreye girer.
+          <p className="mt-5 text-lg leading-relaxed text-[var(--color-muted)]">
+            Ya sadece vardiya, ya sadece satış. Shift ikisinin arasında kalan her şeyi tek çatıda
+            toplar: vardiyadan stoğa, mesaiden hijyene — ve bunu Türkiye&apos;ye göre yapar. İş Kanunu,
+            KVKK, kafe dili. Sonradan çeviri değil, baştan böyle kurgulandı.
           </p>
         </Reveal>
 
         {/* Farklılaştırıcı kartlar */}
-        <RevealStagger className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <RevealStagger className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {WHY_CARDS.map((c) => {
             const Icon = ICONS[c.icon] ?? Scale;
             return (
               <RevealItem key={c.title}>
-                <div className="group flex h-full flex-col rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-signal)]/50">
+                <div className="group flex h-full flex-col rounded-3xl border border-[var(--color-line)] bg-gradient-to-b from-[var(--color-surface)] to-[var(--color-paper)] p-6 shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-signal)]/50">
                   <div className="flex items-center justify-between">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--color-ink)] text-[var(--color-signal)]">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--color-cream)] text-[var(--color-signal-deep)]">
                       <Icon size={20} />
                     </span>
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                        c.badge === "Yerel kazanç"
-                          ? "bg-[var(--color-barista)]/15 text-[var(--color-barista)]"
-                          : "bg-[var(--color-signal)]/15 text-[var(--color-signal-deep)]"
-                      }`}
-                    >
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${BADGE_STYLE[c.badge] ?? BADGE_STYLE.default}`}>
                       {c.badge}
                     </span>
                   </div>

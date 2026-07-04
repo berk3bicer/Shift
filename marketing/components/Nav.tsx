@@ -23,7 +23,7 @@ import clsx from "clsx";
 import { LOGIN_URL, REGISTER_URL } from "@/lib/config";
 import { MODULE_PAGES } from "@/lib/modules";
 
-// Tur 7: mega-menü nav (7shifts deseni). Anchor-scroll YOK — tüm linkler GERÇEK route geçişi.
+// Tur 7: mega-menü nav. Anchor-scroll YOK — tüm linkler GERÇEK route geçişi.
 // Masaüstü: "Modüller" ve "Kaynaklar" hover/tıkla açılan panel; "Neden Shift" ve "Fiyatlar"
 // direkt link. Mobil: hamburger → tam ekran menü, gruplar accordion. Route değişince menü
 // otomatik kapanır (usePathname). prefers-reduced-motion'da panel animasyonsuz açılır.

@@ -5,7 +5,7 @@ import { REGISTER_URL } from "@/lib/config";
 import Reveal, { RevealStagger, RevealItem } from "./Reveal";
 
 // Fiyatlandırma — spec 12.3 birebir (499 / 999 / 1.799 / Özel). AYDINLIK zemin, beyaz kartlar.
-// Ortadaki "Büyüme" vurgulu (amber kenarlık + "Popüler" rozeti, 7shifts deseni). Şube başına aylık.
+// Ortadaki "Büyüme" vurgulu (amber kenarlık + "Popüler" rozeti). Şube başına aylık.
 // hideHeader: /fiyatlar sayfası kendi hero'sunu taşır — bölüm başlığı orada gizlenir (Tur 7).
 export default function Pricing({ hideHeader = false }: { hideHeader?: boolean }) {
   return (

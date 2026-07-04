@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
-/* ── Tasarım token'ları — Tur 4: AYDINLIK / SICAK yön (7shifts hissi) ──
-   Önceki yön (kapkara "matrix" ink zemin + mono her yerde) TERSİNE ÇEVRİLDİ.
-   Yeni taban: SICAK kağıt beyazı (paper). Ink artık zemin değil, yalnız METİN rengi
-   + sayfanın en altında 1 koyu vurgu bandı (CTA/footer). Aksan: amber (kahve crema/bal)
-   + ikincil sıcak turuncu. Kafe sıcaklığı fotoğraftan ve sıcak nötrlerden gelir. */
+/* ── Tasarım token'ları — Tur 8: PREMIUM SICAK EDİTÖRYEL yön ──
+   Taban Tur 4'ün aydınlık/sıcak yönü; bu turda DERİNLEŞTİRİLDİ: tek-amber monotonluğu
+   yerine sıcak ara tonlar (krem + toprak/terracotta + yumuşak adaçayı yeşili), kâğıt
+   dokusu (grain), el yazısı script vurgu fontu ve el-çizimi SVG karalamalar (scribble).
+   Koyu ton hâlâ yalnız metin + alttaki tek koyu bant (CTA/footer). */
 @theme inline {
   /* Koyu ton — SADECE metin + alttaki tek koyu vurgu bandı (CTA/footer) */
   --color-ink: #2a2521;          /* sıcak antrasit: ana metin + koyu bant */
@@ -29,6 +29,13 @@
   --color-warm: #f97316;         /* ikincil sıcak turuncu */
   --color-warm-soft: #fdba74;    /* yumuşak şeftali */
 
+  /* Tur 8 ara tonları — kafe/doğal his, tek-amber monotonluğunu kırar */
+  --color-sage: #64805a;         /* yumuşak adaçayı yeşili (dekoratif aksan) */
+  --color-sage-deep: #46603e;    /* AA uyumlu yeşil metin (eyebrow/rozet) */
+  --color-sage-soft: #e3ead9;    /* pastel adaçayı zemini */
+  --color-terra: #a8542f;        /* toprak/terracotta — AA uyumlu sıcak metin aksanı */
+  --color-terra-soft: #f3ddcd;   /* pastel toprak zemini */
+
   /* Çizelge veri paleti — açık zemine uygun canlı-ama-yumuşak tonlar */
   --color-barista: #16a34a;
   --color-kasiyer: #2563eb;
@@ -37,6 +44,10 @@
   --font-display: var(--font-jakarta);
   --font-body: var(--font-plex-sans);
   --font-mono: var(--font-plex-mono);
+  /* NOT: script fontu @theme'e BİLEREK eklenmedi — `--font-script` anahtarı Tailwind'in
+     kendi `font-script` utility'sini üretir ve (inline modda build anında çözülemeyen
+     next/font değişkeni yüzünden) varsayılan sans'a düşüp .font-script sınıfımızı ezer.
+     El yazısı fontu aşağıdaki .font-script sınıfından, doğrudan --font-caveat ile gelir. */
 
   /* Sıcak-tonlu, yumuşak gölgeler — aydınlık zeminde derinlik */
   --shadow-card: 0 1px 2px rgb(60 50 40 / 0.04), 0 12px 30px -14px rgb(70 55 40 / 0.16);
@@ -65,10 +76,32 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Kâğıt dokusu (grain) — flat dijital yüzey yerine çok hafif elde-işlenmiş doku.
+   SVG feTurbulence data-URI, fixed overlay; pointer-events yok, içerikle etkileşmez. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 90; /* nav (z-50) dahil her şeyin üstünde ince film; tıklamayı engellemez */
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
 /* Display başlıklar — sıcak humanist sans, hafif sıkı tracking */
 .font-display {
   font-family: var(--font-display), system-ui, sans-serif;
   letter-spacing: -0.02em;
+}
+
+/* El yazısı vurgu — SADECE seçili kelimeler/kısa notlar, gövde metni ASLA.
+   Caveat x-yüksekliği küçük kaldığı için çevresindeki başlığa göre büyütülür. */
+.font-script {
+  font-family: var(--font-caveat), "Comic Sans MS", cursive;
+  font-weight: 600;
+  letter-spacing: 0;
+  font-size: 1.18em;
+  line-height: 1;
 }
 
 /* Görünür klavye focus'u — marka aksanıyla halka (kalite tabanı) */
@@ -107,6 +140,19 @@ body {
   animation: float-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* El-çizimi karalama (scribble) "yazılıyor" efekti — path'ler pathLength=1 normalize,
+   dashoffset 1→0 akışıyla çizilir. Above-fold kullanım SAF CSS (arka plan sekme dersi);
+   scroll-tetikli kullanım Scribble bileşeninde framer whileInView ile. */
+@keyframes scribble-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+.scribble-css path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: scribble-draw 0.9s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -115,6 +161,11 @@ body {
   .anim-settle,
   .anim-float {
     opacity: 1;
+    animation: none;
+  }
+  /* Karalama direkt ÇİZİLİ görünür — içerik/dekor hiçbir koşulda gizli kalmaz */
+  .scribble-css path {
+    stroke-dashoffset: 0;
     animation: none;
   }
 }

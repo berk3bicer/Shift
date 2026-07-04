@@ -3,10 +3,11 @@ import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { CORE_MODULES, MORE_MODULES } from "@/lib/content";
 import Reveal, { RevealX, RevealStagger, RevealItem } from "./Reveal";
+import Scribble from "./Scribble";
 import ShiftGrid from "./ShiftGrid";
 import { KanbanMock, TimeclockMock, PoolMock } from "./FeatureMocks";
 
-// Modüller — Tur 6: düz kart ızgarası yerine 7shifts deseni ZİKZAK feature blokları.
+// Modüller — Tur 6: düz kart ızgarası yerine ZİKZAK feature blokları.
 // Her çekirdek modül kendi sahnesinde: bir yanda ürün mockup'ı (gerçek DOM, sıcak palet),
 // diğer yanda başlık + fayda + madde listesi. Sıra her blokta ters döner (görsel sol↔sağ);
 // scroll'da görsel ve metin iki yandan kayarak belirir (RevealX). Mobilde tek kolon:
@@ -37,39 +38,42 @@ const STRIP = CORE_MODULES.filter((m) => !(m.key in VISUALS));
 
 export default function Modules() {
   return (
-    <section id="moduller" className="overflow-hidden bg-[var(--color-paper-deep)] py-20 sm:py-28">
+    <section id="moduller" className="overflow-hidden bg-[var(--color-paper-deep)] py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <Reveal className="max-w-2xl">
-          <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-signal-deep)]">
+          <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-terra)]">
             Çekirdek modüller
           </span>
           <h2 className="font-display mt-3 text-3xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-4xl">
-            Genişlik değil, derinlik.
+            Genişlik değil,{" "}
+            <span className="relative inline-block">
+              <span className="font-script font-bold text-[var(--color-signal-deep)]">derinlik</span>
+              <Scribble shape="underline" className="absolute -bottom-1.5 left-0 w-full" delay={0.4} />
+            </span>
+            .
           </h2>
-          <p className="mt-4 text-lg text-[var(--color-muted)]">
+          <p className="mt-5 text-lg leading-relaxed text-[var(--color-muted)]">
             Önce çekirdeği kusursuz yapıyoruz: vardiya, görev, giriş-çıkış ve vardiya havuzu.
             Kafeye ilk günden değer katan modüller — aşağıda her biri iş başında.
           </p>
         </Reveal>
 
-        {/* Zikzak feature blokları — cömert dikey boşluk, dikey ortalı iki kolon */}
-        <div className="mt-16 space-y-20 sm:mt-20 sm:space-y-28">
+        {/* Zikzak feature blokları — cömert dikey boşluk, dikey ortalı iki kolon.
+            Görsel zeminleri sıcak ara tonlarda döner: krem → şeftali → adaçayı (palet zenginliği). */}
+        <div className="mt-20 space-y-24 sm:mt-24 sm:space-y-36">
           {SHOWCASE.map((m, i) => {
             const Icon = ICONS[m.icon] ?? CalendarDays;
             const visualLeft = i % 2 === 0; // lg'de: çift blok görsel-sol, tek blok görsel-sağ
             const accent = ACCENT[m.accent];
+            const tints = ["bg-[var(--color-cream)]/70", "bg-[var(--color-sage-soft)]/60", "bg-[var(--color-cream-2)]/70", "bg-[var(--color-terra-soft)]/50"];
             return (
               <div key={m.key} className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
                 {/* Görsel — mobilde her zaman üstte (DOM sırası), lg'de zikzak */}
                 <RevealX from={visualLeft ? "left" : "right"} className={visualLeft ? "" : "lg:order-2"}>
-                  <div
-                    className={`relative rounded-[2rem] p-4 sm:p-8 ${
-                      visualLeft ? "bg-[var(--color-cream)]/70" : "bg-[var(--color-cream-2)]/70"
-                    }`}
-                  >
+                  <div className={`relative rounded-[2.5rem] p-4 sm:p-8 ${tints[i % tints.length]}`}>
                     <div
                       aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 rounded-[2rem] opacity-50"
+                      className="pointer-events-none absolute inset-0 rounded-[2.5rem] opacity-50"
                       style={{ background: "radial-gradient(circle at 30% 20%, var(--color-warm-soft), transparent 60%)" }}
                     />
                     <div className="relative">{VISUALS[m.key]}</div>

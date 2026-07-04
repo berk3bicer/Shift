@@ -2,33 +2,32 @@ import { Check, MessageCircle, FileText, Calculator } from "lucide-react";
 import { PROBLEM_SOLUTION } from "@/lib/content";
 import Reveal, { RevealStagger, RevealItem } from "./Reveal";
 
-// Problem → Çözüm — 7shifts "before/after" anlatısı. Sol: dağınık (WhatsApp/kağıt/Excel, soluk),
-// sağ: Shift'te toplanmış (SICAK krem/amber kart — artık koyu DEĞİL). İçerik spec 1.1/1.3.
+// Problem → Çözüm — "önce/sonra" hikâyesi. Sol: dağınık (WhatsApp/kağıt/Excel, soluk),
+// sağ: Shift'te toplanmış (SICAK krem/amber kart). İçerik spec 1.1/1.3. Tur 8: kart
+// etiketleri el yazısı (script) — "tanıdık bir sahne" hissi, anlatı tonu.
 const CHAOS_ICONS = [MessageCircle, FileText, Calculator, MessageCircle, FileText, MessageCircle];
 // Dağınık chip'lere doğal bir "atılmışlık" hissi için hafif dönüşler.
 const TILT = ["-2.5deg", "1.8deg", "-1.2deg", "2.2deg", "-2deg", "1.4deg"];
 
 export default function ProblemSolution() {
   return (
-    <section className="bg-[var(--color-paper)] py-20 sm:py-28">
+    <section className="bg-[var(--color-paper)] py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-signal-deep)]">
-            Problem → Çözüm
-          </span>
+          <span className="font-script text-2xl text-[var(--color-terra)]">tanıdık geldi mi?</span>
           <h2 className="font-display mt-3 text-3xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-4xl">
-            Dağınık araçlar, işi iki kez yaptırır.
+            Bir vardiya değişikliği, üç ayrı yere yazılıyor.
           </h2>
-          <p className="mt-4 text-lg text-[var(--color-muted)]">
-            Bugün kafeler ekibini WhatsApp, Excel ve kağıt arasında yönetiyor. Bir vardiya değişikliği
-            üç yere yazılıyor, bir hijyen kaydı deftere sıkışıyor. Shift hepsini tek yerde toplar.
+          <p className="mt-5 text-lg leading-relaxed text-[var(--color-muted)]">
+            Grupta bir mesaj, panoda bir not, Excel&apos;de bir hücre. Biri güncellenir, ikisi eski kalır —
+            ve cumartesi sabahı iki kişi aynı vardiyaya gelir. Shift bu hikâyeyi tek yerde bitirir.
           </p>
         </Reveal>
 
-        <div className="mt-14 grid items-stretch gap-6 lg:grid-cols-[1fr_auto_1fr]">
+        <div className="mt-16 grid items-stretch gap-6 lg:grid-cols-[1fr_auto_1fr]">
           {/* Sol: dağınık */}
-          <Reveal className="relative rounded-2xl border border-[var(--color-line)] bg-[var(--color-paper-deep)] p-6 sm:p-7">
-            <div className="mb-5 flex items-center gap-2">
+          <Reveal className="relative rounded-3xl border border-[var(--color-line)] bg-[var(--color-paper-deep)] p-6 sm:p-7">
+            <div className="mb-5 flex items-center gap-2.5">
               <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-muted)]/50" />
               <span className="font-display text-sm font-bold text-[var(--color-muted)]">Şimdi — dağınık</span>
             </div>
@@ -61,8 +60,8 @@ export default function ProblemSolution() {
           </div>
 
           {/* Sağ: Shift'te toplanmış — SICAK krem/amber kart */}
-          <Reveal className="rounded-2xl border-2 border-[var(--color-signal)]/40 bg-gradient-to-b from-[var(--color-cream)] to-[var(--color-surface)] p-6 shadow-[var(--shadow-card)] sm:p-7">
-            <div className="mb-5 flex items-center gap-2">
+          <Reveal className="rounded-3xl border-2 border-[var(--color-signal)]/40 bg-gradient-to-b from-[var(--color-cream)] to-[var(--color-surface)] p-6 shadow-[var(--shadow-card)] sm:p-7">
+            <div className="mb-5 flex items-center gap-2.5">
               <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-signal)]" />
               <span className="font-display text-sm font-bold text-[var(--color-ink)]">Shift ile — tek çatıda</span>
             </div>

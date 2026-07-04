@@ -12,7 +12,7 @@ import type { ReactNode } from "react";
 // Tur 6 kök neden düzeltmesi: önceki `amount: 0.2` öğe viewport'un EN ALT kenarında %20
 // görünür olur olmaz tetikliyordu → reveal ekran kenarında, kullanıcı bakmadan bitiyordu.
 // Yeni tetik: negatif alt rootMargin — öğe alt kenardan ~%15 İÇERİ girince oynar (kullanıcı
-// tam o bölgeye bakarken). Mesafe de 20px→36px: hissedilir ama sarsıntısız (Apple/7shifts).
+// tam o bölgeye bakarken). Mesafe de 20px→36px: hissedilir ama sarsıntısız.
 const VIEWPORT = { once: true, margin: "0px 0px -15% 0px" } as const;
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -103,7 +103,7 @@ export function RevealStagger({
   );
 }
 
-// Count-up — sayı viewport'a girince 0'dan hedefe akar (Apple/7shifts istatistik hissi).
+// Count-up — sayı viewport'a girince 0'dan hedefe akar (premium istatistik hissi).
 // prefers-reduced-motion → animasyon YOK, sayı direkt hedefte (erişilebilirlik + Gün 34 dersi:
 // içerik hiçbir koşulda boş/0'da takılı kalmaz). once: bir kez sayar, tekrar tetiklenmez.
 export function CountUp({

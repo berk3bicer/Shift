@@ -22,7 +22,8 @@ export default function CtaBand({
         style={{ background: "radial-gradient(circle, var(--color-signal), transparent 60%)" }}
       />
       <Reveal className="relative mx-auto flex max-w-4xl flex-col items-center px-5 text-center sm:px-8">
-        <h2 className="font-display text-2xl font-extrabold leading-tight text-white sm:text-3xl">{title}</h2>
+        <span className="font-script -rotate-1 text-2xl text-[var(--color-signal-soft)]">hadi, birlikte kuralım</span>
+        <h2 className="font-display mt-3 text-2xl font-extrabold leading-tight text-white sm:text-3xl">{title}</h2>
         <p className="mt-3 max-w-xl text-base leading-relaxed text-white/65">{sub}</p>
         <div className="mt-7 flex flex-col gap-3 sm:flex-row">
           <a

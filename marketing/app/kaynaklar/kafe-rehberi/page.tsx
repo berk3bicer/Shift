@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BookOpen, ExternalLink, Info } from "lucide-react";
 import Reveal, { RevealStagger, RevealItem, CountUp } from "@/components/Reveal";
+import ScriptWord from "@/components/ScriptWord";
 import CtaBand from "@/components/CtaBand";
 
 // /kaynaklar/kafe-rehberi — İÇERİK SAYFASI (Tur 7, EN HASSAS SAYFA).
-// DÜRÜSTLÜK ÇERÇEVESİ (Berke onaylı): 7shifts'in benzer sayfası KENDİ 1.074 kişilik anketine
-// dayanır; bizim öyle verimiz YOK. Bu yüzden "biz araştırdık" tonu YASAK. Burada yalnızca
+// DÜRÜSTLÜK ÇERÇEVESİ (Berke onaylı): kendi anketimiz/verimiz YOK.
+// Bu yüzden "biz araştırdık" tonu YASAK. Burada yalnızca
 // (1) resmi mevzuat, (2) üçüncü taraf/akademik araştırma atıfları kullanılır — her veri
 // görünür + tıklanır kaynak linkiyle. UYDURMA anket/yüzde YOK; niteliksel gözlemler sayı
 // verilmeden, gözlem tonunda anlatılır. Pilot verisi geldiğinde kendi verimizle güçlenecek.
@@ -42,7 +43,7 @@ const INSIGHTS: {
     statLabel: "ortalama restoran net kâr marjı",
     title: "Kâr marjı dar — işgücü maliyeti sürprizi kaldırmaz",
     body: "Sektör analizlerine göre restoran ve kafelerde ortalama net kâr marjı %3–9 bandındadır; gelirin yaklaşık üçte biri işgücüne gider. Bu kadar dar marjda planlanmamış fazla mesai, doğrudan kârdan yer.",
-    source: { label: "Toast — Average Restaurant Profit Margin (sektör analizi)", url: "https://pos.toasttab.com/blog/on-the-line/average-restaurant-profit-margin" },
+    source: { label: "ABD restoran sektörü kâr marjı analizi (2025, İngilizce)", url: "https://pos.toasttab.com/blog/on-the-line/average-restaurant-profit-margin" },
     solution: "Shift fazla mesai eşiği yaklaşırken uyarır ve mesaiyi İş Kanunu'na göre hesaplar — ay sonu bordro sürprizi yerine planlı işgücü maliyeti.",
     link: { href: "/moduller/vardiya", label: "Vardiya & Planlama modülü" },
   },
@@ -67,7 +68,7 @@ const INSIGHTS: {
 
 const SOURCES = [
   { label: "4857 sayılı İş Kanunu — T.C. Mevzuat Bilgi Sistemi", url: "https://www.mevzuat.gov.tr/mevzuatmetin/1.5.4857.pdf" },
-  { label: "Toast — Average Restaurant Profit Margin (2025 verileri, İngilizce)", url: "https://pos.toasttab.com/blog/on-the-line/average-restaurant-profit-margin" },
+  { label: "Average Restaurant Profit Margin — ABD restoran sektörü analizi (2025, İngilizce)", url: "https://pos.toasttab.com/blog/on-the-line/average-restaurant-profit-margin" },
   {
     label: "Ciro ve Personel Devir Hızı İlişkisi — ResearchGate (organize perakende, Türkiye)",
     url: "https://www.researchgate.net/publication/264129664_Ciro_ve_Personel_Devir_Hizi_Iliskisi_-_Revenue_and_Turnover_Relation",
@@ -88,7 +89,7 @@ export default function CafeGuidePage() {
             <BookOpen size={14} className="text-[var(--color-signal-deep)]" /> Kaynaklar · Rehber
           </span>
           <h1 className="anim-rise font-display mt-5 max-w-3xl text-4xl font-extrabold leading-[1.08] text-[var(--color-ink)] sm:text-5xl" style={{ animationDelay: "120ms" }}>
-            Kafe Operasyonu Rehberi: Verilerle Ekip Yönetimi
+            Kafe Operasyonu Rehberi: <ScriptWord>verilerle</ScriptWord> ekip yönetimi
           </h1>
           <p className="anim-rise mt-5 max-w-2xl text-lg leading-relaxed text-[var(--color-muted)]" style={{ animationDelay: "200ms" }}>
             Bağımsız kafe işletmek zor. Sektör verileri ve mevzuat sorunları gösteriyor; Shift çözümü

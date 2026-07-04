@@ -2,7 +2,7 @@ import { Plus } from "lucide-react";
 
 // İmza öğe: canlı haftalık vardiya çizelgesi (statik resim DEĞİL — gerçek DOM).
 // Tur 4: AÇIK zeminli beyaz kart, bloklar PASTEL (kapkara değil). Hero'da fotoğrafın üstüne
-// bindirilen "floating app kartı" (7shifts screenshot-over-photo deseni).
+// bindirilen "floating app kartı" (screenshot-over-photo deseni).
 // Bloklar SAF CSS keyframe (.anim-settle + stagger) ile sırayla "yerine oturur" —
 // JS/hydration'a bağlı değil → arka planda yüklenen sekmede bile görünür (Gün 34 dersi).
 

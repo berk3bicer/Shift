@@ -96,7 +96,7 @@ export const MODULE_PAGES: ModulePage[] = [
       { title: "Geç giriş / erken çıkış bildirimi", desc: "Planlanan vardiyadan sapma olduğunda yöneticiye anında bildirim.", tag: "MVP" },
       { title: "Haftalık 45 saat üzeri %50 zamlı", desc: "Fazla mesai İş Kanunu'na göre otomatik işaretlenir ve %50 zamlı hesaplanır.", tag: "TR" },
       { title: "Gece, hafta sonu ve resmi tatil çarpanı", desc: "Türkiye resmi tatil takvimi entegre; tatil günü otomatik tanınır, çarpan işletme bazlı tanımlanır.", tag: "TR" },
-      { title: "Bordroya hazır dışa aktarma", desc: "Aylık çalışma ve mesai özeti Excel/CSV olarak dışa aktarılır — Logo, Mikro, Paraşüt ile uyumlu format.", tag: "Faz 2" },
+      { title: "Bordroya hazır dışa aktarma", desc: "Aylık çalışma ve mesai özeti Excel/CSV olarak dışa aktarılır — yaygın muhasebe yazılımlarıyla uyumlu format.", tag: "Faz 2" },
     ],
     how: [
       { title: "QR okut ya da PIN gir", desc: "Vardiyaya gelen personel tabletten ya da telefonundan giriş yapar." },
@@ -105,7 +105,7 @@ export const MODULE_PAGES: ModulePage[] = [
     ],
     tr: {
       title: "4857 sayılı İş Kanunu'na göre hesap",
-      body: "Shift'in mesai motoru Türkiye mevzuatına göre çalışır: haftalık 45 saati aşan çalışma %50 zamlı fazla mesaidir, günlük çalışma 11 saati aşamaz. 7shifts gibi araçlar ABD/Kanada eyalet kurallarına göre hesaplar — Türkiye'de kullanılamaz. Shift bu hesabı yerli mevzuatla, otomatik yapar.",
+      body: "Shift'in mesai motoru Türkiye mevzuatına göre çalışır: haftalık 45 saati aşan çalışma %50 zamlı fazla mesaidir, günlük çalışma 11 saati aşamaz. Sonradan çevrilmiş bir hesap değil — motor baştan 4857'ye göre kurgulandı ve hesabı otomatik yapar.",
     },
     visual: "timeclock",
   },
@@ -159,8 +159,8 @@ export const MODULE_PAGES: ModulePage[] = [
       { title: "Teslimatı kaydet", desc: "Gelen miktarı doğrula; stok otomatik güncellenir." },
     ],
     tr: {
-      title: "7shifts'te hiç olmayan modül",
-      body: "Vardiya araçları stok ve tedariğe hiç girmez; POS sistemleri ise satış tarafında kalır. Shift, ekip operasyonuyla tedariği aynı çatıda birleştiren ilk yerli çözüm olmayı hedefliyor. Bu modül Faz 2'de geliyor — bugün satın alma kararını çekirdek modüller üzerinden verebilirsin.",
+      title: "Ekip + tedarik aynı çatıda",
+      body: "Vardiya araçları stok ve tedariğe hiç girmez; satış sistemleri ise kasada kalır. Shift, ekip operasyonuyla tedariği aynı çatıda birleştirmeyi hedefliyor. Bu modül Faz 2'de geliyor — bugün satın alma kararını çekirdek modüller üzerinden verebilirsin.",
     },
     visual: "stock",
   },
@@ -188,7 +188,7 @@ export const MODULE_PAGES: ModulePage[] = [
     ],
     tr: {
       title: "Türkiye'de yasal zorunluluk",
-      body: "HACCP kayıtları gıda işletmeleri için yasal gerekliliktir ve bugün çoğu kafede kağıt formlarda tutulur. 7shifts'te bu modül hiç yok. Shift'in hijyen modülü Faz 3'te geliyor — kağıt dosyayı rafa kaldırmak için.",
+      body: "HACCP kayıtları gıda işletmeleri için yasal gerekliliktir ve bugün çoğu kafede kağıt formlarda tutulur. Shift'in hijyen modülü Faz 3'te geliyor — kağıt dosyayı rafa kaldırmak için.",
     },
     visual: "hygiene",
   },
@@ -206,5 +206,5 @@ export const ROADMAP_MODULES = [
   { name: "Analitik & Raporlama", desc: "İşgücü maliyeti, devamsızlık, operasyon skoru.", tag: "Faz 2–3" },
   { name: "İK & Personel Dosyası", desc: "Dijital özlük, belge saklama, onboarding.", tag: "Faz 3" },
   { name: "Çok Şube", desc: "Merkezi yönetim, konsolide rapor, şubeler arası transfer.", tag: "Faz 3" },
-  { name: "Entegrasyonlar", desc: "POS (Restomenum, Menulux), muhasebe (Logo, Mikro), e-Fatura.", tag: "Faz 3–4" },
+  { name: "Entegrasyonlar", desc: "POS/adisyon, muhasebe ve e-Fatura entegrasyonları.", tag: "Faz 3–4" },
 ];

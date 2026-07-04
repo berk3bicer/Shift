@@ -3,6 +3,7 @@ import { ShieldCheck } from "lucide-react";
 import { TRUST } from "@/lib/content";
 import Pricing from "@/components/Pricing";
 import Reveal, { RevealStagger, RevealItem } from "@/components/Reveal";
+import ScriptWord from "@/components/ScriptWord";
 import CtaBand from "@/components/CtaBand";
 
 // /fiyatlar — landing'deki Pricing bileşeni (spec 12.3 birebir) + güven kartları + SSS (Tur 7).
@@ -34,7 +35,7 @@ const FAQ = [
   },
   {
     q: "Verilerim nerede tutuluyor?",
-    a: "Avrupa/Türkiye veri merkezinde (Hetzner), KVKK'ya uygun olarak. Verilerin ABD'ye gitmez.",
+    a: "Avrupa/Türkiye veri merkezinde, KVKK'ya uygun olarak. Verilerin yurt dışına, farklı hukuk bölgelerine gitmez.",
   },
   {
     q: "Paket değiştirmek istersem?",
@@ -56,7 +57,7 @@ export default function PricingPage() {
             Fiyatlandırma
           </span>
           <h1 className="anim-rise font-display mx-auto mt-3 max-w-3xl text-4xl font-extrabold leading-[1.08] text-[var(--color-ink)] sm:text-5xl" style={{ animationDelay: "120ms" }}>
-            Şube başına, aylık. Sürpriz yok.
+            Şube başına, aylık. <ScriptWord>Sürpriz yok.</ScriptWord>
           </h1>
           <p className="anim-rise mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-[var(--color-muted)]" style={{ animationDelay: "200ms" }}>
             Küçük kafeden büyüyen zincire — ihtiyacın kadar modül. Gizli ücret yok, zorunlu üst paket

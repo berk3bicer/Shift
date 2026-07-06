@@ -53,6 +53,25 @@ public class DecideTimeOffHandler
         timeOff.DecisionNote = request.DecisionNote;
         timeOff.UpdatedAt = DateTime.UtcNow;
 
+        // ── PERSONEL BİLDİRİMİ ──
+        // Kararı talep eden personele bildir (tek kişi — timeOff.UserId zaten elde).
+        // Onay/red tipine göre ayrı NotificationType. Karar notu varsa mesaja eklenir.
+        // Geçiş + bildirim tek SaveChanges → atomik.
+        // Spec §5.2: kanal Push + E-posta; şimdilik yalnız in-app Notification (FCM/SMTP yok).
+        var approved = newStatus == TimeOffStatus.Approved;
+        var message = approved ? "İzin talebin onaylandı." : "İzin talebin reddedildi.";
+        if (!string.IsNullOrWhiteSpace(request.DecisionNote))
+            message += $" Not: {request.DecisionNote}";
+
+        _db.Notifications.Add(new Notification
+        {
+            UserId = timeOff.UserId,
+            Type = approved ? NotificationType.TimeOffApproved : NotificationType.TimeOffRejected,
+            Message = message,
+            RelatedEntityId = timeOff.Id,   // tıkla → izin talebine git
+            IsRead = false
+        });
+
         await _db.SaveChangesAsync(ct);
 
         return new DecideTimeOffResult(timeOff.Id, newStatus.ToString());

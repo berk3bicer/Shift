@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Shift.API\Shift.API.csproj" />
     <ProjectReference Include="..\..\src\Shift.Infrastructure\Shift.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Shift.Application\Shift.Application.csproj" />
     <ProjectReference Include="..\..\src\Shift.Domain\Shift.Domain.csproj" />

@@ -1,6 +1,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Shift.API.RateLimiting;
 using Shift.Application.Features.Staff.Create;
 using Shift.Application.Features.Staff.List;
 using Shift.Application.Features.Staff.ResendInvite;
@@ -37,6 +39,8 @@ public class StaffController : ControllerBase
     }
 
     // Daveti tekrar gönder (yalnız davet-bekleyen/pasif kullanıcıya; eski linkler iptal olur).
+    // E-posta tetikleyen uç → auth-strict (bombardıman önleme), yetkili istekte bile.
+    [EnableRateLimiting(AuthRateLimitPolicies.AuthStrict)]
     [HttpPost("{id:guid}/resend-invite")]
     public async Task<IActionResult> ResendInvite(Guid id)
     {

@@ -29,6 +29,7 @@ public interface IShiftDbContext
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<ShiftSwap> ShiftSwaps { get; }
     DbSet<ShiftPoolSettings> ShiftPoolSettings { get; }
+    DbSet<OneTimeToken> OneTimeTokens { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

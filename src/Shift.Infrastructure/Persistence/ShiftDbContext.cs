@@ -40,6 +40,7 @@ public class ShiftDbContext : DbContext, IShiftDbContext
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<ShiftSwap> ShiftSwaps => Set<ShiftSwap>();
     public DbSet<ShiftPoolSettings> ShiftPoolSettings => Set<ShiftPoolSettings>();
+    public DbSet<OneTimeToken> OneTimeTokens => Set<OneTimeToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -603,6 +604,21 @@ public class ShiftDbContext : DbContext, IShiftDbContext
 
         modelBuilder.Entity<RefreshToken>().HasQueryFilter(
             rt => rt.TenantId == _tenantProvider.GetTenantId());
+
+        // OneTimeToken (davet + şifre sıfırlama) — RefreshToken'la aynı desen.
+        // User'a nav koleksiyonu açmıyoruz (token'a hep hash üzerinden gidilir).
+        modelBuilder.Entity<OneTimeToken>()
+            .HasOne(t => t.User)
+            .WithMany()
+            .HasForeignKey(t => t.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Aramalar hep hash'le (accept-invite / reset-password) → index.
+        modelBuilder.Entity<OneTimeToken>()
+            .HasIndex(t => t.TokenHash);
+
+        modelBuilder.Entity<OneTimeToken>().HasQueryFilter(
+            t => t.TenantId == _tenantProvider.GetTenantId());
     }
 
     // SaveChanges damgalama: yeni eklenen ITenantEntity kayıtlarına

@@ -7,6 +7,7 @@ using Shift.Application.Common.Interfaces;
 using Shift.Application.Features.Auth.Register;
 using Shift.Application.Features.Auth.Login;
 using Shift.Application.Features.Auth.Refresh;
+using Shift.Application.Features.Auth.AcceptInvite;
 
 namespace Shift.API.Controllers;
 
@@ -69,4 +70,14 @@ public class AuthController : ControllerBase
         var result = await _mediator.Send(command);
         return Ok(result);
     }
+
+    // Davet kabulü: davetli henüz login OLAMAZ (IsActive=false) → anonim olmak zorunda.
+    [AllowAnonymous]
+    [HttpPost("accept-invite")]
+    public async Task<IActionResult> AcceptInvite([FromBody] AcceptInviteCommand command)
+    {
+        var result = await _mediator.Send(command);
+        return Ok(result);
+    }
+
 }

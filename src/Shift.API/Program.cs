@@ -15,6 +15,10 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddControllers();
 
+// FE kök adresi — davet/şifre-sıfırlama e-postalarındaki linkler bunun altına kurulur.
+builder.Services.AddSingleton(new Shift.Application.Common.AppUrlOptions(
+    builder.Configuration["App:BaseUrl"] ?? "http://localhost:3000"));
+
 var jwt = builder.Configuration.GetSection("Jwt");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Shift.Application.Common.Interfaces;
 using Shift.Infrastructure.Authentication;
 using Shift.Infrastructure.MultiTenancy;
+using Shift.Infrastructure.Email;
 using Shift.Infrastructure.Persistence;
 using Shift.Infrastructure.Storage;
 
@@ -50,6 +51,24 @@ public static class DependencyInjection
         });
         services.AddScoped<LocalFileStorage>();
         services.AddScoped<IFileStorage>(sp => sp.GetRequiredService<LocalFileStorage>());
+
+        // E-posta: SMTP ayarı varsa gerçek gönderim (MailKit), yoksa dev fallback —
+        // e-postayı (davet/reset linkiyle) loga basar, akış SMTP'siz test edilir.
+        var emailSection = configuration.GetSection(EmailOptions.SectionName);
+        var emailOptions = new EmailOptions
+        {
+            Host = emailSection["Host"] ?? string.Empty,
+            User = emailSection["User"] ?? string.Empty,
+            Pass = emailSection["Pass"] ?? string.Empty,
+            FromAddress = emailSection["FromAddress"] ?? string.Empty,
+            FromName = emailSection["FromName"] ?? "Shift",
+        };
+        if (int.TryParse(emailSection["Port"], out var port)) emailOptions.Port = port;
+        services.AddSingleton(emailOptions);
+        if (emailOptions.IsConfigured)
+            services.AddScoped<IEmailSender, SmtpEmailSender>();
+        else
+            services.AddScoped<IEmailSender, ConsoleEmailSender>();
 
         return services;
     }

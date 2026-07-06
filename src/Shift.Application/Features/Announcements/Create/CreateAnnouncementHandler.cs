@@ -6,8 +6,9 @@ using Shift.Domain.Entities;
 namespace Shift.Application.Features.Announcements.Create;
 
 // Duyuruyu kalıcılaştırır + hedef kullanıcılara bildirim FAN-OUT'u yapar (Gün 8 altyapısı).
-// Hedef = şube (varsa) ∩ rol (varsa) kesişimi; gönderen kendisi hariç. Duyuru + tüm
-// bildirimler tek SaveChanges → atomik (ya hepsi gider ya hiçbiri).
+// Hedef = şube (varsa) ∩ rol (varsa) kesişimi; gönderen de kapsamdaysa alır (kendi
+// duyurusunu kendi zilinde görür). Duyuru + tüm bildirimler tek SaveChanges → atomik
+// (ya hepsi gider ya hiçbiri).
 public class CreateAnnouncementHandler
     : IRequestHandler<CreateAnnouncementCommand, CreateAnnouncementResult>
 {
@@ -58,9 +59,9 @@ public class CreateAnnouncementHandler
             recipients = recipients.Where(u =>
                 _db.UserRoles.Any(ur => ur.UserId == u.Id && ur.Role.Type == role));
 
-        // Gönderenin kendisine bildirim gitmez.
+        // Gönderen de şube∩rol kapsamındaysa alıcıdır — kendi duyurusu kendi zilinde
+        // görünür. Kapsam dışındaysa (ör. farklı şube) doğal olarak almaz.
         var recipientIds = await recipients
-            .Where(u => u.Id != senderId)
             .Select(u => u.Id)
             .ToListAsync(ct);
 

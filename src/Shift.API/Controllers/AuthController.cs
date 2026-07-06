@@ -8,6 +8,8 @@ using Shift.Application.Features.Auth.Register;
 using Shift.Application.Features.Auth.Login;
 using Shift.Application.Features.Auth.Refresh;
 using Shift.Application.Features.Auth.AcceptInvite;
+using Shift.Application.Features.Auth.ForgotPassword;
+using Shift.Application.Features.Auth.ResetPassword;
 
 namespace Shift.API.Controllers;
 
@@ -80,4 +82,20 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    // Cevap e-postanın kayıtlı olup olmamasından bağımsız hep aynı (enumeration koruması).
+    [AllowAnonymous]
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
+    {
+        await _mediator.Send(command);
+        return Ok(new { message = "E-posta kayıtlıysa sıfırlama bağlantısı gönderildi." });
+    }
+
+    [AllowAnonymous]
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
+    {
+        await _mediator.Send(command);
+        return Ok(new { message = "Şifre güncellendi. Giriş yapabilirsiniz." });
+    }
 }

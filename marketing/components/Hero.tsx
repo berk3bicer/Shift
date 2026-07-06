@@ -32,16 +32,8 @@ export default function Hero() {
       <div className="relative mx-auto grid max-w-6xl items-center gap-16 px-5 pb-28 pt-32 sm:px-8 lg:grid-cols-[1.02fr_1fr] lg:gap-12 lg:pb-36 lg:pt-40">
         {/* Sol: metin */}
         <div>
-          <span
-            className="anim-rise inline-flex items-center gap-2 rounded-full border border-[var(--color-line-strong)] bg-[var(--color-surface)] px-3.5 py-1.5 text-xs font-semibold text-[var(--color-muted)] shadow-sm"
-            style={{ animationDelay: "40ms" }}
-          >
-            <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-sage)]" />
-            Kafe ve restoranlar için hepsi-bir-arada operasyon platformu
-          </span>
-
           <h1
-            className="anim-rise font-display mt-6 text-[2.7rem] font-extrabold leading-[1.06] text-[var(--color-ink)] sm:text-5xl lg:text-[3.8rem]"
+            className="anim-rise font-display text-[2.7rem] font-extrabold leading-[1.06] text-[var(--color-ink)] sm:text-5xl lg:text-[3.8rem]"
             style={{ animationDelay: "120ms" }}
           >
             Kafenin bütün operasyonu <ScriptWord delay="0.7s">tek ekranda</ScriptWord>.

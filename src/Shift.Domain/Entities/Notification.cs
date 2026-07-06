@@ -39,5 +39,8 @@ public enum NotificationType
     ShiftPoolActionRequested = 6, // Give/Take onay bekliyor (yöneticiye — aksiyon gerekir)
     ShiftTaken = 7,               // Bir vardiya havuzdan dolduruldu (yöneticiye — bilgi amaçlı)
     ShiftPoolApproved = 8,        // Havuz talebin onaylandı (talep edene)
-    ShiftPoolRejected = 9         // Havuz talebin reddedildi (talep edene)
+    ShiftPoolRejected = 9,        // Havuz talebin reddedildi (talep edene)
+    TimeOffRequested = 10,        // Personel izin talebi oluşturdu (yöneticiye — aksiyon gerekir)
+    TimeOffApproved = 11,         // İzin talebin onaylandı (talep eden personele)
+    TimeOffRejected = 12          // İzin talebin reddedildi (talep eden personele)
 }

@@ -23,7 +23,11 @@ public class LoginHandler : IRequestHandler<LoginCommand, LoginResult>
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(u => u.Email == request.Email, ct);
 
-        if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+        // Boş hash = davet bekleyen kullanıcı (şifre hiç konmadı). BCrypt.Verify boş
+        // hash'te false dönmez, PATLAR → önce ele: aynı "hatalı" cevabı ver (500 değil).
+        if (user is null
+            || string.IsNullOrEmpty(user.PasswordHash)
+            || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             throw new UnauthorizedAccessException("E-posta veya şifre hatalı.");
 
         if (!user.IsActive)

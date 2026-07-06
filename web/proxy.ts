@@ -11,6 +11,15 @@ export function proxy(req: NextRequest) {
   // yoktur → /register guard'ın DIŞINDA olmalı (yoksa kayıt ekranı /login'e sekerdi).
   const isAuthPage = pathname === "/login" || pathname === "/register";
 
+  // Davet kabulü + şifre sıfırlama: e-postadaki linkten gelinir, davetlinin oturumu
+  // OLAMAZ (IsActive=false) → guard dışı. Oturumlu birinin açması da zararsız —
+  // login/register gibi /'a sektirme, sayfa kendi işini yapsın.
+  const isTokenPage =
+    pathname === "/sifre-unuttum" ||
+    pathname.startsWith("/davet/") ||
+    pathname.startsWith("/sifre-sifirla/");
+  if (isTokenPage) return NextResponse.next();
+
   if (!hasSession && !isAuthPage) {
     const url = req.nextUrl.clone();
     url.pathname = "/login";

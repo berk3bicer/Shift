@@ -11,8 +11,7 @@ public class CreateStaffValidator : AbstractValidator<CreateStaffCommand>
 
         RuleFor(x => x.Email).NotEmpty().EmailAddress();
 
-        // Login'le aynı pratik: en az 6 karakter (basit; politika ileride sertleşir).
-        RuleFor(x => x.Password).NotEmpty().MinimumLength(6);
+        // Şifre kuralı YOK: davet modelinde şifreyi personel kendisi belirler (accept-invite).
 
         RuleFor(x => x.BranchId).NotEmpty();
 

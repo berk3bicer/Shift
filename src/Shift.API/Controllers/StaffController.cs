@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shift.Application.Features.Staff.Create;
 using Shift.Application.Features.Staff.List;
+using Shift.Application.Features.Staff.ResendInvite;
 
 namespace Shift.API.Controllers;
 
@@ -33,5 +34,13 @@ public class StaffController : ControllerBase
     {
         var result = await _mediator.Send(new ListStaffQuery());
         return Ok(result);
+    }
+
+    // Daveti tekrar gönder (yalnız davet-bekleyen/pasif kullanıcıya; eski linkler iptal olur).
+    [HttpPost("{id:guid}/resend-invite")]
+    public async Task<IActionResult> ResendInvite(Guid id)
+    {
+        await _mediator.Send(new ResendInviteCommand(id));
+        return Ok(new { message = "Davet e-postası yeniden gönderildi." });
     }
 }

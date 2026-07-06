@@ -11,13 +11,23 @@ import { useRouter } from "next/navigation";
 const POLL_MS = 45_000;
 
 // Backend NotificationType enum'ı (int) → kullanıcıya gösterilecek başlık + tıklama hedefi.
-// 0=ShiftPublished, 1=LateClockIn, 2=TaskAssigned, 3=TaskCompleted, 4=AnnouncementPosted.
+// 0=ShiftPublished, 1=LateClockIn, 2=TaskAssigned, 3=TaskCompleted, 4=AnnouncementPosted,
+// 5=ShiftUpForGrabs, 6=ShiftPoolActionRequested, 7=ShiftTaken, 8=ShiftPoolApproved,
+// 9=ShiftPoolRejected, 10=TimeOffRequested, 11=TimeOffApproved, 12=TimeOffRejected.
 const NOTIFICATION_META: Record<number, { label: string; href: string }> = {
   0: { label: "Vardiya Programı", href: "/schedule" },
   1: { label: "Geç Giriş", href: "/timeclock" },
   2: { label: "Görev Atandı", href: "/tasks" },
   3: { label: "Görev Tamamlandı", href: "/tasks" },
   4: { label: "Yeni Duyuru", href: "/announcements" },
+  5: { label: "Havuzda Açık Vardiya", href: "/schedule" },
+  6: { label: "Vardiya Onayı Bekliyor", href: "/schedule" },
+  7: { label: "Vardiya Dolduruldu", href: "/schedule" },
+  8: { label: "Vardiya Talebin Onaylandı", href: "/schedule" },
+  9: { label: "Vardiya Talebin Reddedildi", href: "/schedule" },
+  10: { label: "İzin Talebi", href: "/timeoff" },
+  11: { label: "İzin Onaylandı", href: "/timeoff" },
+  12: { label: "İzin Reddedildi", href: "/timeoff" },
 };
 
 export default function NotificationBell({ initialNotifications }: { initialNotifications: NotificationDto[] }) {

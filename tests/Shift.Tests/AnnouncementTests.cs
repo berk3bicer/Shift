@@ -5,8 +5,8 @@ using Shift.Infrastructure.Persistence;
 
 namespace Shift.Tests;
 
-// Duyuru fan-out'u: hedef = şube ∩ rol; gönderen hariç. Her hedefe bir AnnouncementPosted
-// bildirimi. Gün 8 Notification altyapısının yeniden kullanımı.
+// Duyuru fan-out'u: hedef = şube ∩ rol; gönderen de kapsamdaysa alır (kendi duyurusunu
+// kendi zilinde görür). Her hedefe bir AnnouncementPosted bildirimi. Gün 8 altyapısı.
 public class AnnouncementTests
 {
     private readonly Guid _tenantId = Guid.NewGuid();
@@ -49,9 +49,9 @@ public class AnnouncementTests
     private CreateAnnouncementHandler Handler(Guid senderId)
         => new(_db, new FakeCurrentUserProvider { CurrentUserId = senderId });
 
-    // ── 1) Tüm ekibe (rol/şube yok): gönderen HARİÇ herkese bildirim ──
+    // ── 1) Tüm ekibe (rol/şube yok): gönderen DAHİL herkese bildirim ──
     [Fact]
-    public async Task Tum_Ekibe_Gonderen_Haric_Herkese()
+    public async Task Tum_Ekibe_Gonderen_Dahil_Herkese()
     {
         await SetupAsync();
         var sender = await AddUserAsync(_managerRoleId, _branchA);
@@ -61,9 +61,9 @@ public class AnnouncementTests
         var result = await Handler(sender).Handle(
             new CreateAnnouncementCommand("Baslik", "Metin", null, null), CancellationToken.None);
 
-        Assert.Equal(2, result.RecipientCount);                  // 3 kullanıcı - gönderen
-        Assert.Equal(2, await _db.Notifications.CountAsync(n => n.Type == NotificationType.AnnouncementPosted));
-        Assert.Equal(0, await _db.Notifications.CountAsync(n => n.UserId == sender));  // gönderene yok
+        Assert.Equal(3, result.RecipientCount);                  // 3 kullanıcı, gönderen dahil
+        Assert.Equal(3, await _db.Notifications.CountAsync(n => n.Type == NotificationType.AnnouncementPosted));
+        Assert.Equal(1, await _db.Notifications.CountAsync(n => n.UserId == sender));  // gönderen kendi zilinde görür
     }
 
     // ── 2) Belirli ROLE: yalnız o rol ──
@@ -82,6 +82,8 @@ public class AnnouncementTests
         Assert.Equal(2, result.RecipientCount);                 // sadece iki Staff
         Assert.Equal(1, await _db.Notifications.CountAsync(n => n.UserId == staff1));
         Assert.Equal(1, await _db.Notifications.CountAsync(n => n.UserId == staff2));
+        // Gönderen Manager → Staff kapsamının dışında; kendine bildirim düşmez.
+        Assert.Equal(0, await _db.Notifications.CountAsync(n => n.UserId == sender));
     }
 
     // ── 3) Belirli ŞUBEYE: yalnız o şubedeki kullanıcılar ──

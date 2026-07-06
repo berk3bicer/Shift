@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Shift.Application.Common;
+using Shift.Application.Common.Services;
 using Shift.Application.Features.Auth.AcceptInvite;
 using Shift.Application.Features.Auth.Login;
 using Shift.Application.Features.Staff.Create;
@@ -28,7 +29,8 @@ public class AcceptInviteTests
 
         // Gerçek davet akışıyla kur: handler token üretir, "e-postadan" ham token'ı alırız.
         var email = new FakeEmailSender();
-        var created = await new CreateStaffHandler(db, email, new AppUrlOptions("http://localhost:3000"))
+        var created = await new CreateStaffHandler(db,
+                new InvitationService(db, email, new AppUrlOptions("http://localhost:3000")))
             .Handle(new CreateStaffCommand("Ali Vural", "ali@kafe.com", RoleType.Staff, branch.Id, null),
                 CancellationToken.None);
         var rawToken = CreateStaffTests.ExtractToken(email.Sent.Single().HtmlBody, "davet");

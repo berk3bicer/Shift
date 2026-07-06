@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Shift.Application.Common;
 using Shift.Application.Common.Security;
+using Shift.Application.Common.Services;
 using Shift.Application.Features.Staff.Create;
 using Shift.Domain.Entities;
 using Shift.Infrastructure.Persistence;
@@ -33,7 +34,7 @@ public class CreateStaffTests
     }
 
     private static CreateStaffHandler Handler(ShiftDbContext db, FakeEmailSender email) =>
-        new(db, email, new AppUrlOptions("http://localhost:3000"));
+        new(db, new InvitationService(db, email, new AppUrlOptions("http://localhost:3000")));
 
     // E-postadaki davet linkinden ham token'ı söker (testin "personel" tarafı).
     internal static string ExtractToken(string htmlBody, string path)

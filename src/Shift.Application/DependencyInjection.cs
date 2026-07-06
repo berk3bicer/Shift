@@ -28,6 +28,9 @@ public static class DependencyInjection
         // Scoped: DbContext ile aynı yaşam döngüsü.
         services.AddScoped<Common.Interfaces.IOvertimeCalculator, Common.Services.Overtime.OvertimeCalculator>();
 
+        // Davet gönderimi — CreateStaff (ilk davet) ve resend-invite paylaşır.
+        services.AddScoped<Common.Interfaces.IInvitationService, Common.Services.InvitationService>();
+
         return services;
     }
 }

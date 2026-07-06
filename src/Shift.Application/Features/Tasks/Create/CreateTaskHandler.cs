@@ -57,9 +57,9 @@ public class CreateTaskHandler : IRequestHandler<CreateTaskCommand, CreateTaskRe
 
         _db.Tasks.Add(task);
 
-        // Kişiye atandıysa o personele bildirim. Pozisyona/havuza atamada bildirim yok
-        // (pozisyon = çok kişi; toplu bildirim ayrı bir iş). Atama + bildirim aynı
-        // SaveChanges'te → atomik.
+        // Kişiye atandıysa o personele, pozisyona atandıysa o pozisyondaki (ve görevin
+        // şubesine atanmış) herkese bildirim. else-if: ikisi de doluysa çift bildirim
+        // olmasın (spec'te tek alan dolu). Atama + bildirimler aynı SaveChanges'te → atomik.
         if (request.AssignedUserId is { } assignedTo)
         {
             _db.Notifications.Add(new Notification
@@ -70,6 +70,30 @@ public class CreateTaskHandler : IRequestHandler<CreateTaskCommand, CreateTaskRe
                 RelatedEntityId = task.Id,
                 IsRead = false
             });
+        }
+        else if (request.AssignedPositionId is { } posId)
+        {
+            // Hedef: görevin şubesine atanmış (UserBranch) ∩ bu pozisyona sahip personel.
+            // Oluşturan hariç — kendi attığın görev kendine bildirilmez (kişiye-atamayla tutarlı).
+            var targetIds = await _db.UserBranches
+                .Where(ub => ub.BranchId == request.BranchId)
+                .Join(_db.Users, ub => ub.UserId, u => u.Id, (ub, u) => u)
+                .Where(u => u.PositionId == posId && u.Id != task.CreatedByUserId)
+                .Select(u => u.Id)
+                .Distinct()
+                .ToListAsync(ct);
+
+            foreach (var targetId in targetIds)
+            {
+                _db.Notifications.Add(new Notification
+                {
+                    UserId = targetId,
+                    Type = NotificationType.TaskAssigned,
+                    Message = "Pozisyonuna bir görev atandı.",
+                    RelatedEntityId = task.Id,
+                    IsRead = false
+                });
+            }
         }
 
         await _db.SaveChangesAsync(ct);

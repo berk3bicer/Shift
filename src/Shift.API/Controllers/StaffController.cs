@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Shift.API.RateLimiting;
 using Shift.Application.Features.Staff.Create;
+using Shift.Application.Features.Staff.Deactivate;
 using Shift.Application.Features.Staff.List;
 using Shift.Application.Features.Staff.ResendInvite;
 
@@ -46,5 +47,14 @@ public class StaffController : ControllerBase
     {
         await _mediator.Send(new ResendInviteCommand(id));
         return Ok(new { message = "Davet e-postası yeniden gönderildi." });
+    }
+
+    // İşten ayrılan personeli pasifleştir (silme değil — geçmiş korunur, login kapanır).
+    // Rate limit YOK: e-posta/SMS tetiklemiyor (resend-invite'taki bombardıman riski burada yok).
+    [HttpPatch("{id:guid}/deactivate")]
+    public async Task<IActionResult> Deactivate(Guid id)
+    {
+        await _mediator.Send(new DeactivateStaffCommand(id));
+        return Ok(new { message = "Personel pasifleştirildi." });
     }
 }

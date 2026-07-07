@@ -9,9 +9,15 @@ export const metadata: Metadata = {
 export default async function ReportsPage() {
   // Backend summary ucu TEK personel hesaplar (userId zorunlu). Ekip tablosu için
   // her personel için paralel çağırıyoruz (Availability ile aynı N+1 deseni).
-  // Dönem sabit: Haziran 2026 (demo). Tarihler date-only "yyyy-MM-dd".
-  const from = "2026-06-01";
-  const to = "2026-06-30";
+  // İçinde bulunulan ayın ilk ve son günü (date-only "yyyy-MM-dd"). Ay seçici Faz 2
+  // (server component; seçici client'a çevirmeyi gerektirir — şimdilik doğru ay yeter).
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth(); // 0-indexed
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const lastDay = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+  const from = `${y}-${pad(m + 1)}-01`;
+  const to = `${y}-${pad(m + 1)}-${pad(lastDay)}`;
 
   const staff = await getStaff();
   const summaries = await Promise.all(

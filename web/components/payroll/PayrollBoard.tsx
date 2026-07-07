@@ -19,8 +19,11 @@ export default function PayrollBoard({
   // mount'tan sonra güncellenmez → bayatlardı. Kaynak tek: DB → prop.
   const records = initialRecords;
 
-  // Selected pay period (default to June 2026 for demo)
-  const [selectedMonth, setSelectedMonth] = useState<string>("2026-06");
+  // İçinde bulunulan ay "yyyy-MM" (yerel saat — kullanıcının ayı). Seçiciyle değiştirilebilir.
+  const [selectedMonth, setSelectedMonth] = useState<string>(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  });
   
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

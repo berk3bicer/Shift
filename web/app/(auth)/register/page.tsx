@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { MARKETING_URL } from "@/lib/config";
 
 // İşletme tipleri backend BusinessType enum'una birebir (Cafe=0..FastFood=3).
 // Register kafe odaklı MVP → Kafe varsayılan seçili.
@@ -24,6 +25,9 @@ export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // KVKK açık rızası: kutu işaretlenmeden submit backend'e gitmez (client-side gate).
+  // Onayın kendisi henüz DB'ye yazılmıyor — kalıcı rıza kanıtı gap #kvkk-kalici-riza-kaniti.
+  const [consent, setConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -33,6 +37,7 @@ export default function RegisterPage() {
     if (!fullName.trim()) return "Ad soyad gerekli.";
     if (!EMAIL_RE.test(email)) return "Geçerli bir e-posta girin.";
     if (password.length < 8) return "Şifre en az 8 karakter olmalı.";
+    if (!consent) return "Devam etmek için KVKK aydınlatma metnini onaylamalısınız.";
     return null;
   }
 
@@ -162,6 +167,27 @@ export default function RegisterPage() {
             placeholder="En az 8 karakter"
           />
         </div>
+
+        {/* KVKK rızası — metin marketing sitesinde (/kvkk), ayrı origin olduğu için env-driven URL. */}
+        <label className="flex items-start gap-2 text-sm text-muted">
+          <input
+            type="checkbox"
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+            className="mt-0.5"
+          />
+          <span>
+            <a
+              href={`${MARKETING_URL}/kvkk`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-signal-deep hover:underline"
+            >
+              KVKK Aydınlatma Metni
+            </a>
+            &rsquo;ni okudum, kişisel verilerimin işlenmesini kabul ediyorum.
+          </span>
+        </label>
 
         <button
           type="submit"

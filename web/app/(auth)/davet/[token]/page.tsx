@@ -2,6 +2,7 @@
 
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
+import { MARKETING_URL } from "@/lib/config";
 
 // Davet kabulü: e-postadaki linkten gelinir, personel şifresini KENDİ belirler
 // (yönetici hiç görmez). Başarıda hesap aktifleşir → login'e yönlendiririz.
@@ -14,6 +15,9 @@ export default function AcceptInvitePage({
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [passwordAgain, setPasswordAgain] = useState("");
+  // KVKK açık rızası: personelin kişisel verisi ilk bu adımda aktifleşir → kutu zorunlu.
+  // Onay DB'ye yazılmıyor — kalıcı rıza kanıtı gap #kvkk-kalici-riza-kaniti.
+  const [consent, setConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
@@ -28,6 +32,10 @@ export default function AcceptInvitePage({
     }
     if (password !== passwordAgain) {
       setError("Şifreler aynı değil.");
+      return;
+    }
+    if (!consent) {
+      setError("Devam etmek için KVKK aydınlatma metnini onaylamalısınız.");
       return;
     }
     setLoading(true);
@@ -101,6 +109,27 @@ export default function AcceptInvitePage({
             placeholder="••••••••"
           />
         </div>
+
+        {/* KVKK rızası — metin marketing sitesinde (/kvkk), ayrı origin olduğu için env-driven URL. */}
+        <label className="flex items-start gap-2 text-sm text-muted">
+          <input
+            type="checkbox"
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+            className="mt-0.5"
+          />
+          <span>
+            <a
+              href={`${MARKETING_URL}/kvkk`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-signal-deep hover:underline"
+            >
+              KVKK Aydınlatma Metni
+            </a>
+            &rsquo;ni okudum, kişisel verilerimin işlenmesini kabul ediyorum.
+          </span>
+        </label>
 
         <button
           type="submit"

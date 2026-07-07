@@ -13,6 +13,8 @@ export default function OvertimeSummaryBoard({
   periodEnd: string;
 }) {
   const periodLabel = `${new Date(periodStart).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })} – ${new Date(periodEnd).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}`;
+  // periodStart'tan ay+yıl türet (props zaten geliyor — yeni prop gerekmez).
+  const periodTitle = new Date(periodStart).toLocaleDateString("tr-TR", { month: "long", year: "numeric" });
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -26,7 +28,7 @@ export default function OvertimeSummaryBoard({
         <div className="lg:col-span-2 rounded-2xl border border-line bg-surface overflow-hidden shadow-card">
           <div className="border-b border-line bg-paper px-6 py-4 flex items-center gap-2">
             <FileBarChart className="h-5 w-5 text-muted" />
-            <h2 className="font-display text-base font-bold text-ink">Personel Mesai Raporu (Haziran 2026)</h2>
+            <h2 className="font-display text-base font-bold text-ink">Personel Mesai Raporu ({periodTitle})</h2>
           </div>
           
           <div className="overflow-x-auto">

@@ -1,8 +1,11 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Shift.API.RateLimiting;
 using Shift.Application.Features.Staff.Create;
 using Shift.Application.Features.Staff.List;
+using Shift.Application.Features.Staff.ResendInvite;
 
 namespace Shift.API.Controllers;
 
@@ -33,5 +36,15 @@ public class StaffController : ControllerBase
     {
         var result = await _mediator.Send(new ListStaffQuery());
         return Ok(result);
+    }
+
+    // Daveti tekrar gönder (yalnız davet-bekleyen/pasif kullanıcıya; eski linkler iptal olur).
+    // E-posta tetikleyen uç → auth-strict (bombardıman önleme), yetkili istekte bile.
+    [EnableRateLimiting(AuthRateLimitPolicies.AuthStrict)]
+    [HttpPost("{id:guid}/resend-invite")]
+    public async Task<IActionResult> ResendInvite(Guid id)
+    {
+        await _mediator.Send(new ResendInviteCommand(id));
+        return Ok(new { message = "Davet e-postası yeniden gönderildi." });
     }
 }

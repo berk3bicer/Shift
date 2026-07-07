@@ -1,7 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Shift.API.RateLimiting;
 using System.Security.Claims;
 using Shift.Application.Common.Interfaces;
 using Shift.Application.Features.Auth.Register;
@@ -33,6 +35,8 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    // IP bazlı brute-force yavaşlatma (limit cömert, normal akışı kısıtlamaz).
+    [EnableRateLimiting(AuthRateLimitPolicies.AuthLogin)]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginCommand command)
     {
@@ -75,6 +79,7 @@ public class AuthController : ControllerBase
 
     // Davet kabulü: davetli henüz login OLAMAZ (IsActive=false) → anonim olmak zorunda.
     [AllowAnonymous]
+    [EnableRateLimiting(AuthRateLimitPolicies.AuthStrict)]
     [HttpPost("accept-invite")]
     public async Task<IActionResult> AcceptInvite([FromBody] AcceptInviteCommand command)
     {
@@ -83,7 +88,9 @@ public class AuthController : ControllerBase
     }
 
     // Cevap e-postanın kayıtlı olup olmamasından bağımsız hep aynı (enumeration koruması).
+    // Rate limit bu korumayı bozmaz: IP bazlı, limit aşılana kadar cevap yine aynı 200.
     [AllowAnonymous]
+    [EnableRateLimiting(AuthRateLimitPolicies.AuthStrict)]
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
     {
@@ -92,6 +99,7 @@ public class AuthController : ControllerBase
     }
 
     [AllowAnonymous]
+    [EnableRateLimiting(AuthRateLimitPolicies.AuthStrict)]
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
     {

@@ -1,9 +1,12 @@
 using Shift.Infrastructure;
 using Shift.Application;
 using System.Text;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using Shift.API.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,9 +42,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddExceptionHandler<Shift.API.Middleware.GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+// Anonim auth uçlarına IP bazlı rate limit (suistimal/e-posta bombardımanı önleme).
+// Partisyon anahtarı IP: e-posta bazlı olsaydı enumeration koruması delinirdi.
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy(AuthRateLimitPolicies.AuthStrict, httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => AuthRateLimitPolicies.StrictWindow()));
+    options.AddPolicy(AuthRateLimitPolicies.AuthLogin, httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => AuthRateLimitPolicies.LoginWindow()));
+});
+
 var app = builder.Build();
 
 app.UseExceptionHandler();
+
+app.UseRateLimiter(); // auth'tan ÖNCE: limit anonim istekleri de saymalı
 
 app.UseAuthentication();
 app.UseAuthorization();

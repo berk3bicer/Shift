@@ -28,6 +28,9 @@ public class AuthController : ControllerBase
         _db = db;
     }
 
+    // Dar limit (forgot ile aynı): register hesap YARATIR — otomatik enumeration/spam
+    // hesap üretimini yavaşlatır. Normal kullanıcıda seyrek aksiyon, 5/15dk rahatsız etmez.
+    [EnableRateLimiting(AuthRateLimitPolicies.AuthStrict)]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterCommand command)
     {

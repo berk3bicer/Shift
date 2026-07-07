@@ -114,7 +114,39 @@ public class PasswordResetTests
                 new ResetPasswordCommand(rawToken, "YepyeniSifre2"), CancellationToken.None));
     }
 
-    // ── 5) Reset açık oturumları düşürür (refresh token'lar iptal) ──
+    // ── 5) İki ardışık forgot: yalnız SON reset linki çalışır, eskisi iptal ──
+    // (ResendInvite'taki "iki resend → yalnız son link geçer" deseninin reset karşılığı:
+    // iptal edilmezse her forgot bir çalışan reset linki daha bırakır.)
+    [Fact]
+    public async Task Iki_Forgot_Yalniz_Son_Token_Calisir()
+    {
+        var (db, user) = await SetupAsync();
+        var email = new FakeEmailSender();
+        var forgot = Forgot(db, email);
+
+        await forgot.Handle(new ForgotPasswordCommand("ayse@kafe.com"), CancellationToken.None);
+        await forgot.Handle(new ForgotPasswordCommand("ayse@kafe.com"), CancellationToken.None);
+
+        var raw = email.Sent
+            .Select(s => CreateStaffTests.ExtractToken(s.HtmlBody, "sifre-sifirla"))
+            .ToList();
+        var reset = new ResetPasswordHandler(db);
+
+        // İlk link iptal edilmiş olmalı — kullanılamaz.
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            reset.Handle(new ResetPasswordCommand(raw[0], "YepyeniSifre2"), CancellationToken.None));
+
+        // İkinci (son) link çalışır.
+        await reset.Handle(new ResetPasswordCommand(raw[1], "YepyeniSifre2"), CancellationToken.None);
+        var updated = await db.Users.IgnoreQueryFilters().FirstAsync(u => u.Id == user.Id);
+        Assert.True(BCrypt.Net.BCrypt.Verify("YepyeniSifre2", updated.PasswordHash));
+
+        // DB'de aktif token kalmadı: ilki iptal (forgot#2), ikincisi kullanıldı (reset).
+        Assert.Empty(await db.OneTimeTokens.IgnoreQueryFilters()
+            .Where(t => t.UserId == user.Id && !t.IsUsed).ToListAsync());
+    }
+
+    // ── 6) Reset açık oturumları düşürür (refresh token'lar iptal) ──
     [Fact]
     public async Task Reset_Acik_Oturumlari_Iptal_Eder()
     {

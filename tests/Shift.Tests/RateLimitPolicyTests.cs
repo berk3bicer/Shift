@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.RateLimiting;
+using Shift.API.Controllers;
 using Shift.API.RateLimiting;
 
 namespace Shift.Tests;
@@ -32,5 +34,19 @@ public class RateLimitPolicyTests
     {
         Assert.Equal("auth-strict", AuthRateLimitPolicies.AuthStrict);
         Assert.Equal("auth-login", AuthRateLimitPolicies.AuthLogin);
+    }
+
+    // Register hesap YARATAN anonim uç — attribute yanlışlıkla silinirse enumeration/spam
+    // hesap kapısı sessizce yeniden açılır. Eşlemeyi sabitle.
+    [Fact]
+    public void Register_AuthStrict_Politikasina_Bagli()
+    {
+        var attr = typeof(AuthController).GetMethod(nameof(AuthController.Register))!
+            .GetCustomAttributes(typeof(EnableRateLimitingAttribute), inherit: false)
+            .Cast<EnableRateLimitingAttribute>()
+            .SingleOrDefault();
+
+        Assert.NotNull(attr);
+        Assert.Equal(AuthRateLimitPolicies.AuthStrict, attr!.PolicyName);
     }
 }

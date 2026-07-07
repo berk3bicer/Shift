@@ -8,8 +8,8 @@ namespace Shift.API.RateLimiting;
 // Konfig testte assert edilir (RateLimitPolicyTests) — middleware sayaç testi kırılgan olurdu.
 public static class AuthRateLimitPolicies
 {
-    // forgot-password / accept-invite / reset-password / resend-invite:
-    // hepsi e-posta tetikler ya da token tüketir → dar pencere (bombardıman önleme).
+    // register / forgot-password / accept-invite / reset-password / resend-invite:
+    // e-posta tetikler, token tüketir ya da hesap yaratır → dar pencere (bombardıman önleme).
     public const string AuthStrict = "auth-strict";
 
     // login: brute-force yavaşlatma; normal kullanıcıyı rahatsız etmeyecek kadar cömert.

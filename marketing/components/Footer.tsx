@@ -2,7 +2,7 @@ import Link from "next/link";
 import { LOGIN_URL, REGISTER_URL } from "@/lib/config";
 
 // Footer — sayfanın kapanış koyu bölgesi (CTA ile birlikte alttaki tek koyu bant). Çok kolonlu
-// (Ürün / Başla / Yasal). KVKK/gizlilik PLACEHOLDER (gerçek metin → gap #P2). Mono KALDIRILDI.
+// (Ürün / Başla / Yasal). KVKK/Gizlilik → /kvkk (Tur 16, gap #P2 kapandı). Mono KALDIRILDI.
 export default function Footer() {
   return (
     <footer className="border-t border-white/10 bg-[var(--color-ink)] pb-10 pt-16">
@@ -22,7 +22,8 @@ export default function Footer() {
 
           <FooterCol title="Ürün" links={[["Tüm modüller", "/moduller"], ["Vardiya & Planlama", "/moduller/vardiya"], ["Giriş-Çıkış & Mesai", "/moduller/giris-cikis"], ["Fiyatlar", "/fiyatlar"], ["Neden Shift", "/neden-shift"]]} />
           <FooterCol title="Kaynaklar" links={[["Kafe Operasyon Rehberi", "/kaynaklar/kafe-rehberi"], ["İletişim", "mailto:merhaba@shift.app"], ["Ücretsiz başla", REGISTER_URL]]} />
-          <FooterCol title="Yasal" links={[["KVKK Aydınlatma", "#"], ["Gizlilik", "#"], ["Giriş Yap", LOGIN_URL]]} />
+          {/* "Gizlilik" şimdilik /kvkk'e gider — ayrı gizlilik politikası Faz 2 (gap #gizlilik-ayri-sayfa). */}
+          <FooterCol title="Yasal" links={[["KVKK Aydınlatma", "/kvkk"], ["Gizlilik", "/kvkk"], ["Giriş Yap", LOGIN_URL]]} />
         </div>
 
         <div className="flex flex-col gap-2 pt-6 sm:flex-row sm:items-center sm:justify-between">

@@ -285,9 +285,9 @@ export default function PayrollBoard({
             <tfoot className="border-t-2 border-line bg-paper">
               <tr>
                 <td colSpan={2} className="px-6 py-4 font-bold text-ink text-right">Aylık Toplam:</td>
-                <td className="px-6 py-4 text-right font-bold text-muted">{totalNormal}s</td>
-                <td className="px-6 py-4 text-right font-bold text-signal-deep">{totalOvertime}s</td>
-                <td className="px-6 py-4 text-right font-bold text-ink text-lg">{totalGrand}s</td>
+                <td className="px-6 py-4 text-right font-bold text-muted">{totalNormal.toFixed(2)}s</td>
+                <td className="px-6 py-4 text-right font-bold text-signal-deep">{totalOvertime.toFixed(2)}s</td>
+                <td className="px-6 py-4 text-right font-bold text-ink text-lg">{totalGrand.toFixed(2)}s</td>
                 <td colSpan={3}></td>
               </tr>
             </tfoot>

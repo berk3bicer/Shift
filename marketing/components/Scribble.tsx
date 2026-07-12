@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useStillMode } from "./Reveal";
 
 // El-çizimi SVG karalamalar (Tur 8) — amber "insan eli" dokunuşları: dalgalı altçizgi,
 // daire içine alma, kıvrık ok. Scroll'da viewport'a girince "çiziliyor" hissiyle akar
@@ -39,7 +40,10 @@ export default function Scribble({
   strokeWidth?: number;
   delay?: number;
 }) {
-  const reduce = useReducedMotion();
+  // Tur 18: initial HEP pathLength:0 (SSR ile aynı) — reduce dalı ilk render'da
+  // strokeDasharray uyuşmazlığı (hydration) yaratıyordu; reduce artık mount SONRASI
+  // animate ile anında çizili yazar (Reveal.tsx'teki useStillMode dersi).
+  const still = useStillMode();
   const { viewBox, d } = SHAPES[shape];
   const paths = Array.isArray(d) ? d : [d];
   return (
@@ -59,10 +63,11 @@ export default function Scribble({
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeLinejoin="round"
-          initial={reduce ? { pathLength: 1 } : { pathLength: 0 }}
+          initial={{ pathLength: 0 }}
+          animate={still ? { pathLength: 1 } : undefined}
           whileInView={{ pathLength: 1 }}
           viewport={{ once: true, margin: "0px 0px -10% 0px" }}
-          transition={reduce ? { duration: 0 } : { duration: 0.7, delay: delay + i * 0.35, ease: [0.65, 0, 0.35, 1] }}
+          transition={still ? { duration: 0 } : { duration: 0.7, delay: delay + i * 0.35, ease: [0.65, 0, 0.35, 1] }}
         />
       ))}
     </svg>

@@ -3,7 +3,7 @@ import { selectBranch } from "@/lib/branch";
 import ShiftNotesBoard from "@/components/shiftnotes/ShiftNotesBoard";
 
 export const metadata = {
-  title: "Vardiya Defteri | Shift",
+  title: "Vardiya Defteri | Shiftle",
 };
 
 export default async function ShiftNotesPage({

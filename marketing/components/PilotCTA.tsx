@@ -22,7 +22,7 @@ export default function PilotCTA() {
   function buildMailto() {
     const subject = encodeURIComponent(`Ücretsiz pilot talebi — ${cafe || "Kafe"}`);
     const body = encodeURIComponent(
-      `Merhaba,\n\nShift ücretsiz pilotuna katılmak istiyorum.\n\n` +
+      `Merhaba,\n\nShiftle ücretsiz pilotuna katılmak istiyorum.\n\n` +
         `Ad Soyad: ${name}\nİşletme: ${cafe}\nE-posta: ${email}\nTelefon: ${phone || "—"}\n`,
     );
     return `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
@@ -56,7 +56,7 @@ export default function PilotCTA() {
                 </h2>
                 <p className="mt-4 text-sm leading-relaxed text-white/70">
                   İlk kafelerle birebir çalışıyoruz — kurulumdan ilk vardiyaya kadar yanındayız. Sıcak,
-                  ücretsiz, taahhütsüz. Kafeni Shift&apos;le tanıştıralım.
+                  ücretsiz, taahhütsüz. Kafeni Shiftle ile tanıştıralım.
                 </p>
               </div>
             </div>

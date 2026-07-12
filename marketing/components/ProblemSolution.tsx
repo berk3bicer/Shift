@@ -20,7 +20,7 @@ export default function ProblemSolution() {
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-[var(--color-muted)]">
             Grupta bir mesaj, panoda bir not, Excel&apos;de bir hücre. Biri güncellenir, ikisi eski kalır —
-            ve cumartesi sabahı iki kişi aynı vardiyaya gelir. Shift bu hikâyeyi tek yerde bitirir.
+            ve cumartesi sabahı iki kişi aynı vardiyaya gelir. Shiftle bu hikâyeyi tek yerde bitirir.
           </p>
         </Reveal>
 
@@ -63,7 +63,7 @@ export default function ProblemSolution() {
           <Reveal className="rounded-3xl border-2 border-[var(--color-signal)]/40 bg-gradient-to-b from-[var(--color-cream)] to-[var(--color-surface)] p-6 shadow-[var(--shadow-card)] sm:p-7">
             <div className="mb-5 flex items-center gap-2.5">
               <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-signal)]" />
-              <span className="font-display text-sm font-bold text-[var(--color-ink)]">Shift ile — tek çatıda</span>
+              <span className="font-display text-sm font-bold text-[var(--color-ink)]">Shiftle ile — tek çatıda</span>
             </div>
             <RevealStagger className="space-y-2.5" stagger={0.06}>
               {PROBLEM_SOLUTION.map((row) => (

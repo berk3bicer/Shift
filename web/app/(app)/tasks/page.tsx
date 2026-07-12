@@ -4,7 +4,7 @@ import TasksBoard from "@/components/tasks/TasksBoard";
 import { redirect } from "next/navigation";
 
 export const metadata = {
-  title: "Görevler | Shift",
+  title: "Görevler | Shiftle",
 };
 
 export default async function TasksPage() {

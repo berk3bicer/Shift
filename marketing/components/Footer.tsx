@@ -13,14 +13,14 @@ export default function Footer() {
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-signal)] font-display text-base font-extrabold text-[var(--color-ink)]">
                 S
               </span>
-              <span className="font-display text-xl font-extrabold text-white">Shift</span>
+              <span className="font-display text-xl font-extrabold text-white">Shiftle</span>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-white/50">
               Kafe ve restoran operasyonunu tek platformda dijitalleştir. Türkçe, İş Kanunu ve KVKK uyumlu.
             </p>
           </div>
 
-          <FooterCol title="Ürün" links={[["Tüm modüller", "/moduller"], ["Vardiya & Planlama", "/moduller/vardiya"], ["Giriş-Çıkış & Mesai", "/moduller/giris-cikis"], ["Fiyatlar", "/fiyatlar"], ["Neden Shift", "/neden-shift"]]} />
+          <FooterCol title="Ürün" links={[["Tüm modüller", "/moduller"], ["Vardiya & Planlama", "/moduller/vardiya"], ["Giriş-Çıkış & Mesai", "/moduller/giris-cikis"], ["Fiyatlar", "/fiyatlar"], ["Neden Shiftle", "/neden-shift"]]} />
           <FooterCol title="Kaynaklar" links={[["Kafe Operasyon Rehberi", "/kaynaklar/kafe-rehberi"], ["İletişim", "mailto:merhaba@shift.app"], ["Ücretsiz başla", REGISTER_URL]]} />
           {/* "Gizlilik" şimdilik /kvkk'e gider — ayrı gizlilik politikası Faz 2 (gap #gizlilik-ayri-sayfa). */}
           <FooterCol title="Yasal" links={[["KVKK Aydınlatma", "/kvkk"], ["Gizlilik", "/kvkk"], ["Giriş Yap", LOGIN_URL]]} />
@@ -28,7 +28,7 @@ export default function Footer() {
 
         <div className="flex flex-col gap-2 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-white/40">
-            Shift — Kafe ve restoran operasyonunu dijitalleştir. © {new Date().getFullYear()}
+            Shiftle — Kafe ve restoran operasyonunu dijitalleştir. © {new Date().getFullYear()}
           </p>
           <p className="text-xs text-white/30">Verileriniz Avrupa / Türkiye veri merkezinde</p>
         </div>

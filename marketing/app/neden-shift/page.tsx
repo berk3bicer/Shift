@@ -12,9 +12,9 @@ import CtaBand from "@/components/CtaBand";
 // cevabı pozitif ve kendinden emin verilir. Matris kavramsal kolonlarla (kategori, isim değil).
 
 export const metadata: Metadata = {
-  title: "Neden Shift? — Operasyonun tamamı tek platformda",
+  title: "Neden Shiftle? — Operasyonun tamamı tek platformda",
   description:
-    "Çoğu araç ya vardiyayı ya satışı çözer. Shift ikisinin arasında kalan her şeyi tek çatıda toplar — İş Kanunu, KVKK ve kafe diliyle, Türkiye'ye göre.",
+    "Çoğu araç ya vardiyayı ya satışı çözer. Shiftle ikisinin arasında kalan her şeyi tek çatıda toplar — İş Kanunu, KVKK ve kafe diliyle, Türkiye'ye göre.",
 };
 
 const ICONS: Record<string, LucideIcon> = { Scale, ShieldCheck, MessagesSquare, Zap };
@@ -38,7 +38,7 @@ const STORY = [
   },
   {
     icon: Coffee,
-    name: "Shift: ikisinin arasındaki her şey",
+    name: "Shiftle: ikisinin arasındaki her şey",
     story:
       "Vardiyadan stoğa, mesaiden hijyene — parça parça değil, bütün. İş Kanunu limitleri planlama anında denetlenir, veriler KVKK'ya göre tutulur, arayüz kafenin diliyle konuşur. Sonradan çeviri değil: baştan Türkiye'deki kafeler için kurgulandı.",
     gap: null,
@@ -61,7 +61,7 @@ export default function WhyShiftPage() {
         />
         <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
           <span className="anim-rise inline-block text-sm font-bold uppercase tracking-wider text-[var(--color-terra)]" style={{ animationDelay: "40ms" }}>
-            Neden Shift
+            Neden Shiftle
           </span>
           <h1 className="anim-rise font-display mt-3 max-w-3xl text-4xl font-extrabold leading-[1.08] text-[var(--color-ink)] sm:text-5xl" style={{ animationDelay: "120ms" }}>
             Çünkü operasyonun <ScriptWord>tamamı</ScriptWord> burada.
@@ -69,7 +69,7 @@ export default function WhyShiftPage() {
           <p className="anim-rise mt-6 max-w-2xl text-lg leading-relaxed text-[var(--color-muted)]" style={{ animationDelay: "200ms" }}>
             Kimseyi kötülemeye ihtiyacımız yok — her araç kendi işini iyi yapar. Soru şu: kafenin
             <em> ekip operasyonu</em>{" "}için, vardiyadan hijyene her parçayı Türkiye&apos;ye göre çözen
-            eksiksiz bir araç var mı? Shift, o sorunun cevabı olsun diye yazılıyor.
+            eksiksiz bir araç var mı? Shiftle, o sorunun cevabı olsun diye yazılıyor.
           </p>
         </div>
       </section>
@@ -119,7 +119,7 @@ export default function WhyShiftPage() {
       <section className="bg-[var(--color-paper)] py-20 sm:py-28">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
           <Reveal className="max-w-2xl">
-            <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-sage-deep)]">Shift farkı</span>
+            <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-sage-deep)]">Shiftle farkı</span>
             <h2 className="font-display mt-3 text-2xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-3xl">
               Hepsi-bir-arada + İş Kanunu + KVKK + kafe dili.
             </h2>
@@ -157,7 +157,7 @@ export default function WhyShiftPage() {
             </h2>
             <p className="mt-3 text-base leading-relaxed text-[var(--color-muted)]">
               İsimlere gerek yok — kategoriler yeter. Aşağıdaki tablo, tipik bir vardiya aracının ve
-              tipik bir POS/adisyon sisteminin kapsamıyla Shift&apos;in kapsamını yan yana koyar.
+              tipik bir POS/adisyon sisteminin kapsamıyla Shiftle&apos;nin kapsamını yan yana koyar.
             </p>
           </Reveal>
           <div className="mt-8">

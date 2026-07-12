@@ -11,7 +11,7 @@ import type { Metadata } from "next";
 // "Avrupa Birliği sınırları içindeki veri merkezleri" denir, firma adı verilmez).
 
 export const metadata: Metadata = {
-  title: "KVKK Aydınlatma Metni — Shift",
+  title: "KVKK Aydınlatma Metni — Shiftle",
   description:
     "6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında aydınlatma metni: işlenen veriler, işleme amaçları, hukuki sebepler ve ilgili kişi hakları.",
 };
@@ -147,7 +147,7 @@ export default function KvkkPage() {
             KVKK Aydınlatma Metni
           </h1>
           <p className="mt-4 text-base leading-relaxed text-[var(--color-muted)]">
-            6698 sayılı Kişisel Verilerin Korunması Kanunu m.10 kapsamında, Shift platformunu
+            6698 sayılı Kişisel Verilerin Korunması Kanunu m.10 kapsamında, Shiftle platformunu
             kullanan işletme sahipleri ve çalışanlarına yönelik aydınlatma metnidir.
           </p>
 

@@ -61,7 +61,7 @@ public static class DependencyInjection
             User = emailSection["User"] ?? string.Empty,
             Pass = emailSection["Pass"] ?? string.Empty,
             FromAddress = emailSection["FromAddress"] ?? string.Empty,
-            FromName = emailSection["FromName"] ?? "Shift",
+            FromName = emailSection["FromName"] ?? "Shiftle",
         };
         if (int.TryParse(emailSection["Port"], out var port)) emailOptions.Port = port;
         services.AddSingleton(emailOptions);

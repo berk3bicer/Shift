@@ -198,7 +198,7 @@ const CARDS: Card[] = [
     title: "Kağıt çizelge yerine sürükle-bırak",
     claim: "Karalanmış kağıtlar ve 'son hali hangisi?' kargaşası yerine renk kodlu, yayınlanınca herkese bildirilen dijital çizelge.",
     img: "/urun/vardiya.webp",
-    aria: "Karşılaştırma: kağıda çizilmiş, karalanmış eski vardiya çizelgesi ile Shift'in renk kodlu, dolu haftalık dijital vardiya çizelgesi ekranı.",
+    aria: "Karşılaştırma: kağıda çizilmiş, karalanmış eski vardiya çizelgesi ile Shiftle'nin renk kodlu, dolu haftalık dijital vardiya çizelgesi ekranı.",
     old: <OldSchedule />,
   },
   {
@@ -207,7 +207,7 @@ const CARDS: Card[] = [
     title: "Mesaj grubu yerine görev panosu",
     claim: "Gece yarısı mesajlarında kaybolan işler yerine kim-ne-ne zaman belli, fotoğraf kanıtlı Kanban panosu.",
     img: "/urun/kanban.webp",
-    aria: "Karşılaştırma: dağınık mesaj grubu konuşmaları ile Shift'in üç sütunlu görev panosu ekranı: yapılacak, devam eden ve tamamlanan kafe görevleri.",
+    aria: "Karşılaştırma: dağınık mesaj grubu konuşmaları ile Shiftle'nin üç sütunlu görev panosu ekranı: yapılacak, devam eden ve tamamlanan kafe görevleri.",
     old: <OldChat />,
   },
   {
@@ -216,7 +216,7 @@ const CARDS: Card[] = [
     title: "Hesap makinesi yerine otomatik mesai",
     claim: "Defterde tutmayan toplamlar yerine İş Kanunu'na göre otomatik hesaplanan, dönemi kilitlenen bordro tablosu.",
     img: "/urun/bordro.webp",
-    aria: "Karşılaştırma: elle tutulmuş, toplamı yanlış mesai defteri ve hesap makinesi ile Shift'in hesaplanmış normal saat, fazla mesai ve brüt tutar kolonlu bordro ekranı.",
+    aria: "Karşılaştırma: elle tutulmuş, toplamı yanlış mesai defteri ve hesap makinesi ile Shiftle'nin hesaplanmış normal saat, fazla mesai ve brüt tutar kolonlu bordro ekranı.",
     old: <OldLedger />,
   },
   {
@@ -225,7 +225,7 @@ const CARDS: Card[] = [
     title: "Islak kağıt form yerine dijital checklist",
     claim: "Tezgahta ıslanan, kimin ne zaman baktığı belli olmayan formlar yerine saat damgalı, kişi imzalı dijital kontrol listesi.",
     img: "/urun/checklist.webp",
-    aria: "Karşılaştırma: tezgahta ıslanmış, yarım doldurulmuş kağıt kontrol formu ile Shift'in kim ve ne zaman bilgisiyle tamamlanmış dijital açılış kontrol listesi ekranı.",
+    aria: "Karşılaştırma: tezgahta ıslanmış, yarım doldurulmuş kağıt kontrol formu ile Shiftle'nin kim ve ne zaman bilgisiyle tamamlanmış dijital açılış kontrol listesi ekranı.",
     old: <OldForm />,
   },
 ];
@@ -271,7 +271,7 @@ function FlipCard({ card }: { card: Card }) {
               style={{ backfaceVisibility: "hidden" }}
             >
               <img src={card.img} alt="" width={1600} height={1000} loading="lazy" decoding="async" className="h-full w-full object-cover" />
-              <span className="absolute left-3 top-3 rounded-full bg-[var(--color-signal)] px-2.5 py-0.5 text-[10px] font-bold text-[var(--color-ink)]">Shift&apos;te</span>
+              <span className="absolute left-3 top-3 rounded-full bg-[var(--color-signal)] px-2.5 py-0.5 text-[10px] font-bold text-[var(--color-ink)]">Shiftle&apos;de</span>
             </div>
             {/* ARKA: eski dünya (pin başı, ilk görünen yüz) */}
             <div
@@ -311,7 +311,7 @@ function StaticCard({ card }: { card: Card }) {
         </div>
         <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-[var(--color-line)] shadow-[var(--shadow-card)]">
           <img src={card.img} alt="" width={1600} height={1000} loading="lazy" decoding="async" className="h-full w-full object-cover" />
-          <span className="absolute left-3 top-3 rounded-full bg-[var(--color-signal)] px-2.5 py-0.5 text-[10px] font-bold text-[var(--color-ink)]">Shift&apos;te</span>
+          <span className="absolute left-3 top-3 rounded-full bg-[var(--color-signal)] px-2.5 py-0.5 text-[10px] font-bold text-[var(--color-ink)]">Shiftle&apos;de</span>
         </div>
       </div>
       <Caption card={card} />
@@ -366,7 +366,7 @@ export default function FlipShowcase() {
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-[var(--color-muted)]">
             Aşağıdaki ekranlar çalışan panelden alındı — kaydırdıkça eski yöntem
-            yerini Shift&apos;e bırakıyor.
+            yerini Shiftle&apos;ye bırakıyor.
           </p>
         </Reveal>
 
@@ -379,7 +379,7 @@ export default function FlipShowcase() {
           <div className="grid items-center gap-10 sm:grid-cols-[auto_1fr] sm:gap-14">
             <div
               role="img"
-              aria-label="Telefon ekranında Shift personel görünümü: Elif'in yayınlanmış haftalık barista vardiyaları listesi."
+              aria-label="Telefon ekranında Shiftle personel görünümü: Elif'in yayınlanmış haftalık barista vardiyaları listesi."
               className="justify-self-center"
             >
               <div aria-hidden="true" className="w-56 rounded-[2.2rem] border-[6px] border-[var(--color-ink)] bg-[var(--color-ink)] shadow-[var(--shadow-float)]">

@@ -8,7 +8,7 @@ import Reveal from "./Reveal";
 // Başla" (app register) + "Pilot iste" (ana sayfadaki forma) yönlendirir. Koyu-sıcak bant,
 // sayfa başına tek koyu bölge ilkesi footer'la birleşerek korunur.
 export default function CtaBand({
-  title = "Kafeni Shift'le tanıştır.",
+  title = "Kafeni Shiftle ile tanıştır.",
   sub = "10 dakikada kur, ilk vardiya programını bugün yayınla. Ücretsiz, taahhütsüz.",
 }: {
   title?: string;

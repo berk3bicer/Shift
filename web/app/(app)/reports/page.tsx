@@ -3,7 +3,7 @@ import OvertimeSummaryBoard from "@/components/reports/OvertimeSummaryBoard";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Raporlar | Shift",
+  title: "Raporlar | Shiftle",
 };
 
 export default async function ReportsPage() {

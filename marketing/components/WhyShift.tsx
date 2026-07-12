@@ -108,18 +108,18 @@ export default function WhyShift() {
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <Reveal className="max-w-2xl">
           <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-sage-deep)]">
-            Neden Shift
+            Neden Shiftle
           </span>
           <h2 className="font-display mt-3 text-3xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-4xl">
             Çoğu araç bir parçayı çözer.{" "}
             <span className="relative inline-block whitespace-nowrap">
-              Shift, <span className="font-script font-bold text-[var(--color-signal-deep)]">bütününü</span>
+              Shiftle, <span className="font-script font-bold text-[var(--color-signal-deep)]">bütününü</span>
               <Scribble shape="underline" className="absolute -bottom-1.5 left-0 w-full" delay={0.4} />
             </span>
             .
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-[var(--color-muted)]">
-            Ya sadece vardiya, ya sadece satış. Shift ikisinin arasında kalan her şeyi tek çatıda
+            Ya sadece vardiya, ya sadece satış. Shiftle ikisinin arasında kalan her şeyi tek çatıda
             toplar: vardiyadan stoğa, mesaiden hijyene — ve bunu Türkiye&apos;ye göre yapar. İş Kanunu,
             KVKK, kafe dili. Sonradan çeviri değil, baştan böyle kurgulandı.
           </p>

@@ -3,7 +3,7 @@ import { selectBranch } from "@/lib/branch";
 import ChecklistsBoard from "@/components/checklists/ChecklistsBoard";
 
 export const metadata = {
-  title: "Kontrol Listeleri | Shift",
+  title: "Kontrol Listeleri | Shiftle",
 };
 
 export default async function ChecklistsPage() {

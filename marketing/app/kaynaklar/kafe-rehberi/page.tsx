@@ -13,7 +13,7 @@ import CtaBand from "@/components/CtaBand";
 // verilmeden, gözlem tonunda anlatılır. Pilot verisi geldiğinde kendi verimizle güçlenecek.
 
 export const metadata: Metadata = {
-  title: "Kafe Operasyonu Rehberi: Verilerle Ekip Yönetimi — Shift",
+  title: "Kafe Operasyonu Rehberi: Verilerle Ekip Yönetimi — Shiftle",
   description:
     "Bağımsız kafe işletmek zor. Resmi mevzuat ve sektör verileri sorunları gösteriyor: dar kâr marjı, yüksek personel devri, İş Kanunu limitleri. Kaynaklı rehber.",
 };
@@ -35,7 +35,7 @@ const INSIGHTS: {
     title: "İş Kanunu limitleri elle takip edilemeyecek kadar kritik",
     body: "4857 sayılı İş Kanunu'na göre haftalık çalışma süresi en çok 45 saattir ve günlük çalışma 11 saati aşamaz; 45 saati aşan çalışma, saat ücreti %50 zamlı fazla mesaidir. Bu limitleri kağıt puantajla takip etmek hem hata hem yaptırım riski taşır.",
     source: { label: "4857 sayılı İş Kanunu (Md. 41, 63) — mevzuat.gov.tr", url: "https://www.mevzuat.gov.tr/mevzuatmetin/1.5.4857.pdf" },
-    solution: "Shift giriş-çıkış verisinden mesaiyi otomatik hesaplar; 45 saate yaklaşan personelde plan aşamasında uyarır, fazla mesaiyi %50 zamlı işaretler.",
+    solution: "Shiftle giriş-çıkış verisinden mesaiyi otomatik hesaplar; 45 saate yaklaşan personelde plan aşamasında uyarır, fazla mesaiyi %50 zamlı işaretler.",
     link: { href: "/moduller/giris-cikis", label: "Giriş-Çıkış & Mesai modülü" },
   },
   {
@@ -44,7 +44,7 @@ const INSIGHTS: {
     title: "Kâr marjı dar — işgücü maliyeti sürprizi kaldırmaz",
     body: "Sektör analizlerine göre restoran ve kafelerde ortalama net kâr marjı %3–9 bandındadır; gelirin yaklaşık üçte biri işgücüne gider. Bu kadar dar marjda planlanmamış fazla mesai, doğrudan kârdan yer.",
     source: { label: "ABD restoran sektörü kâr marjı analizi (2025, İngilizce)", url: "https://pos.toasttab.com/blog/on-the-line/average-restaurant-profit-margin" },
-    solution: "Shift fazla mesai eşiği yaklaşırken uyarır ve mesaiyi İş Kanunu'na göre hesaplar — ay sonu bordro sürprizi yerine planlı işgücü maliyeti.",
+    solution: "Shiftle fazla mesai eşiği yaklaşırken uyarır ve mesaiyi İş Kanunu'na göre hesaplar — ay sonu bordro sürprizi yerine planlı işgücü maliyeti.",
     link: { href: "/moduller/vardiya", label: "Vardiya & Planlama modülü" },
   },
   {
@@ -54,14 +54,14 @@ const INSIGHTS: {
       label: "Ciro ve Personel Devir Hızı İlişkisi — akademik çalışma (organize perakende, Türkiye)",
       url: "https://www.researchgate.net/publication/264129664_Ciro_ve_Personel_Devir_Hizi_Iliskisi_-_Revenue_and_Turnover_Relation",
     },
-    solution: "Shift'in davetle katılım, şeffaf vardiya programı ve vardiya havuzu esnekliği, yeni personelin hızla uyum sağlamasını ve ekipte kalmasını hedefler.",
+    solution: "Shiftle'nin davetle katılım, şeffaf vardiya programı ve vardiya havuzu esnekliği, yeni personelin hızla uyum sağlamasını ve ekipte kalmasını hedefler.",
     link: { href: "/moduller/vardiya-havuzu", label: "Vardiya Havuzu modülü" },
   },
   {
     title: "Dağınık araçlar zaman yer: WhatsApp + Excel + kağıt",
     body: "Bu bir istatistik değil, sahadan bir gözlem: vardiya bir WhatsApp grubunda, puantaj Excel'de, hijyen kaydı deftere tutulunca aynı bilgi üç yerde yaşar — biri güncellenir, ikisi eski kalır. Aradaki fark hata, tartışma ve kayıp zaman olarak geri döner.",
     source: { label: "Niteliksel gözlem — sayı iddiası yok", url: "" },
-    solution: "Shift bu üç aracı tek platformda birleştirir: program yayınlanır, giriş-çıkış kaydedilir, checklist doldurulur — tek doğru kaynak.",
+    solution: "Shiftle bu üç aracı tek platformda birleştirir: program yayınlanır, giriş-çıkış kaydedilir, checklist doldurulur — tek doğru kaynak.",
     link: { href: "/moduller", label: "Tüm modüller" },
   },
 ];
@@ -92,7 +92,7 @@ export default function CafeGuidePage() {
             Kafe Operasyonu Rehberi: <ScriptWord>verilerle</ScriptWord> ekip yönetimi
           </h1>
           <p className="anim-rise mt-5 max-w-2xl text-lg leading-relaxed text-[var(--color-muted)]" style={{ animationDelay: "200ms" }}>
-            Bağımsız kafe işletmek zor. Sektör verileri ve mevzuat sorunları gösteriyor; Shift çözümü
+            Bağımsız kafe işletmek zor. Sektör verileri ve mevzuat sorunları gösteriyor; Shiftle çözümü
             sunuyor. Aşağıdaki her veri, görünür kaynağıyla birlikte.
           </p>
 
@@ -151,7 +151,7 @@ export default function CafeGuidePage() {
                       )}
                       <div className="mt-5 rounded-xl bg-[var(--color-cream)]/60 p-4">
                         <p className="text-sm leading-relaxed text-[var(--color-ink)]">
-                          <strong className="font-display">Shift bunu nasıl çözer:</strong>{" "}{ins.solution}
+                          <strong className="font-display">Shiftle bunu nasıl çözer:</strong>{" "}{ins.solution}
                         </p>
                         <Link
                           href={ins.link.href}
@@ -196,7 +196,7 @@ export default function CafeGuidePage() {
         </div>
       </section>
 
-      <CtaBand title="Veriler sorunu gösteriyor; çözüm hazır." sub="Vardiya, mesai ve görev takibini tek platformda topla — İş Kanunu limitlerini Shift takip etsin." />
+      <CtaBand title="Veriler sorunu gösteriyor; çözüm hazır." sub="Vardiya, mesai ve görev takibini tek platformda topla — İş Kanunu limitlerini Shiftle takip etsin." />
     </main>
   );
 }

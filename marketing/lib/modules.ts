@@ -51,7 +51,7 @@ export const MODULE_PAGES: ModulePage[] = [
     ],
     tr: {
       title: "İş Kanunu'na göre planlama",
-      body: "Shift, 4857 sayılı İş Kanunu limitlerini planlama anında denetler: günlük 11 saat, haftalık 45 saat ve iki vardiya arası dinlenme süresi. ABD kurallarına göre yazılmış araçlarda bu kontroller yoktur — burada planın daha yayınlanmadan uyumlu olur.",
+      body: "Shiftle, 4857 sayılı İş Kanunu limitlerini planlama anında denetler: günlük 11 saat, haftalık 45 saat ve iki vardiya arası dinlenme süresi. ABD kurallarına göre yazılmış araçlarda bu kontroller yoktur — burada planın daha yayınlanmadan uyumlu olur.",
     },
     visual: "shiftgrid",
   },
@@ -105,7 +105,7 @@ export const MODULE_PAGES: ModulePage[] = [
     ],
     tr: {
       title: "4857 sayılı İş Kanunu'na göre hesap",
-      body: "Shift'in mesai motoru Türkiye mevzuatına göre çalışır: haftalık 45 saati aşan çalışma %50 zamlı fazla mesaidir, günlük çalışma 11 saati aşamaz. Sonradan çevrilmiş bir hesap değil — motor baştan 4857'ye göre kurgulandı ve hesabı otomatik yapar.",
+      body: "Shiftle'nin mesai motoru Türkiye mevzuatına göre çalışır: haftalık 45 saati aşan çalışma %50 zamlı fazla mesaidir, günlük çalışma 11 saati aşamaz. Sonradan çevrilmiş bir hesap değil — motor baştan 4857'ye göre kurgulandı ve hesabı otomatik yapar.",
     },
     visual: "timeclock",
   },
@@ -132,7 +132,7 @@ export const MODULE_PAGES: ModulePage[] = [
     ],
     tr: {
       title: "Her devirde limit yeniden kontrol",
-      body: "Vardiyayı kapan kişinin haftalık toplamı İş Kanunu limitlerini aşacaksa Shift devri onaylamadan önce uyarır. Takas serbestliği, yasal uyumdan taviz vermez.",
+      body: "Vardiyayı kapan kişinin haftalık toplamı İş Kanunu limitlerini aşacaksa Shiftle devri onaylamadan önce uyarır. Takas serbestliği, yasal uyumdan taviz vermez.",
     },
     visual: "pool",
   },
@@ -160,7 +160,7 @@ export const MODULE_PAGES: ModulePage[] = [
     ],
     tr: {
       title: "Ekip + tedarik aynı çatıda",
-      body: "Vardiya araçları stok ve tedariğe hiç girmez; satış sistemleri ise kasada kalır. Shift, ekip operasyonuyla tedariği aynı çatıda birleştirmeyi hedefliyor. Bu modül Faz 2'de geliyor — bugün satın alma kararını çekirdek modüller üzerinden verebilirsin.",
+      body: "Vardiya araçları stok ve tedariğe hiç girmez; satış sistemleri ise kasada kalır. Shiftle, ekip operasyonuyla tedariği aynı çatıda birleştirmeyi hedefliyor. Bu modül Faz 2'de geliyor — bugün satın alma kararını çekirdek modüller üzerinden verebilirsin.",
     },
     visual: "stock",
   },
@@ -188,7 +188,7 @@ export const MODULE_PAGES: ModulePage[] = [
     ],
     tr: {
       title: "Türkiye'de yasal zorunluluk",
-      body: "HACCP kayıtları gıda işletmeleri için yasal gerekliliktir ve bugün çoğu kafede kağıt formlarda tutulur. Shift'in hijyen modülü Faz 3'te geliyor — kağıt dosyayı rafa kaldırmak için.",
+      body: "HACCP kayıtları gıda işletmeleri için yasal gerekliliktir ve bugün çoğu kafede kağıt formlarda tutulur. Shiftle'nin hijyen modülü Faz 3'te geliyor — kağıt dosyayı rafa kaldırmak için.",
     },
     visual: "hygiene",
   },

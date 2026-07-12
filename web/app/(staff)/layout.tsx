@@ -32,7 +32,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-line bg-surface px-4">
         <div className="flex items-baseline gap-2">
           <span className="font-display text-lg font-bold text-ink">
-            Shift<span className="text-signal">.</span>
+            Shiftle<span className="text-signal">.</span>
           </span>
           <span className="text-xs font-medium text-faint">{name ?? ""}</span>
         </div>

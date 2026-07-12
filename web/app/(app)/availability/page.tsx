@@ -3,7 +3,7 @@ import AvailabilityBoard from "@/components/availability/AvailabilityBoard";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Müsaitlik Yönetimi | Shift",
+  title: "Müsaitlik Yönetimi | Shiftle",
 };
 
 // Müsaitlik listesi backend'de PER-USER (userId zorunlu) — "tüm ekip" ucu yok.

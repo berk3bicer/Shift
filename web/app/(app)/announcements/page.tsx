@@ -3,7 +3,7 @@ import { selectBranch } from "@/lib/branch";
 import AnnouncementsBoard from "@/components/announcements/AnnouncementsBoard";
 
 export const metadata = {
-  title: "Duyurular | Shift",
+  title: "Duyurular | Shiftle",
 };
 
 export default async function AnnouncementsPage() {

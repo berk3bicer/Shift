@@ -50,7 +50,7 @@ public class ForgotPasswordHandler : IRequestHandler<ForgotPasswordCommand>
         var link = _appUrl.PasswordResetLink(rawToken);
         await _email.SendAsync(
             user.Email,
-            "Shift — şifre sıfırlama",
+            "Shiftle — şifre sıfırlama",
             $"""
             <p>Merhaba {user.FullName},</p>
             <p>Şifrenizi sıfırlamak için bağlantıya tıklayın:</p>

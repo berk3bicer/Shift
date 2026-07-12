@@ -20,9 +20,9 @@ import CtaBand from "@/components/CtaBand";
 // sayfası olmayan modüle link verilmez, olmayan modül "var" gibi sunulmaz).
 
 export const metadata: Metadata = {
-  title: "Modüller — Shift",
+  title: "Modüller — Shiftle",
   description:
-    "Vardiya, görev, giriş-çıkış, vardiya havuzu bugün; stok, tedarik ve hijyen yol haritasında. Shift'in tüm modülleri tek sayfada.",
+    "Vardiya, görev, giriş-çıkış, vardiya havuzu bugün; stok, tedarik ve hijyen yol haritasında. Shiftle'nin tüm modülleri tek sayfada.",
 };
 
 const ICONS: Record<string, LucideIcon> = {

@@ -28,10 +28,10 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Shift",
-  description: "Shift operasyon platformu",
+  title: "Shiftle",
+  description: "Shiftle operasyon platformu",
   // manifest link'ini Next, app/manifest.ts konvansiyonundan otomatik ekler.
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "Shift" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "Shiftle" },
   icons: { apple: "/icon-192x192.png" },
 };
 

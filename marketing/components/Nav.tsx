@@ -101,11 +101,11 @@ export default function Nav() {
       )}
     >
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5 sm:px-8">
-        <Link href="/" className="flex items-center gap-2" aria-label="Shift ana sayfa">
+        <Link href="/" className="flex items-center gap-2" aria-label="Shiftle ana sayfa">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-signal)] font-display text-base font-extrabold text-[var(--color-ink)]">
             S
           </span>
-          <span className="font-display text-xl font-extrabold text-[var(--color-ink)]">Shift</span>
+          <span className="font-display text-xl font-extrabold text-[var(--color-ink)]">Shiftle</span>
         </Link>
 
         {/* Masaüstü menü */}
@@ -118,7 +118,7 @@ export default function Nav() {
             onLeave={scheduleClose}
             onClick={() => setPanel((p) => (p === "moduller" ? null : "moduller"))}
           />
-          <TopLink href="/neden-shift" label="Neden Shift" active={pathname === "/neden-shift"} />
+          <TopLink href="/neden-shift" label="Neden Shiftle" active={pathname === "/neden-shift"} />
           <TopLink href="/fiyatlar" label="Fiyatlar" active={pathname === "/fiyatlar"} />
           <PanelTrigger
             label="Kaynaklar"
@@ -219,7 +219,7 @@ export default function Nav() {
                 href="/neden-shift"
                 className="rounded-lg px-3 py-3 text-base font-medium text-[var(--color-ink)] hover:bg-[var(--color-paper-deep)]"
               >
-                Neden Shift
+                Neden Shiftle
               </Link>
               <Link
                 href="/fiyatlar"

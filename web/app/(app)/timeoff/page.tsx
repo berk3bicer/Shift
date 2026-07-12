@@ -3,7 +3,7 @@ import TimeOffBoard from "@/components/timeoff/TimeOffBoard";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "İzin Yönetimi | Shift",
+  title: "İzin Yönetimi | Shiftle",
 };
 
 // Sunucu tarafında izin taleplerini + oturum sahibini çeker.

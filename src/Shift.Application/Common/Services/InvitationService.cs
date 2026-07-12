@@ -55,10 +55,10 @@ public class InvitationService : IInvitationService
         var link = _appUrl.InviteLink(rawToken);
         await _email.SendAsync(
             user.Email,
-            $"{tenantName ?? "Shift"} — ekibe davet edildiniz",
+            $"{tenantName ?? "Shiftle"} — ekibe davet edildiniz",
             $"""
             <p>Merhaba {user.FullName},</p>
-            <p><strong>{tenantName ?? "İşletmeniz"}</strong> sizi Shift'e davet etti.
+            <p><strong>{tenantName ?? "İşletmeniz"}</strong> sizi Shiftle'ye davet etti.
             Hesabınızı etkinleştirmek için şifrenizi belirleyin:</p>
             <p><a href="{link}">{link}</a></p>
             <p>Bu bağlantı 7 gün geçerlidir ve tek kullanımlıktır.</p>

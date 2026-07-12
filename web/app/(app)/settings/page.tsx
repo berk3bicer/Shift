@@ -3,7 +3,7 @@ import OvertimeSettingsForm from "@/components/settings/OvertimeSettingsForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Ayarlar | Shift",
+  title: "Ayarlar | Shiftle",
 };
 
 export default async function SettingsPage() {

@@ -51,7 +51,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <div className="flex items-center gap-6">
           <div className="flex items-baseline gap-2">
             <span className="font-display text-lg font-bold text-ink">
-              Shift<span className="text-signal">.</span>
+              Shiftle<span className="text-signal">.</span>
             </span>
             <span className="hidden text-xs font-medium text-faint sm:inline">Yönetici</span>
           </div>

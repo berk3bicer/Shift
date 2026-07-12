@@ -3,7 +3,7 @@ import { selectBranch } from "@/lib/branch";
 import DashboardBoard from "@/components/dashboard/DashboardBoard";
 
 export const metadata = {
-  title: "Ana Sayfa | Shift",
+  title: "Ana Sayfa | Shiftle",
 };
 
 export default async function DashboardPage() {

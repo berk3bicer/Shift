@@ -4,8 +4,8 @@ import type { MetadataRoute } from "next";
 // ekle" + standalone (adres çubuğu gizli) için gerekli. Staff mobil deneyiminin kabuğu.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Shift — Vardiya",
-    short_name: "Shift",
+    name: "Shiftle — Vardiya",
+    short_name: "Shiftle",
     description: "Kafe/restoran vardiya ve operasyon uygulaması",
     start_url: "/",
     display: "standalone",

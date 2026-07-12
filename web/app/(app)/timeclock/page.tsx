@@ -4,7 +4,7 @@ import TimeClockBoard from "@/components/timeclock/TimeClockBoard";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Puantaj Yönetimi | Shift",
+  title: "Puantaj Yönetimi | Shiftle",
 };
 
 export default async function TimeClockPage() {

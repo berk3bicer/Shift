@@ -40,7 +40,7 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Shift — Kafe & Restoran Operasyonunu Dijitalleştir",
+  title: "Shiftle — Kafe & Restoran Operasyonunu Dijitalleştir",
   description:
     "Vardiya, görev, giriş-çıkış, checklist ve duyuru tek platformda. Kafeler için İş Kanunu ve KVKK uyumlu, Türkçe operasyon yazılımı. WhatsApp'ta vardiya, kağıtta hijyen bitiyor.",
   keywords: [
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     "giriş çıkış takibi",
   ],
   openGraph: {
-    title: "Shift — Kafe & Restoran Operasyonunu Dijitalleştir",
+    title: "Shiftle — Kafe & Restoran Operasyonunu Dijitalleştir",
     description:
       "Vardiya, görev, giriş-çıkış, checklist ve duyuru tek platformda. Kafeler için, Türkçe, İş Kanunu + KVKK uyumlu.",
     locale: "tr_TR",

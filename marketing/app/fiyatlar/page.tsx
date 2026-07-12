@@ -11,7 +11,7 @@ import CtaBand from "@/components/CtaBand";
 // Cevaplar DÜRÜST: Faz 2/3 modülleri "gelince pakete dahil olur" diye anlatılır, "var" denmez.
 
 export const metadata: Metadata = {
-  title: "Fiyatlar — Shift",
+  title: "Fiyatlar — Shiftle",
   description:
     "Şube başına aylık fiyatlandırma: Başlangıç 499 TL, Büyüme 999 TL, Pro 1.799 TL. Gizli ücret yok, zorunlu üst paket yok. Pilot dönemi ücretsiz.",
 };

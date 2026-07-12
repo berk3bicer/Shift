@@ -11,7 +11,7 @@ public class EmailOptions
     public string User { get; set; } = string.Empty;
     public string Pass { get; set; } = string.Empty;
     public string FromAddress { get; set; } = string.Empty;
-    public string FromName { get; set; } = "Shift";
+    public string FromName { get; set; } = "Shiftle";
 
     // Host boşsa gerçek gönderim yapılamaz → dev'de ConsoleEmailSender devreye girer.
     public bool IsConfigured => !string.IsNullOrWhiteSpace(Host);

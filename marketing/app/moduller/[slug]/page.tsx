@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const mod = getModule(slug);
   if (!mod) return {};
   return {
-    title: `${mod.name} — Shift`,
+    title: `${mod.name} — Shiftle`,
     description: `${mod.headline} ${mod.sub}`,
   };
 }

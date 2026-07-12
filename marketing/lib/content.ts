@@ -119,7 +119,7 @@ export const MORE_MODULES = [
 // value: "full" | "partial" | "none" | metin. Shift sütunu vurgulanır.
 // DÜRÜSTLÜK: henüz inşa edilmemiş modüller Shift sütununda faz etiketiyle ("var" gibi sunulmaz).
 export const COMPARISON = {
-  competitors: ["Shift", "Tipik vardiya aracı", "Tipik POS / adisyon"],
+  competitors: ["Shiftle", "Tipik vardiya aracı", "Tipik POS / adisyon"],
   rows: [
     { feature: "Vardiya & Havuz", values: ["full", "full", "none"] },
     { feature: "Görev (Kanban + foto)", values: ["full", "partial", "none"] },
@@ -130,7 +130,7 @@ export const COMPARISON = {
     { feature: "Türkçe Destek", values: ["full", "none", "full"] },
   ],
   footnote:
-    "Marka değil kategori karşılaştırması: \"Tipik vardiya aracı\" = yurt dışı odaklı ekip/vardiya uygulamaları, \"Tipik POS / adisyon\" = satış odaklı sistemler. \"Faz 2/3\" = Shift yol haritasında, henüz yayında değil. Kaynak: Ürün Spesifikasyonu 1.5.",
+    "Marka değil kategori karşılaştırması: \"Tipik vardiya aracı\" = yurt dışı odaklı ekip/vardiya uygulamaları, \"Tipik POS / adisyon\" = satış odaklı sistemler. \"Faz 2/3\" = Shiftle yol haritasında, henüz yayında değil. Kaynak: Ürün Spesifikasyonu 1.5.",
 };
 
 // Spec 1.5 — TAM matris (/neden-shift sayfası). Landing'deki sade COMPARISON'ın genişletilmişi:
@@ -138,7 +138,7 @@ export const COMPARISON = {
 // "Tam" yazar ama stok/tedarik/hijyen/İK henüz İNŞA EDİLMEDİ → Shift hücresinde faz etiketi
 // gösterilir ("var" gibi sunulmaz).
 export const COMPARISON_FULL = {
-  competitors: ["Shift", "Tipik vardiya aracı", "Tipik POS / adisyon"],
+  competitors: ["Shiftle", "Tipik vardiya aracı", "Tipik POS / adisyon"],
   rows: [
     { feature: "Vardiya Planlama", values: ["full", "full", "temel"] },
     { feature: "Vardiya Havuzu / Takas", values: ["full", "full", "none"] },
@@ -153,7 +153,7 @@ export const COMPARISON_FULL = {
     { feature: "Türkçe Destek", values: ["full", "none", "full"] },
   ],
   footnote:
-    "Marka değil kategori karşılaştırması — her kategori kendi işini iyi yapar; tablo kapsam farkını gösterir. \"Faz 2/3\" = Shift yol haritasında, henüz yayında değil — dürüst etiket. Kaynak: Ürün Spesifikasyonu 1.5.",
+    "Marka değil kategori karşılaştırması — her kategori kendi işini iyi yapar; tablo kapsam farkını gösterir. \"Faz 2/3\" = Shiftle yol haritasında, henüz yayında değil — dürüst etiket. Kaynak: Ürün Spesifikasyonu 1.5.",
 };
 
 // Spec 12.3 — Fiyatlandırma (referans). Kapsamlar tabloyla birebir.

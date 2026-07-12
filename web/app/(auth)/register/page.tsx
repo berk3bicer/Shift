@@ -79,7 +79,7 @@ export default function RegisterPage() {
         className="w-full max-w-sm space-y-5 rounded-xl border border-line bg-surface p-8 shadow-card"
       >
         <div>
-          <h1 className="font-display text-xl font-bold text-ink">Shift<span className="text-signal">.</span></h1>
+          <h1 className="font-display text-xl font-bold text-ink">Shiftle<span className="text-signal">.</span></h1>
           <p className="text-sm text-muted">İşletmeni kaydet, birkaç dakikada kur.</p>
         </div>
 

@@ -3,7 +3,7 @@ import PayrollBoard from "@/components/payroll/PayrollBoard";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Bordro | Shift",
+  title: "Bordro | Shiftle",
 };
 
 export default async function PayrollPage() {

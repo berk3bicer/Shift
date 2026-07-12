@@ -1,4 +1,4 @@
-# Gün 50 — Flip Kart Cilası: Sinematik 3D + Scroll Tetik Düzeltmesi (Tur 19)
+# Gün 50 — Flip Kart Cilası: Sinematik 3D + Scroll Tetik + Sticky-Pin (Tur 19 / 19b / 20)
 
 **Kapsam:** Gün 49'da kurulan `FlipShowcase.tsx`'in iki kusurunu gidermek — tek dosya, tek
 mesele: **dönüş mekaniği**. Arka yüz eski-dünya çizimlerine (kağıt çizelge, mesaj grubu, mesai
@@ -138,24 +138,89 @@ düşer; yüzler yuvarlak, kabuk köşeli olsaydı gölge keskin dikdörtgen olu
 
 ---
 
-## 4. reduced-motion — dokunulmadı, teyit edildi
+## 4. Sticky-pin: kart yapışır, YERİNDE döner (Tur 20 — mimari değişiklik)
+
+Tur 19/19b'de kart sayfa akarken dönüyordu; Berke'nin gerçek isteği Apple ürün sayfası tarzıydı:
+kart ekrana **yapışsın**, kaydırdıkça **olduğu yerde** dönsün, dönüş bitince serbest kalıp sayfa
+aksın. Bu, tetik ayarı değil **mekanik değişimi**. Desen — "pin bölgesi" + `position: sticky`:
+
+```tsx
+<div ref={ref} className="relative h-[200vh]">          {/* PIN BÖLGESİ = dönüş mesafesi */}
+  <div className="sticky top-0 flex h-screen flex-col items-center justify-center">
+    {/* kart burada — bölge boyunca viewport'a yapışık, dikey ortalı */}
+  </div>
+</div>
+const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+```
+
+**Neden pin bölgesi yüksekliği = dönüş mesafesi?** `sticky top-0` eleman, kapsayıcısının üstü
+viewport üstüne değince yapışır ve kapsayıcının ALTI viewport üstüne gelene kadar yapışık kalır.
+Yani kart, `h-[200vh]` bölge boyunca (~2 ekran scroll) ekranda sabit durur; o 2 ekranlık scroll
+`scrollYProgress` 0→1'e eşlenir ve dönüşü sürer. Bölge kısaysa dönüş için "yakıt" az → çok hızlı
+biter; uzunsa kullanıcı fazla kaydırır. `200vh` = ölçülü başlangıç.
+
+**Nefes payı** ile ani başlangıç/bitiş önlenir — dönüş tüm bölgeye yayılmaz, ortasına toplanır:
+```tsx
+const rotateY = useTransform(scrollYProgress, [0, 0.18, 0.82, 1], [-180, -180, 0, 0]);
+```
+İlk %18 ilk yüz (eski dünya) sabit görünür, %18–82 arası döner, son %18 ürün sabit durur. Sinematik
+3B (scale/shadow/rotateX) da `[0.18, 0.5, 0.82]` aralığına hizalandı → dönüşle senkron.
+
+> [!question] Mülakat Sorusu 5 — **"`position: sticky` scroll-scrub animasyonda nasıl 'pin' yaratır, dönüş süresini ne belirler?"**
+> `sticky` eleman, offset eşiğine (ör. `top:0`) ulaşınca **kapsayıcısının sınırları içinde**
+> viewport'a yapışır; kapsayıcının alt kenarı eşiği geçene kadar sabit kalır, sonra normal akışa
+> döner. Yani "ne kadar süre yapışık kalır" = kapsayıcının yüksekliği eksi viewport. Scroll-scrub'da
+> bu yapışık pencereyi `useScroll` 0→1 progress'ine eşleriz; kart ekranda dururken scroll dönüşü
+> sürer. Dönüş "süresi" saniye değil, **pin bölgesi yüksekliğidir** — `h-[200vh]` uzatmak dönüşü
+> yavaşlatır (daha çok kaydırma), kısaltmak hızlandırır.
+
+### ⚠️ `overflow: hidden` ata'da sticky'yi ÖLDÜRÜR
+
+Section'da `overflow-hidden` vardı (taşan dekor için). Ama `overflow: hidden/auto/scroll` olan bir
+**ata eleman scroll konteyneri** oluşturur; `sticky` en yakın scroll konteynerine göre yapışır ve
+o konteyner scroll etmiyorsa yapışma görünmez/kırılır. Çözüm: section'dan `overflow-hidden`
+kaldırıldı, yerine **`overflow-x-clip`** kondu. `overflow: clip` scroll konteyneri OLUŞTURMAZ
+(kaydırma mekanizması yok) → sticky'yi kırmaz, ama yatay taşmayı yine kırpar. İki kuş, tek taş.
+
+> [!question] Mülakat Sorusu 6 — **"`position: sticky` çalışmıyor — ilk bakacağın şey nedir? `overflow: hidden` ile `overflow: clip` farkı?"**
+> İlk şüpheli: bir ata elemanda `overflow: hidden` (ya da auto/scroll). Sticky en yakın **scroll
+> konteynerine** göre çalışır; araya giren overflow'lu ata onu kendine hapseder ve beklediğin
+> viewport-yapışması olmaz. `overflow: hidden` programatik olarak kaydırılabilir bir scroll
+> konteyneri kurar (sticky'yi yakalar); `overflow: clip` ise sadece kırpar, kaydırma sunmaz,
+> scroll konteyneri kurmaz → sticky'yi bozmadan taşmayı gizler. Diğer sık sebepler: sticky
+> elemana `top/bottom` offset verilmemesi, ya da kapsayıcının çocuk yüksekliğiyle eşit olup
+> "yapışacak yol" bırakmaması.
+
+### ⚠️ Mobil — sticky-pin KAPALI
+
+Küçük ekranda kart + `h-[200vh]` pin kolayca viewport'a sığmaz, scroll tuhaflaşır. Karar: sticky-pin
+yalnız `sm+` (640px). `useIsDesktop` (matchMedia `min-width:640px`) + mevcut mounted-gate deseniyle
+mobilde `StaticCard` (üst-üste eski/yeni, "Eskiden"/"Shift'te" rozetli) render edilir — düz, normal
+scroll. `flat = mounted && (reduce || !isDesktop)`. Kritik: `isDesktop` yalnız `mounted` sonrası
+etkir; mount öncesi herkes flip alır → ilk istemci render'ı SSR ile özdeş, hydration güvenli
+(Gün 49/Tur 18 dersinin sticky'ye taşınması).
+
+## 5. reduced-motion — dokunulmadı, teyit edildi
 
 `StaticCard` (yan-yana öncesi/sonrası) yolu ve mounted-gate mantığı (Gün 49/Tur 18) aynen
-korundu. Sinematik efektler yalnız hareketli `FlipCard` yolunda; reduce açıkken hiçbir
-scale/shadow/rotate animasyonu yok, iki yüz sabit yan yana durur. Erişilebilirlik modu içerik
-eksiltmez ilkesi bozulmadı.
+korundu; artık aynı düz yol **mobil** için de kullanılıyor. Sinematik + sticky-pin efektleri yalnız
+`(mounted && !reduce && isDesktop)` yolunda; reduce açıkken hiçbir scale/shadow/rotate/pin yok,
+iki yüz sabit. Erişilebilirlik modu içerik eksiltmez ilkesi bozulmadı.
 
 ## Ayar sabitleri (Berke görsel testte kurcalar)
 
-Brief'teki sayılar **başlangıç**, "böyle bitecek" değil. İnce ayar için dokunulacaklar:
+Değerler **başlangıç**, "böyle bitecek" değil:
 
-- **Tetik penceresi:** `offset` içindeki `0.75` ve `0.52` — dönüşün nerede başlayıp bittiği.
-- **Nabız:** `scale` orta değeri `1.04`, `rotateX` orta değeri `6`.
-- **Gölge derinliği:** `shadowBlur/shadowY/shadowAlpha`'nın orta (0.5) değerleri.
-- **Perspektif:** `900px` ve `perspectiveOrigin: "50% 40%"`.
+- **Pin uzunluğu / scroll miktarı:** pin bölgesi `h-[200vh]` — uzun bulunursa `150vh`.
+- **Nefes payı:** `rotateY` kırılımları `0.18` / `0.82` (ilk/son yüz ne kadar sabit dursun).
+- **Nabız & gölge:** `scale` orta `1.04`, `rotateX` orta `6`, `shadow*` orta değerleri.
+- **Perspektif:** `900px` + `perspectiveOrigin: "50% 40%"`.
+- **Mobil eşiği:** `useIsDesktop` içindeki `min-width: 640px`.
 
 ## Açık borçlar
 
 - **#flip-shadow-ayrik-katman:** gölge şu an dönen kabukta; ikinci yarıda tuhaflaşırsa dönmeyen
   sarmalayıcıya taşınacak (bkz. §3 tuzak).
+- **#flip-sticky-mobil-kanit:** desktop sticky + mobil düz + reduced-motion yan-yana görsel
+  kayıtları Berke'nin gözüyle onaylanacak (scroll-scrub konumsal, curl/build ile kanıtlanamaz).
 - Gün 49'un açık borçları (favicon/OG, unsplash-bağımlılığı) bu turda kapsam dışı, sürüyor.

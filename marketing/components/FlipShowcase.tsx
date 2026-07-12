@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useMotionTemplate, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import type { ReactNode } from "react";
 import Reveal from "./Reveal";
 import Scribble from "./Scribble";
@@ -234,22 +234,36 @@ const CARDS: Card[] = [
 
 function FlipCard({ card }: { card: Card }) {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "center center"] });
+  // Tur 19: dönüş penceresi görünür alana çekildi. "start 0.75" = kartın ÜSTÜ
+  // viewport'un %75'ine (alt %25'e) girdiğinde başla; "center 0.52" = kartın
+  // ORTASI hafif merkez-üstüne geldiğinde bit. Kullanıcı KARTA BAKARKEN döner.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.75", "center 0.52"] });
   // -180 (eski dünya) → 0 (ürün). Bitiş yüzü HER ZAMAN ürün ekranı.
   const rotateY = useTransform(scrollYProgress, [0, 1], [-180, 0]);
+  // Sinematik 3D (Tur 19): dönüşün ORTASINDA kart öne gelip hafif tepeden eğilir,
+  // gölge derinleşir → "havada dönen kart" hissi. Uçlarda yerine oturur.
+  const rotateX = useTransform(scrollYProgress, [0, 0.5, 1], [0, 6, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.94, 1.04, 1]);
+  // box-shadow string interpolate edilemez → blur+y+alpha ayrı sürülüp template ile birleşir.
+  const shadowBlur = useTransform(scrollYProgress, [0, 0.5, 1], [24, 60, 30]);
+  const shadowY = useTransform(scrollYProgress, [0, 0.5, 1], [12, 34, 16]);
+  const shadowAlpha = useTransform(scrollYProgress, [0, 0.5, 1], [0.18, 0.42, 0.22]);
+  const boxShadow = useMotionTemplate`0px ${shadowY}px ${shadowBlur}px -12px rgba(40,35,30,${shadowAlpha})`;
   // will-change yalnız dönüş sürerken — bittiğinde tarayıcı katmanı serbest bırakır.
-  const willChange = useTransform(scrollYProgress, (v) => (v > 0 && v < 1 ? "transform" : "auto"));
+  const willChange = useTransform(scrollYProgress, (v) => (v > 0 && v < 1 ? "transform, box-shadow" : "auto"));
 
   return (
     <div ref={ref} role="img" aria-label={card.aria}>
-      <div aria-hidden="true" style={{ perspective: "1200px" }}>
+      {/* perspective 900px + hafif üstten bakış → 3D belirgin, kart hacim kazanır. */}
+      <div aria-hidden="true" style={{ perspective: "900px", perspectiveOrigin: "50% 40%" }}>
         <motion.div
-          className="relative aspect-[16/10] w-full"
-          style={{ transformStyle: "preserve-3d", rotateY, willChange }}
+          className="relative aspect-[16/10] w-full rounded-2xl"
+          style={{ transformStyle: "preserve-3d", rotateY, rotateX, scale, boxShadow, willChange }}
         >
-          {/* ÖN: gerçek panel ekranı */}
+          {/* ÖN: gerçek panel ekranı — gölge artık dönen kabuktaki animasyonlu
+              boxShadow'da (çift gölge olmasın diye buradan kaldırıldı). */}
           <div
-            className="absolute inset-0 overflow-hidden rounded-2xl border border-[var(--color-line)] shadow-[var(--shadow-float)]"
+            className="absolute inset-0 overflow-hidden rounded-2xl border border-[var(--color-line)]"
             style={{ backfaceVisibility: "hidden" }}
           >
             <img src={card.img} alt="" width={1600} height={1000} loading="lazy" decoding="async" className="h-full w-full object-cover" />

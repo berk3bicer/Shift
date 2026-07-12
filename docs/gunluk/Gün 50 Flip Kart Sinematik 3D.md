@@ -16,10 +16,29 @@ belirmeye başlıyor. Dönüş burada başlayıp `center center`'da (kart tam or
 kullanıcı karta gözünü diktiğinde dönüş çoktan tamamlanmış oluyordu: "yavan, kımıldamayan kart"
 şikâyeti aslında **erken tetik** şikâyetiydi.
 
-Yeni offset: `["start 0.75", "center 0.52"]`. Dönüş penceresi kartın ekranın alt %25'inden orta
-hizasına kadar olan aralığa çekildi — göz odağı tam oraya düşer. `"start 0.75"` = kartın üstü
-viewport yüksekliğinin %75'ine (yani alt çeyreğe) girdiğinde başla; `"center 0.52"` = kartın
-ortası merkezin hafif üstüne geldiğinde bitir.
+Yeni offset: `["start 0.6", "center 0.45"]`. Dönüş penceresi kartın alt-orta banttan ekran
+ortasına çıktığı aralığa çekildi — göz odağı tam oraya düşer. `"start 0.6"` = kartın üstü
+viewport'un %60'ına girdiğinde başla; `"center 0.45"` = kartın ortası merkezin biraz üstüne
+gelince bitir.
+
+### Ama asıl kök neden offset değil — `ref` neyi ölçüyordu (Tur 19b)
+
+İlk düzeltmede sadece offset sayısını değiştirdik ve dönüş HÂLÂ erken bitiyordu. Gerçek sebep:
+`ref` en dış div'e bağlıydı ve o div **kartı + altındaki `<Caption>` başlığını birlikte**
+kapsıyordu. `useScroll` ölçüm hedefinin geometrisini okur; hedef kart+caption olunca `"center"`
+= **kart + caption'ın ortası**, bu nokta kartın görsel merkezinin epeyce ALTINDA. Sonuç: dönüş
+penceresi yukarı kayıyor, kart tam ekrana oturmadan progress 1.0'a varıp dönüş bitiyordu —
+"daha görmeden dönmüş" tam olarak buydu. Düzeltme yapısal: `ref` yalnız 16:10 kart kapsayıcısına
+taşındı, caption ölçüm dışında kaldı. `role`/`aria-label` en dış div'de korundu (erişilebilirlik
+kökü kaymasın). Ancak bundan sonra offset kurcalaması tutarlı sonuç verir.
+
+> [!question] Mülakat Sorusu 1b — **"`useScroll({ target: ref })` tam olarak neyin pozisyonunu ölçer, yanlış elemana bağlamak neyi bozar?"**
+> `ref`'in işaret ettiği DOM elemanının **bounding box'ını** viewport'a göre ölçer; `offset`'teki
+> `start`/`center`/`end` bu kutunun kenarlarına/merkezine göredir. Hedef, görmek istediğinden
+> daha büyük bir kapsayıcıysa (ör. kart + altındaki başlık), kutunun merkezi görsel öğenin
+> merkezinden kayar → animasyon penceresi kayar, efekt yanlış anda tetiklenir. Ders: `ref` yalnız
+> animasyonu sürükleyen görsel öğeyi sarmalasın; ölçüme dahil her ek eleman pencereyi öteler.
+> offset "ince ayar", ref hedefi ise "kök tanım" — önce ref'i doğrula.
 
 > [!question] Mülakat Sorusu 1 — **"framer `useScroll` `offset: ['start end', ...]` — bu iki string tam olarak neyi tanımlar?"**
 > Her offset iki jeton taşır: **birincisi hedef elemanın kenarı**, **ikincisi viewport'un

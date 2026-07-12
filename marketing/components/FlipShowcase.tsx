@@ -234,10 +234,13 @@ const CARDS: Card[] = [
 
 function FlipCard({ card }: { card: Card }) {
   const ref = useRef<HTMLDivElement>(null);
-  // Tur 19: dönüş penceresi görünür alana çekildi. "start 0.75" = kartın ÜSTÜ
-  // viewport'un %75'ine (alt %25'e) girdiğinde başla; "center 0.52" = kartın
-  // ORTASI hafif merkez-üstüne geldiğinde bit. Kullanıcı KARTA BAKARKEN döner.
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.75", "center 0.52"] });
+  // Tur 19b: dönüş penceresi görünür alana çekildi. KÖK NEDEN düzeltmesi ref'i
+  // yalnız kartın kapsayıcısına bağlamak (aşağıda) — caption ölçüme dahilken
+  // "center" kart+başlığın ortasını, yani kartın görsel merkezinin ALTINI ölçüyor,
+  // pencere yukarı kayıp kart net görünmeden dönüş bitiyordu.
+  // "start 0.6" = kartın ÜSTÜ viewport'un %60'ına (orta banda) girince başla;
+  // "center 0.45" = kartın ORTASI ekran ortasının biraz üstüne gelince bit.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.6", "center 0.45"] });
   // -180 (eski dünya) → 0 (ürün). Bitiş yüzü HER ZAMAN ürün ekranı.
   const rotateY = useTransform(scrollYProgress, [0, 1], [-180, 0]);
   // Sinematik 3D (Tur 19): dönüşün ORTASINDA kart öne gelip hafif tepeden eğilir,
@@ -253,9 +256,10 @@ function FlipCard({ card }: { card: Card }) {
   const willChange = useTransform(scrollYProgress, (v) => (v > 0 && v < 1 ? "transform, box-shadow" : "auto"));
 
   return (
-    <div ref={ref} role="img" aria-label={card.aria}>
-      {/* perspective 900px + hafif üstten bakış → 3D belirgin, kart hacim kazanır. */}
-      <div aria-hidden="true" style={{ perspective: "900px", perspectiveOrigin: "50% 40%" }}>
+    <div role="img" aria-label={card.aria}>
+      {/* ref YALNIZ kart kapsayıcısında — caption ölçüme dahil değil (Tur 19b kök neden).
+          perspective 900px + hafif üstten bakış → 3D belirgin, kart hacim kazanır. */}
+      <div ref={ref} aria-hidden="true" style={{ perspective: "900px", perspectiveOrigin: "50% 40%" }}>
         <motion.div
           className="relative aspect-[16/10] w-full rounded-2xl"
           style={{ transformStyle: "preserve-3d", rotateY, rotateX, scale, boxShadow, willChange }}

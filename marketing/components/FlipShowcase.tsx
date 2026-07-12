@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useMotionTemplate, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import type { ReactNode } from "react";
 import Reveal from "./Reveal";
 import Scribble from "./Scribble";
@@ -234,36 +234,57 @@ const CARDS: Card[] = [
 
 function FlipCard({ card }: { card: Card }) {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "center center"] });
-  // -180 (eski dünya) → 0 (ürün). Bitiş yüzü HER ZAMAN ürün ekranı.
-  const rotateY = useTransform(scrollYProgress, [0, 1], [-180, 0]);
-  // will-change yalnız dönüş sürerken — bittiğinde tarayıcı katmanı serbest bırakır.
-  const willChange = useTransform(scrollYProgress, (v) => (v > 0 && v < 1 ? "transform" : "auto"));
+  // Sticky-pin (Tur 20): ref PIN BÖLGESİ'ne bağlı (h-[200vh]). Kart bölge boyunca
+  // sticky ile ekranda sabitlenir; scroll ilerlemesi dönüşü YERİNDE sürer, bölge
+  // bitince sticky çözülür ve sayfa akar. "start start" = pin bölgesinin tepesi ekran
+  // tepesine değince başla; "end end" = bölgenin sonu ekran sonuna gelince bit.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  // Nefes payı: ilk %18 ilk yüz (eski dünya) SABİT görünür, %18–82 döner, son %18 ürün
+  // SABİT. -180 (eski dünya) → 0 (ürün); bitiş yüzü HER ZAMAN ürün ekranı.
+  const rotateY = useTransform(scrollYProgress, [0, 0.18, 0.82, 1], [-180, -180, 0, 0]);
+  // Sinematik 3D KORUNUR — ama dönüş aralığına (0.18–0.82) hizalı, uçlarda oturur.
+  const rotateX = useTransform(scrollYProgress, [0.18, 0.5, 0.82], [0, 6, 0]);
+  const scale = useTransform(scrollYProgress, [0.18, 0.5, 0.82], [0.96, 1.04, 1]);
+  // box-shadow string interpolate edilemez → blur+y+alpha ayrı sürülüp template ile birleşir.
+  const shadowBlur = useTransform(scrollYProgress, [0.18, 0.5, 0.82], [24, 60, 30]);
+  const shadowY = useTransform(scrollYProgress, [0.18, 0.5, 0.82], [12, 34, 16]);
+  const shadowAlpha = useTransform(scrollYProgress, [0.18, 0.5, 0.82], [0.18, 0.42, 0.22]);
+  const boxShadow = useMotionTemplate`0px ${shadowY}px ${shadowBlur}px -12px rgba(40,35,30,${shadowAlpha})`;
 
   return (
-    <div ref={ref} role="img" aria-label={card.aria}>
-      <div aria-hidden="true" style={{ perspective: "1200px" }}>
-        <motion.div
-          className="relative aspect-[16/10] w-full"
-          style={{ transformStyle: "preserve-3d", rotateY, willChange }}
+    // PIN BÖLGESİ — yüksekliği = dönüş için gereken scroll mesafesi (~200vh). role/aria kökte.
+    <div ref={ref} role="img" aria-label={card.aria} className="relative h-[200vh]">
+      {/* STICKY KART — bölge boyunca ekranda dikey ortalı sabit durur */}
+      <div className="sticky top-0 flex h-screen flex-col items-center justify-center">
+        <div
+          aria-hidden="true"
+          className="w-full max-w-3xl"
+          style={{ perspective: "900px", perspectiveOrigin: "50% 40%" }}
         >
-          {/* ÖN: gerçek panel ekranı */}
-          <div
-            className="absolute inset-0 overflow-hidden rounded-2xl border border-[var(--color-line)] shadow-[var(--shadow-float)]"
-            style={{ backfaceVisibility: "hidden" }}
+          <motion.div
+            className="relative aspect-[16/10] w-full rounded-2xl"
+            style={{ transformStyle: "preserve-3d", rotateY, rotateX, scale, boxShadow, willChange: "transform, box-shadow" }}
           >
-            <img src={card.img} alt="" width={1600} height={1000} loading="lazy" decoding="async" className="h-full w-full object-cover" />
-          </div>
-          {/* ARKA: eski dünya */}
-          <div
-            className="absolute inset-0 overflow-hidden rounded-2xl border border-[#d6d3cd]"
-            style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-          >
-            {card.old}
-          </div>
-        </motion.div>
+            {/* ÖN: gerçek panel ekranı (dönüş SONU) — gölge dönen kabuktaki animasyonlu boxShadow'da. */}
+            <div
+              className="absolute inset-0 overflow-hidden rounded-2xl border border-[var(--color-line)]"
+              style={{ backfaceVisibility: "hidden" }}
+            >
+              <img src={card.img} alt="" width={1600} height={1000} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+              <span className="absolute left-3 top-3 rounded-full bg-[var(--color-signal)] px-2.5 py-0.5 text-[10px] font-bold text-[var(--color-ink)]">Shift&apos;te</span>
+            </div>
+            {/* ARKA: eski dünya (pin başı, ilk görünen yüz) */}
+            <div
+              className="absolute inset-0 overflow-hidden rounded-2xl border border-[#d6d3cd]"
+              style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+            >
+              {card.old}
+              <span className="absolute left-3 top-3 rounded-full bg-[#57534e]/80 px-2.5 py-0.5 text-[10px] font-bold text-white">Eskiden</span>
+            </div>
+          </motion.div>
+        </div>
+        <Caption card={card} />
       </div>
-      <Caption card={card} />
     </div>
   );
 }
@@ -300,17 +321,36 @@ function StaticCard({ card }: { card: Card }) {
 
 /* ── Bölüm ── */
 
+// Desktop tespiti (Tur 20): sticky-pin küçük ekranda riskli (pin yüksekliği + kart
+// viewport'a sığmayınca scroll tuhaflaşır) → yalnız sm+ (640px) sticky-pin aç.
+// mount öncesi false döner; ilk istemci render'ı SSR ile özdeş kalsın diye render
+// dallanması yalnız mount SONRASI etkir (aşağıdaki `flat` mounted-gate'li).
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 640px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return isDesktop;
+}
+
 export default function FlipShowcase() {
-  // Hydration tuzağı (Tur 17): SSR her zaman flip düzenini basar; reduce'a göre AĞAÇ
-  // değiştirmek ilk istemci render'ında metin uyuşmazlığı → hydration hatası üretiyordu.
-  // Çözüm: mount'a kadar SSR ile birebir aynı düzen, mount SONRASI reduce ise yan-yana.
-  // İçerik hiçbir aşamada gizlenmez (flip düzeninde de eski-dünya yüzü görünürdür).
+  // Hydration tuzağı (Tur 17): SSR her zaman flip düzenini basar; reduce/viewport'a göre
+  // AĞAÇ değiştirmek ilk istemci render'ında uyuşmazlık → hydration hatası üretiyordu.
+  // Çözüm: mount'a kadar SSR ile birebir aynı düzen (flip), mount SONRASI farklılaş.
+  // İçerik hiçbir aşamada gizlenmez (flip düzeninde de bir yüz her zaman görünür).
   const reduce = useReducedMotion();
+  const isDesktop = useIsDesktop();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  const sideBySide = mounted && reduce;
+  // Düz kart (StaticCard yan-yana/üst-üste): reduce açık VEYA mobil. Sticky-pin flip
+  // yalnız desktop + hareket serbest. mount öncesi herkes flip alır (SSR ile özdeş).
+  const flat = mounted && (reduce || !isDesktop);
   return (
-    <section id="urun-gercekte" className="overflow-hidden bg-[var(--color-surface)] py-24 sm:py-32">
+    <section id="urun-gercekte" className="overflow-x-clip bg-[var(--color-surface)] py-24 sm:py-32">
       <div className="mx-auto max-w-4xl px-5 sm:px-8">
         <Reveal className="mx-auto max-w-2xl text-center">
           <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-sage-deep)]">
@@ -330,8 +370,8 @@ export default function FlipShowcase() {
           </p>
         </Reveal>
 
-        <div className="mt-16 space-y-20 sm:mt-20 sm:space-y-28">
-          {CARDS.map((c) => (sideBySide ? <StaticCard key={c.key} card={c} /> : <FlipCard key={c.key} card={c} />))}
+        <div className="mt-16 space-y-16 sm:mt-20">
+          {CARDS.map((c) => (flat ? <StaticCard key={c.key} card={c} /> : <FlipCard key={c.key} card={c} />))}
         </div>
 
         {/* Personel tarafı — telefon çerçevesinde gerçek mobil görünüm */}

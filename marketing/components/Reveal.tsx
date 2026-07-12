@@ -18,10 +18,22 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 // Tur 7 KÖK NEDEN düzeltmesi (reduced-motion görünmez içerik): eski yol `initial=false +
 // whileInView=undefined` idi — framer öğeye HİÇ stil yazmıyordu, SSR'dan gelen inline
-// `opacity:0` kalıcı oluyordu (React 19 hydration attribute uyuşmazlığını YAMAMAZ, sadece
-// uyarır). Sonuç: reduce açık kullanıcıda içerik sonsuza dek gizli. Yeni yol: reduce'ta
-// initial AÇIK görünür değerler taşır (opacity:1) → framer mount'ta stili imperatif yazar
-// ve SSR kalıntısını ezer; whileInView hep tanımlı, reduce'ta duration:0 (hareket hissi yok).
+// `opacity:0` kalıcı oluyordu. Sonuç: reduce açık kullanıcıda içerik sonsuza dek gizli.
+// ŞART: reduce'ta içerik her koşulda görünür hale gelmeli.
+
+// Tur 18 hydration düzeltmesi: Tur 7'nin `initial={reduce ? görünür : gizli}` yolu SSR/istemci
+// uyuşmazlığı yaratıyordu — SSR hep reduce=false varsayar (opacity:0 basar), reduce açık
+// istemcide ilk render opacity:1 üretir ve React 19 "Hydration failed" fırlatıp TÜM ağacı
+// yeniden üretir. Yeni yol (FlipShowcase Tur 17 mounted-gate dersi): initial HEP gizli değerleri
+// taşır (SSR ile birebir aynı), reduce dalı yalnızca mount SONRASI devreye girer — `animate`
+// duration:0 ile görünür değerleri ANINDA imperatif yazar (IntersectionObserver'ı beklemez,
+// SSR kalıntısı opacity:0 ezilir). Tur 7 şartı korunur: reduce'ta içerik görünür, hareket yok.
+export function useStillMode() {
+  const reduce = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted && !!reduce;
+}
 
 // Bölüm/öğe giriş animasyonu — viewport'a girince fade + aşağıdan yukarı belirgin kayma.
 // prefers-reduced-motion → hareket YOK, öğe direkt yerinde (kalite tabanı).
@@ -38,14 +50,15 @@ export default function Reveal({
   y?: number;
   once?: boolean;
 }) {
-  const reduce = useReducedMotion();
+  const still = useStillMode();
   return (
     <motion.div
       className={`reveal${className ? ` ${className}` : ""}`}
-      initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y }}
+      initial={{ opacity: 0, y }}
+      animate={still ? { opacity: 1, y: 0 } : undefined}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ ...VIEWPORT, once }}
-      transition={reduce ? { duration: 0 } : { duration: 0.6, delay, ease: EASE }}
+      transition={still ? { duration: 0 } : { duration: 0.6, delay, ease: EASE }}
     >
       {children}
     </motion.div>
@@ -65,15 +78,16 @@ export function RevealX({
   from?: "left" | "right";
   delay?: number;
 }) {
-  const reduce = useReducedMotion();
+  const still = useStillMode();
   const x = from === "left" ? -32 : 32;
   return (
     <motion.div
       className={`reveal${className ? ` ${className}` : ""}`}
-      initial={reduce ? { opacity: 1, x: 0 } : { opacity: 0, x }}
+      initial={{ opacity: 0, x }}
+      animate={still ? { opacity: 1, x: 0 } : undefined}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={VIEWPORT}
-      transition={reduce ? { duration: 0 } : { duration: 0.65, delay, ease: EASE }}
+      transition={still ? { duration: 0 } : { duration: 0.65, delay, ease: EASE }}
     >
       {children}
     </motion.div>
@@ -120,7 +134,9 @@ export function CountUp({
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.6 });
   const reduce = useReducedMotion();
-  const [n, setN] = useState(reduce ? to : 0);
+  // Tur 18: başlangıç HEP 0 (SSR ile aynı) — `reduce ? to : 0` SSR/istemci metin uyuşmazlığı
+  // yaratıyordu (hydration hatası). Reduce'ta effect mount'ta hedefi anında yazar.
+  const [n, setN] = useState(0);
 
   useEffect(() => {
     if (reduce) {
@@ -157,14 +173,15 @@ export function RevealItem({
   y?: number;
   delay?: number;
 }) {
-  const reduce = useReducedMotion();
+  const still = useStillMode();
   return (
     <motion.div
       className={`reveal${className ? ` ${className}` : ""}`}
-      initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y }}
+      initial={{ opacity: 0, y }}
+      animate={still ? { opacity: 1, y: 0 } : undefined}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "0px 0px -12% 0px" }}
-      transition={reduce ? { duration: 0 } : { duration: 0.55, delay, ease: EASE }}
+      transition={still ? { duration: 0 } : { duration: 0.55, delay, ease: EASE }}
     >
       {children}
     </motion.div>

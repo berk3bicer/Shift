@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { LOGIN_URL, REGISTER_URL } from "@/lib/config";
+import ShiftleMark from "@/components/ShiftleMark";
+import Wordmark from "@/components/Wordmark";
 
 // Footer — sayfanın kapanış koyu bölgesi (CTA ile birlikte alttaki tek koyu bant). Çok kolonlu
 // (Ürün / Başla / Yasal). KVKK/Gizlilik → /kvkk (Tur 16, gap #P2 kapandı). Mono KALDIRILDI.
@@ -10,10 +12,8 @@ export default function Footer() {
         <div className="grid gap-10 border-b border-white/10 pb-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div className="max-w-xs">
             <div className="flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-signal)] font-display text-base font-extrabold text-[var(--color-ink)]">
-                S
-              </span>
-              <span className="font-display text-xl font-extrabold text-white">Shiftle</span>
+              <ShiftleMark className="h-8 w-8" variant="onDark" />
+              <Wordmark className="text-xl text-white" />
             </div>
             <p className="mt-3 text-sm leading-relaxed text-white/50">
               Kafe ve restoran operasyonunu tek platformda dijitalleştir. Türkçe, İş Kanunu ve KVKK uyumlu.

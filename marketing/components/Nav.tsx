@@ -22,6 +22,8 @@ import type { LucideIcon } from "lucide-react";
 import clsx from "clsx";
 import { LOGIN_URL, REGISTER_URL } from "@/lib/config";
 import { MODULE_PAGES } from "@/lib/modules";
+import ShiftleMark from "@/components/ShiftleMark";
+import Wordmark from "@/components/Wordmark";
 
 // Tur 7: mega-menü nav. Anchor-scroll YOK — tüm linkler GERÇEK route geçişi.
 // Masaüstü: "Modüller" ve "Kaynaklar" hover/tıkla açılan panel; "Neden Shift" ve "Fiyatlar"
@@ -102,10 +104,8 @@ export default function Nav() {
     >
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5 sm:px-8">
         <Link href="/" className="flex items-center gap-2" aria-label="Shiftle ana sayfa">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-signal)] font-display text-base font-extrabold text-[var(--color-ink)]">
-            S
-          </span>
-          <span className="font-display text-xl font-extrabold text-[var(--color-ink)]">Shiftle</span>
+          <ShiftleMark className="h-8 w-8" />
+          <Wordmark className="text-xl text-[var(--color-ink)]" />
         </Link>
 
         {/* Masaüstü menü */}

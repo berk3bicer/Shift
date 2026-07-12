@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, IBM_Plex_Sans, IBM_Plex_Mono, Caveat } from "next/font/google";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import { SITE_URL } from "@/lib/config";
 import "./globals.css";
 
 // Display: Plus Jakarta Sans — sıcak, humanist, yuvarlak hatlı sans. Space Grotesk'in
@@ -40,6 +41,7 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Shiftle — Kafe & Restoran Operasyonunu Dijitalleştir",
   description:
     "Vardiya, görev, giriş-çıkış, checklist ve duyuru tek platformda. Kafeler için İş Kanunu ve KVKK uyumlu, Türkçe operasyon yazılımı. WhatsApp'ta vardiya, kağıtta hijyen bitiyor.",

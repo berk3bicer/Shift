@@ -6,3 +6,8 @@ export const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000
 
 export const LOGIN_URL = `${APP_URL}/login`;
 export const REGISTER_URL = `${APP_URL}/register`;
+
+// Pazarlama sitesinin KENDİ kanonik adresi — metadataBase (OG/twitter görsel mutlak URL'i)
+// buradan gelir; env yoksa marka domaini. Slack/WhatsApp önizlemesi mutlak URL ister,
+// aksi halde og:image localhost'a düşer.
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://shiftle.com.tr";

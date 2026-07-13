@@ -35,6 +35,19 @@ public class ForgotPasswordHandler : IRequestHandler<ForgotPasswordCommand>
         if (user is null)
             return; // sessiz: cevap "varsa gönderildi"den farklılaşmaz
 
+        // Eski aktif reset token'larını iptal et: iptal edilmezse her forgot çağrısı bir
+        // çalışan reset linki daha bırakır (InvitationService'teki resend deseni). Anonim uç
+        // olduğundan sorgu da IgnoreQueryFilters ister — tenant filtresi altında token'lar
+        // görünmez ve iptal sessizce boşa düşerdi.
+        var now = DateTime.UtcNow;
+        var oldResets = await _db.OneTimeTokens
+            .IgnoreQueryFilters()
+            .Where(t => t.UserId == user.Id && t.Purpose == TokenPurpose.PasswordReset
+                        && !t.IsUsed && t.ExpiresAt > now)
+            .ToListAsync(ct);
+        foreach (var old in oldResets)
+            old.IsUsed = true;
+
         var rawToken = TokenGenerator.Generate();
         _db.OneTimeTokens.Add(new OneTimeToken
         {
@@ -43,7 +56,7 @@ public class ForgotPasswordHandler : IRequestHandler<ForgotPasswordCommand>
             UserId = user.Id,
             TokenHash = TokenHasher.Hash(rawToken),
             Purpose = TokenPurpose.PasswordReset,
-            ExpiresAt = DateTime.UtcNow.Add(ResetLifetime),
+            ExpiresAt = now.Add(ResetLifetime),
         });
         await _db.SaveChangesAsync(ct);
 

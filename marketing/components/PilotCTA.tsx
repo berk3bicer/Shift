@@ -1,16 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { CheckCircle2, Send } from "lucide-react";
 import Photo from "./Photo";
 import Reveal from "./Reveal";
+import { PILOT_OPEN, CONTACT_EMAIL, REGISTER_URL } from "@/lib/config";
 
 // Kapanış CTA — sayfanın TEK koyu vurgu bandı (spec 12.2: "sıcak pilot", soğuk satış değil).
 // Koyu ama SICAK: warm-ink zemin + amber ışıma + gerçek barista fotoğrafı (insan sıcaklığı).
 // Backend YOK: sahte endpoint UYDURULMAZ. Form, girilen bilgiyle önceden doldurulmuş bir
 // mailto: üretir → kullanıcının e-posta istemcisine gerçekten devreder.
-// merhaba@shift.app = PLACEHOLDER iletişim adresi (gerçek domain → gap #P3).
-const CONTACT_EMAIL = "merhaba@shift.app";
+// PILOT_OPEN=false iken form RENDER EDİLMEZ (ölü mailto yayınlanmaz) — kod yerinde durur,
+// CONTACT_EMAIL dolup PILOT_OPEN=true olunca aynen geri gelir. Bkz. lib/config.ts.
 
 export default function PilotCTA() {
   const [sent, setSent] = useState(false);
@@ -63,7 +65,23 @@ export default function PilotCTA() {
 
             {/* Sağ: form / teşekkürler */}
             <div className="bg-[var(--color-ink-soft)] p-8 sm:p-10">
-              {sent ? (
+              {!PILOT_OPEN ? (
+                <div className="flex h-full flex-col justify-center">
+                  <h3 className="font-display text-xl font-bold text-white">
+                    Pilot başvuruları yakında
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-white/60">
+                    İlk kafelerle birebir çalışmaya hazırlanıyoruz. Şimdiden denemek istersen
+                    panelden ücretsiz hesap açabilirsin.
+                  </p>
+                  <Link
+                    href={REGISTER_URL}
+                    className="mt-5 text-sm font-medium text-[var(--color-signal-soft)] underline-offset-4 hover:text-white hover:underline"
+                  >
+                    Ücretsiz hesap aç →
+                  </Link>
+                </div>
+              ) : sent ? (
                 <div className="flex h-full flex-col justify-center">
                   <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-barista)]/15 text-[var(--color-barista)]">
                     <CheckCircle2 size={24} />

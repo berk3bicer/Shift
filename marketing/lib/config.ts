@@ -11,3 +11,10 @@ export const REGISTER_URL = `${APP_URL}/register`;
 // buradan gelir; env yoksa marka domaini. Slack/WhatsApp önizlemesi mutlak URL ister,
 // aksi halde og:image localhost'a düşer.
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://shiftle.com.tr";
+
+// Pilot bayrağı — pilot başvuru formu (PilotCTA) canlı mı? Şu an FALSE: kutu/ekip hazır
+// olmadan ölü mailto yayınlamıyoruz. Form kodu YERİNDE, sadece render edilmiyor.
+// CONTACT_EMAIL dolunca + PILOT_OPEN=true olunca form iki satırla geri gelir.
+export const PILOT_OPEN = false;
+export const CONTACT_EMAIL = ""; // gerçek iletişim adresi netleşince doldurulacak
+

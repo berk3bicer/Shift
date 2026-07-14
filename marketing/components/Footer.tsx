@@ -21,7 +21,7 @@ export default function Footer() {
           </div>
 
           <FooterCol title="Ürün" links={[["Tüm modüller", "/moduller"], ["Vardiya & Planlama", "/moduller/vardiya"], ["Giriş-Çıkış & Mesai", "/moduller/giris-cikis"], ["Fiyatlar", "/fiyatlar"], ["Neden Shiftle", "/neden-shift"]]} />
-          <FooterCol title="Kaynaklar" links={[["Kafe Operasyon Rehberi", "/kaynaklar/kafe-rehberi"], ["İletişim", "mailto:merhaba@shift.app"], ["Ücretsiz başla", REGISTER_URL]]} />
+          <FooterCol title="Kaynaklar" links={[["Kafe Operasyon Rehberi", "/kaynaklar/kafe-rehberi"], ["Ücretsiz başla", REGISTER_URL]]} />
           {/* "Gizlilik" şimdilik /kvkk'e gider — ayrı gizlilik politikası Faz 2 (gap #gizlilik-ayri-sayfa). */}
           <FooterCol title="Yasal" links={[["KVKK Aydınlatma", "/kvkk"], ["Gizlilik", "/kvkk"], ["Giriş Yap", LOGIN_URL]]} />
         </div>

@@ -11,7 +11,7 @@
   --color-ink: #2a2521;          /* sıcak antrasit: ana metin + koyu buton */
   --color-ink-soft: #423b32;     /* koyu buton hover'ı */
   --color-muted: #6d655b;        /* sıcak ikincil metin */
-  --color-faint: #a39889;        /* üçüncül: placeholder/boş-durum (açık zeminde AA-large) */
+  --color-faint: #7e7365;        /* üçüncül: placeholder/pasif/dekoratif — paper 4.34, paper-deep 3.95 (AA-large ✓) */
 
   /* Zemin */
   --color-paper: #faf7f2;        /* sıcak kağıt beyazı: ana zemin */

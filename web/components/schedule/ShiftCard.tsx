@@ -4,9 +4,13 @@ import { formatTime } from "@/lib/date";
 
 // Tek vardiya kartı: kişi (başlık) + saat aralığı + pozisyon.
 // SADELEŞTİRME: kalın gölge + hover-yükselme kaldırıldı (kartlar "yüzmesin", sakin
-// dursun); saat TEK SATIR ve daha küçük; pozisyon rengi yalnız SOL ŞERİT'te (alt
-// satırdaki tekrar renk noktası kaldırıldı — çift kodlama gürültüsü). Sol şerit tek
-// kimlik kanalı, isim başlık, saat+pozisyon ikincil satır → net hiyerarşi.
+// dursun); pozisyon rengi yalnız SOL ŞERİT'te (alt satırdaki tekrar renk noktası
+// kaldırıldı — çift kodlama gürültüsü). Taslak durumu da tek kanaldan kodlanır:
+// bg-cream/50 (metin rozeti kaldırıldı — rozet shrink-0'dı ve ismi sistematik
+// kesiyordu, ayrıca arka planla çift kodlamaydı). Saat kendi satırında, pozisyon
+// kendi satırında → dar sütunda kesişmezler. font-mono kaldırıldı (slashed zero
+// istenmiyordu); tabular-nums kaldı → saatler hâlâ alt alta hizalı. Sol şerit tek
+// kimlik kanalı, isim başlık → net hiyerarşi.
 export default function ShiftCard({ shift }: { shift: ShiftDto }) {
   const color = shift.positionColor ?? "#a39889"; // pozisyon rengi yoksa nötr sıcak gri
   const isDraft = shift.status === ShiftStatus.Draft;
@@ -19,24 +23,16 @@ export default function ShiftCard({ shift }: { shift: ShiftDto }) {
       }`}
       style={{ borderLeftColor: color }}
     >
-      <div className="flex items-center justify-between gap-2">
-        <span className={`truncate font-medium leading-tight ${isUnassigned ? "italic text-faint" : "text-ink"}`}>
-          {shift.userFullName ?? "Açık vardiya"}
-        </span>
-        {isDraft && (
-          <span className="shrink-0 rounded-full bg-signal/15 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-signal-deep">
-            Taslak
-          </span>
-        )}
-      </div>
+      <span className={`block truncate font-medium leading-tight ${isUnassigned ? "italic text-faint" : "text-ink"}`}>
+        {shift.userFullName ?? "Açık vardiya"}
+      </span>
 
-      <div className="mt-0.5 flex items-center gap-2 text-xs text-muted">
-        <span className="font-mono tabular-nums tracking-tight">
+      <div className="mt-0.5 text-xs text-muted">
+        <span className="tabular-nums tracking-tight">
           {formatTime(shift.startTime)}–{formatTime(shift.endTime)}
         </span>
-        <span aria-hidden="true" className="text-line-strong">·</span>
-        <span className="truncate">{shift.positionName}</span>
       </div>
+      <div className="truncate text-xs text-muted">{shift.positionName}</div>
     </div>
   );
 }

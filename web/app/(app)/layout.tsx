@@ -6,6 +6,8 @@ import LogoutButton from "@/components/LogoutButton";
 import NotificationBell from "@/components/NotificationBell";
 import BranchSwitcher from "@/components/BranchSwitcher";
 import AppNav from "@/components/AppNav";
+import ShiftleMark from "@/components/brand/ShiftleMark";
+import Wordmark from "@/components/brand/Wordmark";
 import type { BranchDto, NotificationDto } from "@/lib/types";
 
 // Korumalı uygulama düzeni. Sunucuda /me ile kullanıcıyı çözer (token geçersizse
@@ -49,10 +51,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen bg-paper">
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-line bg-surface px-4 sm:px-6">
         <div className="flex items-center gap-6">
-          <div className="flex items-baseline gap-2">
-            <span className="font-display text-lg font-bold text-ink">
-              Shiftle<span className="text-signal">.</span>
-            </span>
+          <div className="flex items-center gap-2">
+            <ShiftleMark className="h-7 w-7" />
+            <Wordmark className="text-lg text-ink" />
             <span className="hidden text-xs font-medium text-faint sm:inline">Yönetici</span>
           </div>
           <div className="hidden lg:block">

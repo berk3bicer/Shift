@@ -2,6 +2,8 @@
 
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
+import ShiftleMark from "@/components/brand/ShiftleMark";
+import Wordmark from "@/components/brand/Wordmark";
 
 // Şifre sıfırlama: e-postadaki linkten gelinir (link 1 saat geçerli, tek kullanım).
 export default function ResetPasswordPage({
@@ -57,7 +59,10 @@ export default function ResetPasswordPage({
         className="w-full max-w-sm space-y-5 rounded-xl border border-line bg-surface p-8 shadow-card"
       >
         <div>
-          <h1 className="font-display text-xl font-bold text-ink">Shiftle<span className="text-signal">.</span></h1>
+          <h1 className="flex items-center gap-2">
+            <ShiftleMark className="h-8 w-8" />
+            <Wordmark className="text-xl text-ink" />
+          </h1>
           <p className="text-sm text-muted">Yeni şifrenizi belirleyin</p>
         </div>
 

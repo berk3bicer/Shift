@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import ShiftleMark from "@/components/brand/ShiftleMark";
+import Wordmark from "@/components/brand/Wordmark";
 
 // Şifremi unuttum: e-posta girilir, backend kayıtlıysa sıfırlama linki yollar.
 // Cevap her durumda aynı ("varsa gönderildi") — e-posta sistemde var mı bilgisi sızmaz.
@@ -41,7 +43,10 @@ export default function ForgotPasswordPage() {
         className="w-full max-w-sm space-y-5 rounded-xl border border-line bg-surface p-8 shadow-card"
       >
         <div>
-          <h1 className="font-display text-xl font-bold text-ink">Shiftle<span className="text-signal">.</span></h1>
+          <h1 className="flex items-center gap-2">
+            <ShiftleMark className="h-8 w-8" />
+            <Wordmark className="text-xl text-ink" />
+          </h1>
           <p className="text-sm text-muted">Şifrenizi mi unuttunuz?</p>
         </div>
 

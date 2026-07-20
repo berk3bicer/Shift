@@ -3,6 +3,8 @@ import { getMe, getNotifications, ApiError } from "@/lib/api-server";
 import { isManager } from "@/lib/roles";
 import LogoutButton from "@/components/LogoutButton";
 import NotificationBell from "@/components/NotificationBell";
+import ShiftleMark from "@/components/brand/ShiftleMark";
+import Wordmark from "@/components/brand/Wordmark";
 import type { NotificationDto } from "@/lib/types";
 
 // Personel (Staff) kabuğu — mobil öncelikli, sade. Yönetici üst-barından (çoklu menü,
@@ -30,10 +32,9 @@ export default async function StaffLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen bg-paper">
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-line bg-surface px-4">
-        <div className="flex items-baseline gap-2">
-          <span className="font-display text-lg font-bold text-ink">
-            Shiftle<span className="text-signal">.</span>
-          </span>
+        <div className="flex items-center gap-2">
+          <ShiftleMark className="h-7 w-7" />
+          <Wordmark className="text-lg text-ink" />
           <span className="text-xs font-medium text-faint">{name ?? ""}</span>
         </div>
         <div className="flex items-center gap-2">

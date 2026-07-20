@@ -48,6 +48,11 @@
 
 :root {
   color-scheme: light;
+
+  /* Marka wordmark fontu — pazarlamayla aynı rol. Switzer `next/font/local` ile bağlanınca
+     --font-brand onu alır; şimdilik panelin yüklü Jakarta'sına düşer (@theme'e KOYULMADI:
+     inline @theme utility SSR'da çözülemeyip sans'a düşebiliyor — .font-display ile aynı sebep). */
+  --font-brand: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
 }
 
 * {
@@ -67,6 +72,13 @@ body {
    sessizce sans'a düşüyor (pazarlama Tur 8 kök nedeni) — bu sınıf garanti. */
 .font-display {
   font-family: var(--font-jakarta), system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Marka wordmark — "Shiftle" logosu (Wordmark bileşeni). Marka fontu gelene kadar
+   --font-brand Jakarta'ya düşer; sıkı tracking burada (boşluksuz akış). Pazarlamayla aynı. */
+.font-brand {
+  font-family: var(--font-brand);
   letter-spacing: -0.02em;
 }
 

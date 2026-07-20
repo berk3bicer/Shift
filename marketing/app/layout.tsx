@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, IBM_Plex_Sans, IBM_Plex_Mono, Caveat } from "next/font/google";
+import localFont from "next/font/local";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { SITE_URL } from "@/lib/config";
@@ -40,6 +41,19 @@ const plexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
+// Marka wordmark fontu — Switzer (Fontshare, ITF Free License). SADECE "Shiftle"
+// wordmark'ında (nav/footer/auth). Gövde/başlık DEĞİL — onlar Plex Sans/Jakarta.
+// next/font/local: self-host (Fontshare'e runtime istek yok, GDPR temiz), FOUT yok.
+// `variable: "--font-brand"` → body className'ine düşünce Wordmark.tsx otomatik geçer.
+const switzer = localFont({
+  variable: "--font-brand",
+  src: [
+    { path: "./fonts/Switzer-Bold.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/Switzer-Extrabold.woff2", weight: "800", style: "normal" },
+  ],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Shiftle — Kafe & Restoran Operasyonunu Dijitalleştir",
@@ -72,7 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="tr">
       {/* Tur 7: ortak Nav + Footer layout'ta — her route'ta aynı iskelet, sayfalar yalnız içerik */}
-      <body className={`${jakarta.variable} ${plexSans.variable} ${plexMono.variable} ${caveat.variable}`}>
+      <body className={`${jakarta.variable} ${plexSans.variable} ${plexMono.variable} ${caveat.variable} ${switzer.variable}`}>
         <Nav />
         {children}
         <Footer />

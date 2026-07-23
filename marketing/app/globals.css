@@ -58,9 +58,12 @@
 :root {
   color-scheme: light;
 
-  /* Marka wordmark fontu — Switzer `next/font/local` ile bağlanınca --font-brand onun
-     değişkenini alır; şimdilik (geçici) Jakarta'ya düşer. @theme'e KOYULMADI: `.font-script`
-     ile aynı sebep (satır 47-50) — inline @theme utility SSR'da çözülemeyip sans'a düşer. */
+  /* Marka wordmark fontu. Switzer artık `next/font/local` ile bağlı (layout.tsx): Next
+     `--font-brand`'i <body>'de gerçek (mangled) aile adına doldurur ve bu değer, alt
+     öğelerdeki (.font-brand) bu :root tanımını gölgeler → wordmark Switzer'e geçer.
+     Buradaki değer yalnız GRACEFUL FALLBACK: body değişkeni yokken/yüklenirken Jakarta.
+     @theme'e KOYULMADI: `.font-script` ile aynı sebep (satır 47-50) — inline @theme
+     utility SSR'da çözülemeyip sans'a düşer. */
   --font-brand: "Plus Jakarta Sans", system-ui, sans-serif;
 }
 

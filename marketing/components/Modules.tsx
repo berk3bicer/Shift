@@ -38,7 +38,7 @@ const STRIP = CORE_MODULES.filter((m) => !(m.key in VISUALS));
 
 export default function Modules() {
   return (
-    <section id="moduller" className="overflow-hidden bg-[var(--color-paper-deep)] py-24 sm:py-32">
+    <section id="moduller" className="overflow-hidden bg-[var(--color-paper-deep)] py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <Reveal className="max-w-2xl">
           <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-terra)]">
@@ -60,17 +60,17 @@ export default function Modules() {
 
         {/* Zikzak feature blokları — cömert dikey boşluk, dikey ortalı iki kolon.
             Görsel zeminleri sıcak ara tonlarda döner: krem → şeftali → adaçayı (palet zenginliği). */}
-        <div className="mt-20 space-y-24 sm:mt-24 sm:space-y-36">
+        <div className="mt-14 space-y-16 sm:mt-16 sm:space-y-24">
           {SHOWCASE.map((m, i) => {
             const Icon = ICONS[m.icon] ?? CalendarDays;
             const visualLeft = i % 2 === 0; // lg'de: çift blok görsel-sol, tek blok görsel-sağ
             const accent = ACCENT[m.accent];
             const tints = ["bg-[var(--color-cream)]/70", "bg-[var(--color-sage-soft)]/60", "bg-[var(--color-cream-2)]/70", "bg-[var(--color-terra-soft)]/50"];
             return (
-              <div key={m.key} className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+              <div key={m.key} className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
                 {/* Görsel — mobilde her zaman üstte (DOM sırası), lg'de zikzak */}
                 <RevealX from={visualLeft ? "left" : "right"} className={visualLeft ? "" : "lg:order-2"}>
-                  <div className={`relative rounded-[2.5rem] p-4 sm:p-8 ${tints[i % tints.length]}`}>
+                  <div className={`relative rounded-[2.5rem] p-3 sm:p-5 ${tints[i % tints.length]}`}>
                     <div
                       aria-hidden="true"
                       className="pointer-events-none absolute inset-0 rounded-[2.5rem] opacity-50"
@@ -117,7 +117,7 @@ export default function Modules() {
         </div>
 
         {/* Duyuru + "ve dahası" — kompakt kapanış şeridi */}
-        <RevealStagger className="mt-20 grid gap-4 sm:mt-28 sm:grid-cols-2">
+        <RevealStagger className="mt-16 grid gap-4 sm:mt-20 sm:grid-cols-2">
           {STRIP.map((m) => {
             const Icon = ICONS[m.icon] ?? Megaphone;
             return (

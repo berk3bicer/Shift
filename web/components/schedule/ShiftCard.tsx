@@ -12,7 +12,7 @@ import { formatTime } from "@/lib/date";
 // istenmiyordu); tabular-nums kaldı → saatler hâlâ alt alta hizalı. Sol şerit tek
 // kimlik kanalı, isim başlık → net hiyerarşi.
 export default function ShiftCard({ shift }: { shift: ShiftDto }) {
-  const color = shift.positionColor ?? "#a39889"; // pozisyon rengi yoksa nötr sıcak gri
+  const color = shift.positionColor ?? "#7e7365"; // pozisyon rengi yoksa nötr sıcak gri
   const isDraft = shift.status === ShiftStatus.Draft;
   const isUnassigned = !shift.userId;
 

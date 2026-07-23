@@ -29,7 +29,7 @@ export default function Hero() {
         style={{ background: "radial-gradient(circle, var(--color-sage-soft), transparent 60%)" }}
       />
 
-      <div className="relative mx-auto grid max-w-6xl items-center gap-16 px-5 pb-28 pt-32 sm:px-8 lg:grid-cols-[1.02fr_1fr] lg:gap-12 lg:pb-36 lg:pt-40">
+      <div className="relative mx-auto grid max-w-6xl items-center gap-16 px-5 pb-20 pt-32 sm:px-8 lg:grid-cols-[1.02fr_1fr] lg:gap-12 lg:pb-28 lg:pt-40">
         {/* Sol: metin */}
         <div>
           <h1

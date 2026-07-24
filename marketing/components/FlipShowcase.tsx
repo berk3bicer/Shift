@@ -19,15 +19,15 @@ import Scribble from "./Scribble";
 /* ── Eski dünya çizimleri — kasıtlı SOLUK/DAĞINIK: gri tonlar, eğik, düşük kontrast.
       Ön yüzün temiz ürün ekranıyla kontrast yaratır. Hepsi dekoratif (aria-hidden kökte). ── */
 
-const OLD_INK = "#57534e"; // soluk kurşun kalem grisi
-const OLD_FADE = "#a8a29e";
+const OLD_INK = "#5c5349"; // soluk sıcak kurşun kalem (palet ink'ine akraba)
+const OLD_FADE = "#9a9086";
 
 function OldPaper({ children, tilt = "-rotate-1" }: { children: ReactNode; tilt?: string }) {
   return (
-    <div className="flex h-full w-full items-center justify-center bg-[#e7e5e1] p-4 sm:p-6">
+    <div className="flex h-full w-full items-center justify-center bg-[#e3ddd3] p-4 sm:p-6">
       <div
-        className={`relative max-h-full w-[88%] ${tilt} rounded-sm bg-[#f6f4ef] p-3 shadow-[0_10px_28px_-12px_rgb(60_55_50/0.45)] sm:p-5`}
-        style={{ backgroundImage: "repeating-linear-gradient(transparent, transparent 26px, #dcd8d0 27px)" }}
+        className={`relative max-h-full w-[88%] ${tilt} rounded-sm bg-[#f4efe6] p-3 shadow-[0_10px_28px_-12px_rgb(60_55_50/0.45)] sm:p-5`}
+        style={{ backgroundImage: "repeating-linear-gradient(transparent, transparent 26px, #d8d0c4 27px)" }}
       >
         {children}
       </div>
@@ -92,8 +92,8 @@ function OldChat() {
     { me: false, text: "O eski liste bende başkası var", time: "06:31" },
   ];
   return (
-    <div className="flex h-full w-full items-center justify-center bg-[#e2e0dc] p-4 sm:p-6">
-      <div className="w-[82%] -rotate-1 rounded-xl bg-[#efedea] p-3 shadow-[0_10px_28px_-12px_rgb(60_55_50/0.45)]">
+    <div className="flex h-full w-full items-center justify-center bg-[#e0dad0] p-4 sm:p-6">
+      <div className="w-[82%] -rotate-1 rounded-xl bg-[#ede7dd] p-3 shadow-[0_10px_28px_-12px_rgb(60_55_50/0.45)]">
         <div className="mb-2 flex items-center justify-between border-b border-[#d4d0c9] pb-1.5">
           <span className="text-xs font-bold" style={{ color: OLD_INK }}>Kafe Ekip Grubu</span>
           <span className="rounded-full bg-[#d6d2cb] px-2 py-0.5 text-[10px] font-semibold" style={{ color: OLD_INK }}>
@@ -275,7 +275,7 @@ function FlipCard({ card }: { card: Card }) {
             </div>
             {/* ARKA: eski dünya (pin başı, ilk görünen yüz) */}
             <div
-              className="absolute inset-0 overflow-hidden rounded-2xl border border-[#d6d3cd]"
+              className="absolute inset-0 overflow-hidden rounded-2xl border border-[#d5cdc0]"
               style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
             >
               {card.old}
@@ -305,7 +305,7 @@ function StaticCard({ card }: { card: Card }) {
   return (
     <div role="img" aria-label={card.aria}>
       <div aria-hidden="true" className="grid gap-4 sm:grid-cols-2">
-        <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-[#d6d3cd]">
+        <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-[#d5cdc0]">
           {card.old}
           <span className="absolute left-3 top-3 rounded-full bg-[#57534e]/80 px-2.5 py-0.5 text-[10px] font-bold text-white">Eskiden</span>
         </div>

@@ -83,35 +83,70 @@ function OldSchedule() {
   );
 }
 
-// 2 · Mesaj grubu kaosu — jenerik sohbet görünümü (marka YOK), gece yarısı vardiya pazarlığı.
+// 2 · Mesaj grubu kaosu — jenerik sohbet (marka YOK). Ön yüz Kanban'ın derdi: iş görünmez,
+// sahibi yok, zaman damgası yok, kanıt yok → gece yarısı ekranında kaybolan görev/sahiplik
+// kargaşası. Kağıt değil CİHAZ okunsun diye cam parlaması + kuyruklu baloncuk + tik + yazma
+// göstergesi katmanları (hepsi statik CSS/DOM; animasyon YOK — reduced-motion dersi).
 function OldChat() {
   const msgs = [
-    { me: false, text: "Abi ben yarın gelemiyorum, yerime bakan olur mu 🙏", time: "23:47" },
-    { me: false, text: "Sabah kim açıyor?? Çizelge değişti mi", time: "06:12" },
-    { me: true, text: "vardiya_SON_final2.xlsx 📎", time: "06:30" },
-    { me: false, text: "O eski liste bende başkası var", time: "06:31" },
+    { me: false, text: "Bugün vitrini kim sildi? Sabahtan beri öyle duruyor", time: "14:22" },
+    { me: false, text: "Makine temizlendi mi?? Akşamcılar bakacaktı", time: "22:51" },
+    { me: true, text: "Dün kapanışta ne oldu, kimse yazmamış", time: "08:05" },
+    { me: false, text: "Ben yaptım sanıyordum 🙈", time: "08:19" },
   ];
   return (
     <div className="flex h-full w-full items-center justify-center bg-[#e0dad0] p-4 sm:p-6">
-      <div className="w-[82%] -rotate-1 rounded-xl bg-[#ede7dd] p-3 shadow-[0_10px_28px_-12px_rgb(60_55_50/0.45)]">
-        <div className="mb-2 flex items-center justify-between border-b border-[#d4d0c9] pb-1.5">
+      {/* CİHAZ hissi: iki-katman gölge (yakın sıkı + uzak yayvan) + üst iç parlama */}
+      <div className="relative w-[82%] -rotate-1 overflow-hidden rounded-2xl bg-[#ede7dd] p-3 shadow-[0_2px_6px_-2px_rgb(60_55_50/0.35),0_18px_36px_-14px_rgb(60_55_50/0.5),inset_0_1px_0_rgb(255_255_255/0.6)]">
+        {/* ekran camı parlaması */}
+        <span aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-black/[0.04]" />
+        <div className="relative mb-2 flex items-center justify-between border-b border-[#d4d0c9] pb-1.5">
           <span className="text-xs font-bold" style={{ color: OLD_INK }}>Kafe Ekip Grubu</span>
           <span className="rounded-full bg-[#d6d2cb] px-2 py-0.5 text-[10px] font-semibold" style={{ color: OLD_INK }}>
             +47 yeni mesaj
           </span>
         </div>
-        <div className="space-y-1.5">
+        {/* kaydırma ipucu: yarım kırpılmış eski baloncuk → sonsuz akış hissi */}
+        <div className="relative mb-1 h-3 overflow-hidden opacity-50">
+          <div className="flex justify-start">
+            <div className="max-w-[70%] rounded-lg bg-white/70 px-2 py-1 text-[11px] leading-snug" style={{ color: OLD_INK }}>
+              peki ya dün akşamki sayım?
+            </div>
+          </div>
+        </div>
+        <div className="relative space-y-1.5">
           {msgs.map((m, i) => (
             <div key={i} className={`flex ${m.me ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[85%] rounded-lg px-2 py-1 text-[11px] leading-snug ${m.me ? "bg-[#d9d9cf]" : "bg-white/80"}`} style={{ color: OLD_INK }}>
+              <div
+                className={`relative max-w-[85%] rounded-lg px-2 py-1 text-[11px] leading-snug shadow-[0_1px_1px_rgb(60_55_50/0.12)] ${m.me ? "bg-[#d9d9cf]" : "bg-white/80"}`}
+                style={{ color: OLD_INK }}
+              >
                 {m.text}
                 <span className="ml-1.5 text-[9px]" style={{ color: OLD_FADE }}>{m.time}</span>
+                {/* okundu tiki — sohbet olduğunu anında söyler */}
+                {m.me && <span className="ml-0.5 text-[9px]" style={{ color: OLD_FADE }}>✓✓</span>}
+                {/* baloncuk kuyruğu */}
+                <span
+                  aria-hidden
+                  className={`absolute bottom-1 h-2 w-2 rotate-45 ${m.me ? "-right-0.5 bg-[#d9d9cf]" : "-left-0.5 bg-white/80"}`}
+                />
               </div>
             </div>
           ))}
+          {/* yazma göstergesi (statik — "konuşma bitmiyor") */}
+          <div className="flex justify-start">
+            <div className="relative rounded-lg bg-white/80 px-2.5 py-1.5 shadow-[0_1px_1px_rgb(60_55_50/0.12)]">
+              <div className="flex gap-1">
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: OLD_FADE }} />
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: OLD_FADE }} />
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: OLD_FADE }} />
+              </div>
+              <span aria-hidden className="absolute -left-0.5 bottom-1 h-2 w-2 rotate-45 bg-white/80" />
+            </div>
+          </div>
         </div>
-        <p className="mt-2 text-center font-script text-sm" style={{ color: "#b45309" }}>
-          … kimin geleceği belli değil
+        <p className="relative mt-2 text-center font-script text-sm" style={{ color: "#b45309" }}>
+          … kimin yaptığı belli değil
         </p>
       </div>
     </div>
@@ -279,7 +314,7 @@ function FlipCard({ card }: { card: Card }) {
               style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
             >
               {card.old}
-              <span className="absolute left-3 top-3 rounded-full bg-[#57534e]/80 px-2.5 py-0.5 text-[10px] font-bold text-white">Eskiden</span>
+              <span className="absolute left-3 top-3 rounded-full bg-[#5c5349]/80 px-2.5 py-0.5 text-[10px] font-bold text-white">Eskiden</span>
             </div>
           </motion.div>
         </div>
@@ -307,7 +342,7 @@ function StaticCard({ card }: { card: Card }) {
       <div aria-hidden="true" className="grid gap-4 sm:grid-cols-2">
         <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-[#d5cdc0]">
           {card.old}
-          <span className="absolute left-3 top-3 rounded-full bg-[#57534e]/80 px-2.5 py-0.5 text-[10px] font-bold text-white">Eskiden</span>
+          <span className="absolute left-3 top-3 rounded-full bg-[#5c5349]/80 px-2.5 py-0.5 text-[10px] font-bold text-white">Eskiden</span>
         </div>
         <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-[var(--color-line)] shadow-[var(--shadow-card)]">
           <img src={card.img} alt="" width={1600} height={1000} loading="lazy" decoding="async" className="h-full w-full object-cover" />

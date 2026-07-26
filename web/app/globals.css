@@ -50,19 +50,6 @@
   color-scheme: light;
 }
 
-/* Marka wordmark fontu — pazarlamayla aynı rol. Switzer artık `next/font/local` ile bağlı
-   (layout.tsx): Next `--font-brand`'i html className'inde gerçek (mangled) aile adına doldurur
-   → wordmark Switzer'e geçer. Buradaki değer yalnız GRACEFUL FALLBACK (Jakarta): Next değişkeni
-   yokken/yüklenirken.
-   `html` type-selector (0,0,1) KASITLI — `:root` (0,1,0) DEĞİL: Next'in html'e verdiği
-   `.__variable` class'ı da (0,1,0) ve globals'tan SONRA gelmediği için `:root` eş-özgüllükte
-   kaynak sırasıyla kazanıp Switzer'i ezerdi. Pazarlamada değişkenler <body>'de (child) olduğu
-   için bu sorun yoktu; panelde html'de → daha düşük özgüllük şart. @theme'e KOYULMADI: inline
-   @theme utility SSR'da çözülemeyip sans'a düşebiliyor — .font-display ile aynı sebep. */
-html {
-  --font-brand: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
-}
-
 * {
   border-color: var(--color-line);
 }
@@ -80,13 +67,6 @@ body {
    sessizce sans'a düşüyor (pazarlama Tur 8 kök nedeni) — bu sınıf garanti. */
 .font-display {
   font-family: var(--font-jakarta), system-ui, sans-serif;
-  letter-spacing: -0.02em;
-}
-
-/* Marka wordmark — "Shiftle" logosu (Wordmark bileşeni). Marka fontu gelene kadar
-   --font-brand Jakarta'ya düşer; sıkı tracking burada (boşluksuz akış). Pazarlamayla aynı. */
-.font-brand {
-  font-family: var(--font-brand);
   letter-spacing: -0.02em;
 }
 

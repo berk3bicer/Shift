@@ -2,7 +2,7 @@
 //
 // Neden: (a) her cihazda birebir aynı görünür (Switzer FOUT/eksikliği etkilemez),
 // (b) link önizleme görseli (OG, gen-icons.mjs) aynı path'ten beslenir → site ve paylaşım
-// kartı tutarlı, (c) `web/` de outline'a geçince Switzer tümden silinebilir (ayrı tur).
+// kartı tutarlı, (c) `web/` de outline'a geçti → Switzer iki taraftan tümden silindi.
 //
 // Path'ler Switzer-Extrabold.woff2'den fonttools ile çıkarıldı: "Shiftle" tek kesintisiz
 // akış (advance toplamı 3062em, kerning fontun kendi metriğinde pişmiş — elle <span>'a bölünmedi,

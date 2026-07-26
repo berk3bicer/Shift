@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
-import localFont from "next/font/local";
 import "./globals.css";
 import PwaRegistrar from "@/components/PwaRegistrar";
 
@@ -28,18 +27,8 @@ const plexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
-// Marka wordmark fontu — Switzer (Fontshare, ITF Free License). Pazarlamayla birebir aynı
-// rol: SADECE "Shiftle" wordmark'ında (Wordmark bileşeni). Gövde/başlık DEĞİL — Plex Sans/
-// Jakarta aynen. next/font/local: self-host (runtime istek yok), FOUT yok (display: swap).
-// `variable: "--font-brand"` → html className'ine düşünce Wordmark otomatik Switzer'e geçer.
-const switzer = localFont({
-  variable: "--font-brand",
-  src: [
-    { path: "./fonts/Switzer-Bold.woff2", weight: "700", style: "normal" },
-    { path: "./fonts/Switzer-Extrabold.woff2", weight: "800", style: "normal" },
-  ],
-  display: "swap",
-});
+// Marka wordmark artık font değil — Wordmark bileşeni outline SVG path (Switzer-Extrabold'dan
+// çıkarılmış "Shiftle"). Bu yüzden Switzer localFont'u kaldırıldı; panelde font kullanıcısı yok.
 
 export const metadata: Metadata = {
   title: "Shiftle",
@@ -64,7 +53,7 @@ export default function RootLayout({
   return (
     <html
       lang="tr"
-      className={`${jakarta.variable} ${plexSans.variable} ${plexMono.variable} ${switzer.variable} h-full antialiased`}
+      className={`${jakarta.variable} ${plexSans.variable} ${plexMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <PwaRegistrar />

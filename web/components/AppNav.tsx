@@ -17,6 +17,7 @@ const NAV: NavItem[] = [
   {
     label: "Ekip & Puantaj",
     children: [
+      { href: "/ekip", label: "Ekip" },
       { href: "/timeclock", label: "Puantaj" },
       { href: "/timeoff", label: "İzinler" },
       { href: "/availability", label: "Müsaitlik" },

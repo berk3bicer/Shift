@@ -55,6 +55,45 @@ export async function createPosition(payload: {
   return { positionId: data.positionId };
 }
 
+// ── Ekip (Staff) — davet / yeniden-davet / pasifleştir ──
+// Tümü Owner/Manager-only backend uçlarına BFF proxy üzerinden gider (token sunucuda).
+// DTO tuzağı: CreateStaff → {userId} döner (createBranch→branchId gibi ama userId).
+// Rol POST'ta INT gönderilir (RoleType: Manager=1, AssistantManager=2, Staff=3).
+
+export async function createStaff(payload: {
+  fullName: string;
+  email: string;
+  role: number;
+  branchId: string;
+  positionId: string | null;
+}): Promise<{ userId: string }> {
+  const res = await fetch(`/api/proxy/api/staff`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  await ensureOk(res, "Davet gönderilemedi");
+  const data = await res.json();
+  return { userId: data.userId };
+}
+
+// Eski davet linkini iptal eder, yenisini e-postalar. Backend {message} döner.
+export async function resendInvite(userId: string): Promise<void> {
+  const res = await fetch(`/api/proxy/api/staff/${userId}/resend-invite`, {
+    method: "POST",
+  });
+  await ensureOk(res, "Davet yeniden gönderilemedi");
+}
+
+// Silme DEĞİL — pasifleştirme (PATCH). Kayıt/geçmiş korunur, login kapanır. Backend
+// self/son-owner/başka-tenant korumaları var → hatayı UI'a taşı.
+export async function deactivateStaff(userId: string): Promise<void> {
+  const res = await fetch(`/api/proxy/api/staff/${userId}/deactivate`, {
+    method: "PATCH",
+  });
+  await ensureOk(res, "Personel pasifleştirilemedi");
+}
+
 // ── Vardiya (Shift) ──
 
 export async function updateShift(

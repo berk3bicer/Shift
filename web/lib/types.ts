@@ -54,6 +54,32 @@ export interface PositionDto {
   isActive: boolean;
 }
 
+// Backend RoleType enum'u (int). StaffDto.roles bu değerlerin listesi (number[]).
+// TUZAK: login'deki me.roles STRING[] ("Owner"); burası INT. Karıştırma.
+export enum RoleType {
+  Owner = 0,
+  Manager = 1,
+  AssistantManager = 2,
+  Staff = 3,
+  Supplier = 4,
+}
+
+// int rol → TR etiket (listede rozet). Bilinmeyen değer için "—".
+export const ROLE_LABELS: Record<number, string> = {
+  [RoleType.Owner]: "Sahip",
+  [RoleType.Manager]: "Yönetici",
+  [RoleType.AssistantManager]: "Asistan Yönetici",
+  [RoleType.Staff]: "Personel",
+  [RoleType.Supplier]: "Tedarikçi",
+};
+
+// Personel ekle formunda seçilebilir roller (Owner/Supplier backend'de reddedilir).
+export const ASSIGNABLE_ROLES: { value: RoleType; label: string }[] = [
+  { value: RoleType.Manager, label: ROLE_LABELS[RoleType.Manager] },
+  { value: RoleType.AssistantManager, label: ROLE_LABELS[RoleType.AssistantManager] },
+  { value: RoleType.Staff, label: ROLE_LABELS[RoleType.Staff] },
+];
+
 // Ekip üyesi (GET /api/staff). Atama dropdown'unu besler.
 export interface StaffDto {
   id: string;

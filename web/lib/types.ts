@@ -64,20 +64,24 @@ export enum RoleType {
   Supplier = 4,
 }
 
-// int rol → TR etiket (listede rozet). Bilinmeyen değer için "—".
+// int rol → KISA TR etiket (listede rozet). Bilinmeyen değer için "—".
+// Rozet kısa kalır; "ne yapabilir" açıklaması sadece FORMDA (bkz. ASSIGNABLE_ROLES).
 export const ROLE_LABELS: Record<number, string> = {
   [RoleType.Owner]: "Sahip",
   [RoleType.Manager]: "Yönetici",
-  [RoleType.AssistantManager]: "Asistan Yönetici",
+  [RoleType.AssistantManager]: "Kıdemli",
   [RoleType.Staff]: "Personel",
   [RoleType.Supplier]: "Tedarikçi",
 };
 
 // Personel ekle formunda seçilebilir roller (Owner/Supplier backend'de reddedilir).
-export const ASSIGNABLE_ROLES: { value: RoleType; label: string }[] = [
-  { value: RoleType.Manager, label: ROLE_LABELS[RoleType.Manager] },
-  { value: RoleType.AssistantManager, label: ROLE_LABELS[RoleType.AssistantManager] },
-  { value: RoleType.Staff, label: ROLE_LABELS[RoleType.Staff] },
+// value (int) DEĞİŞMEZ — backend yetki kovası (Manager=1, AsstMgr=2, Staff=3). Sadece
+// görünen metin insani: label kısa ad, description "ne yapabilir" cümlesi.
+// Sıra en yaygından (Personel) en yetkiliye (Yönetici); form varsayılanı yine Staff.
+export const ASSIGNABLE_ROLES: { value: RoleType; label: string; description: string }[] = [
+  { value: RoleType.Staff, label: "Personel", description: "Sadece kendi vardiyası, görevleri, giriş-çıkışı" },
+  { value: RoleType.AssistantManager, label: "Kıdemli", description: "Vardiya ve görev yönetir, izin onaylayamaz" },
+  { value: RoleType.Manager, label: "Yönetici", description: "İzin onaylar, personel ekler, rapor görür" },
 ];
 
 // Ekip üyesi (GET /api/staff). Atama dropdown'unu besler.

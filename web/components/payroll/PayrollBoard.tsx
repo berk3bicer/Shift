@@ -193,7 +193,7 @@ export default function PayrollBoard({
       <div className="rounded-2xl border border-line bg-surface overflow-hidden shadow-card">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-muted">
-            <thead className="border-b border-line bg-paper text-xs font-semibold uppercase text-muted">
+            <thead className="border-b border-line bg-crema/40 text-xs font-semibold uppercase text-muted">
               <tr>
                 <th className="px-6 py-4">Personel</th>
                 <th className="px-6 py-4">Dönem</th>

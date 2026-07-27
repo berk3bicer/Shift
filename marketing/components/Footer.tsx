@@ -7,7 +7,7 @@ import Wordmark from "@/components/Wordmark";
 // (Ürün / Başla / Yasal). KVKK/Gizlilik → /kvkk (Tur 16, gap #P2 kapandı). Mono KALDIRILDI.
 export default function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-[var(--color-ink)] pb-10 pt-16">
+    <footer className="border-t border-white/10 bg-[var(--color-espresso)] pb-10 pt-16">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <div className="grid gap-10 border-b border-white/10 pb-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div className="max-w-xs">

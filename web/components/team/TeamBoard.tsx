@@ -102,7 +102,7 @@ export default function TeamBoard({
         <div className="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-line bg-paper text-left text-xs font-semibold uppercase tracking-wider text-faint">
+              <tr className="border-b border-line bg-crema/40 text-left text-xs font-semibold uppercase tracking-wider text-muted">
                 <th className="px-4 py-3">Personel</th>
                 <th className="hidden px-4 py-3 sm:table-cell">Pozisyon</th>
                 <th className="px-4 py-3">Rol</th>

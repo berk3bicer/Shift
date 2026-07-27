@@ -15,11 +15,11 @@ export default function CtaBand({
   sub?: string;
 }) {
   return (
-    <section className="relative overflow-hidden bg-[var(--color-ink)] py-16 sm:py-20">
+    <section className="relative overflow-hidden bg-[var(--color-espresso)] py-16 sm:py-20">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -bottom-24 left-1/2 h-72 w-[36rem] -translate-x-1/2 rounded-full opacity-25 blur-3xl"
-        style={{ background: "radial-gradient(circle, var(--color-signal), transparent 60%)" }}
+        style={{ background: "radial-gradient(circle, var(--color-signal) 0%, var(--color-coffee) 45%, transparent 70%)" }}
       />
       <Reveal className="relative mx-auto flex max-w-4xl flex-col items-center px-5 text-center sm:px-8">
         <span className="font-script -rotate-1 text-2xl text-[var(--color-signal-soft)]">hadi, birlikte kuralım</span>

@@ -67,7 +67,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <NotificationBell initialNotifications={notifications} />
           <div className="hidden h-6 w-px bg-line sm:block" />
           <span className="hidden items-center gap-2 text-sm text-muted md:flex">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-cream text-xs font-bold text-signal-deep">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-espresso text-xs font-bold text-crema">
               {name ? name.charAt(0) : "?"}
             </span>
             <span className="flex flex-col leading-tight">

@@ -3,8 +3,11 @@
 import { useState } from "react";
 import type { BranchDto, PositionDto } from "@/lib/types";
 import { ASSIGNABLE_ROLES, RoleType } from "@/lib/types";
-import { createStaff, ApiClientError } from "@/lib/api-client";
+import { createStaff, createPosition, ApiClientError } from "@/lib/api-client";
 import { X } from "lucide-react";
+
+// Pozisyon dropdown'unda "yeni yaz" moduna geçiren sentinel değer (gerçek bir id değil).
+const NEW_POSITION = "__new__";
 
 // Personel DAVET formu. Şifre alanı YOK — personel davet linkiyle kendi kurar.
 // Rol dropdown'ı SADECE Yönetici/Asistan Yönetici/Personel (Owner+Supplier backend'de red).
@@ -23,7 +26,8 @@ export default function TeamModal({
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<number>(RoleType.Staff);
   const [branchId, setBranchId] = useState(branches[0]?.id ?? "");
-  const [positionId, setPositionId] = useState(""); // "" = pozisyon yok
+  const [positionId, setPositionId] = useState(""); // "" = pozisyon yok; NEW_POSITION = yeni yaz
+  const [newPositionName, setNewPositionName] = useState(""); // sadece NEW_POSITION modunda
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -39,13 +43,33 @@ export default function TeamModal({
 
     setSaving(true);
     try {
+      // Pozisyonu çöz. Yeni yazıldıysa iki adımlı: ÖNCE createPosition → {positionId} al,
+      // SONRA o id ile createStaff. createPosition patlarsa aşağıdaki await fırlatır,
+      // catch'e düşer, createStaff'a HİÇ gidilmez (yarım pozisyon kalsa da davet gitmez).
+      let finalPositionId: string | null;
+      if (positionId === NEW_POSITION) {
+        const newName = newPositionName.trim(); // whitespace-only da boş sayılır
+        if (!newName) {
+          finalPositionId = null; // boş → pozisyonsuz davet (bugünkü gibi geçerli)
+        } else {
+          const { positionId: createdId } = await createPosition({
+            name: newName,
+            colorCode: null,
+            hourlyRate: null,
+          });
+          finalPositionId = createdId;
+        }
+      } else {
+        // Mevcut pozisyon seçildi (veya "" → pozisyonsuz). Tek adım, eskisi gibi.
+        finalPositionId = positionId || null;
+      }
+
       await createStaff({
         fullName: name,
         email: email.trim(),
         role,
         branchId,
-        // Pozisyon opsiyonel — boşsa null gönder ("" veya undefined DEĞİL).
-        positionId: positionId || null,
+        positionId: finalPositionId,
       });
       onInvited(email.trim());
     } catch (err) {
@@ -109,9 +133,13 @@ export default function TeamModal({
               className={`${fieldClass} cursor-pointer`}
             >
               {ASSIGNABLE_ROLES.map((r) => (
-                <option key={r.value} value={r.value}>{r.label}</option>
+                <option key={r.value} value={r.value}>{r.label} — {r.description}</option>
               ))}
             </select>
+            {/* Seçili rolün açıklaması — kapalı select uzun metni kırpsa da tam okunur. */}
+            <p className="text-xs text-faint">
+              {ASSIGNABLE_ROLES.find((r) => r.value === role)?.description}
+            </p>
           </div>
 
           <div className="space-y-1.5">
@@ -138,7 +166,19 @@ export default function TeamModal({
               {positions.map((p) => (
                 <option key={p.id} value={p.id}>{p.name}</option>
               ))}
+              <option value={NEW_POSITION}>+ Yeni pozisyon ekle…</option>
             </select>
+            {positionId === NEW_POSITION && (
+              <input
+                type="text"
+                value={newPositionName}
+                onChange={(e) => setNewPositionName(e.target.value)}
+                maxLength={100}
+                autoFocus
+                placeholder="Örn: Vitrin Ustası"
+                className={`${fieldClass} placeholder:text-faint`}
+              />
+            )}
           </div>
         </div>
 

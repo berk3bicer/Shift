@@ -36,6 +36,17 @@
   --color-terra: #a8542f;        /* toprak/terracotta — AA uyumlu sıcak metin aksanı */
   --color-terra-soft: #f3ddcd;   /* pastel toprak zemini */
 
+  /* Kahve ailesi (Tur: Dark Roast) — espresso çapa + kahve aksan. --color-ink'in YERİNE
+     DEĞİL, YANINA: ink hâlâ gövde metni + panel overlay'i, bu aile sadece koyu YÜZEYLER.
+     Kontrast: espresso/beyaz 15.99, espresso/amber 7.44, espresso/crema 11.20, roast/crema 9.49.
+     ⛔ coffee KOYU zeminde metin olamaz (espresso'da 2.15, roast'ta 1.82) — sadece açık
+     zeminde metin/kontur ya da blur'lu dekoratif glow katmanı olarak. */
+  --color-espresso: #2E1E16;       /* en derin: koyu bant zemini */
+  --color-roast: #3D2A1F;          /* espresso üstünde kalkık yüzey (kart) */
+  --color-espresso-line: #4A382C;  /* espresso üstünde ince çizgi */
+  --color-coffee: #6F4E37;         /* açık zeminde metin/kontur + dekoratif glow */
+  --color-crema: #E8D5C0;          /* açık zeminde yumuşak zemin; koyu zeminde metin */
+
   /* Çizelge veri paleti — açık zemine uygun canlı-ama-yumuşak tonlar */
   --color-barista: #16a34a;
   --color-kasiyer: #2563eb;
@@ -49,9 +60,11 @@
      next/font değişkeni yüzünden) varsayılan sans'a düşüp .font-script sınıfımızı ezer.
      El yazısı fontu aşağıdaki .font-script sınıfından, doğrudan --font-caveat ile gelir. */
 
-  /* Sıcak-tonlu, yumuşak gölgeler — aydınlık zeminde derinlik */
-  --shadow-card: 0 1px 2px rgb(60 50 40 / 0.04), 0 12px 30px -14px rgb(70 55 40 / 0.16);
-  --shadow-float: 0 30px 60px -22px rgb(60 45 30 / 0.30), 0 12px 26px -16px rgb(60 45 30 / 0.18);
+  /* Sıcak-tonlu, yumuşak gölgeler — aydınlık zeminde derinlik.
+     Tur "Dark Roast": rgb üçlüleri kahveye kaydırıldı (opaklık/ofset/blur AYNEN korundu) —
+     yüzeyler "sıcak kahve ışığında" durur. web/app/globals.css ile BİREBİR AYNI kalmalı. */
+  --shadow-card: 0 1px 2px rgb(52 38 28 / 0.04), 0 12px 30px -14px rgb(58 42 30 / 0.16);
+  --shadow-float: 0 30px 60px -22px rgb(52 36 24 / 0.30), 0 12px 26px -16px rgb(52 36 24 / 0.18);
   --shadow-cta: 0 12px 26px -8px rgb(245 158 11 / 0.5);
 }
 

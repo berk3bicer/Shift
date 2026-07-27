@@ -31,15 +31,15 @@ export default function PilotCTA() {
   }
 
   return (
-    <section id="pilot" className="relative overflow-hidden bg-[var(--color-ink)] py-20 sm:py-28">
-      {/* Yumuşak amber ışıma — sıcak derinlik */}
+    <section id="pilot" className="relative overflow-hidden bg-[var(--color-espresso)] py-20 sm:py-28">
+      {/* Kahve→amber ışıma — espresso zeminde "crema" derinliği (tek katmanlı amber değil) */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -bottom-32 left-1/2 h-96 w-[40rem] -translate-x-1/2 rounded-full opacity-25 blur-3xl"
-        style={{ background: "radial-gradient(circle, var(--color-signal), transparent 60%)" }}
+        style={{ background: "radial-gradient(circle, var(--color-signal) 0%, var(--color-coffee) 45%, transparent 70%)" }}
       />
       <div className="relative mx-auto max-w-4xl px-5 sm:px-8">
-        <Reveal className="overflow-hidden rounded-3xl border border-[var(--color-ink-line)] bg-[var(--color-ink-soft)] shadow-[var(--shadow-float)]">
+        <Reveal className="overflow-hidden rounded-3xl border border-[var(--color-espresso-line)] bg-[var(--color-roast)] shadow-[var(--shadow-float)]">
           <div className="grid gap-0 md:grid-cols-[1fr_1.1fr]">
             {/* Sol: fotoğraf + metin overlay */}
             <div className="relative flex min-h-[15rem] flex-col justify-end overflow-hidden p-8 sm:p-10">
@@ -48,7 +48,7 @@ export default function PilotCTA() {
                 alt="Bir baristanın filtre kahve demleyişi"
                 className="absolute inset-0 h-full w-full object-cover"
               />
-              <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink)] via-[var(--color-ink)]/80 to-[var(--color-ink)]/30" />
+              <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[var(--color-espresso)] via-[var(--color-espresso)]/80 to-[var(--color-espresso)]/30" />
               <div className="relative">
                 <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-signal-soft)]">
                   Ücretsiz pilot
@@ -64,7 +64,7 @@ export default function PilotCTA() {
             </div>
 
             {/* Sağ: form / teşekkürler */}
-            <div className="bg-[var(--color-ink-soft)] p-8 sm:p-10">
+            <div className="bg-[var(--color-roast)] p-8 sm:p-10">
               {!PILOT_OPEN ? (
                 <div className="flex h-full flex-col justify-center">
                   <h3 className="font-display text-xl font-bold text-white">

@@ -32,6 +32,17 @@
   --color-terra: #a8542f;        /* terracotta — AA uyumlu sıcak metin aksanı */
   --color-terra-soft: #f3ddcd;   /* pastel toprak zemini */
 
+  /* Kahve ailesi (Tur: Dark Roast) — siteyle AYNI isimler/değerler. Panelde bu turda
+     yalnız espresso (avatar çipi) + crema (tablo başlıkları) kullanılıyor; roast /
+     espresso-line / coffee BİLEREK ölü duruyor ki iki uygulamanın token ailesi ayrışmasın
+     (Tailwind v4 kullanılmayan theme değişkenini üretmiyor, çıktıya yük binmiyor).
+     ⛔ coffee koyu zeminde metin olamaz — sadece açık zeminde. */
+  --color-espresso: #2E1E16;       /* en derin: koyu yüzey zemini */
+  --color-roast: #3D2A1F;          /* espresso üstünde kalkık yüzey (kart) */
+  --color-espresso-line: #4A382C;  /* espresso üstünde ince çizgi */
+  --color-coffee: #6F4E37;         /* açık zeminde metin/kontur */
+  --color-crema: #E8D5C0;          /* açık zeminde yumuşak zemin; koyu zeminde metin */
+
   /* Pozisyon renkleri (çizelge veri paleti — siteyle aynı) */
   --color-barista: #16a34a;
   --color-kasiyer: #2563eb;
@@ -41,9 +52,11 @@
   --font-display: var(--font-jakarta);
   --font-mono: var(--font-plex-mono);
 
-  /* Sıcak-tonlu, yumuşak gölgeler (soğuk siyah gölge değil) */
-  --shadow-card: 0 1px 2px rgb(60 50 40 / 0.04), 0 12px 30px -14px rgb(70 55 40 / 0.16);
-  --shadow-float: 0 30px 60px -22px rgb(60 45 30 / 0.30), 0 12px 26px -16px rgb(60 45 30 / 0.18);
+  /* Sıcak-tonlu, yumuşak gölgeler (soğuk siyah gölge değil).
+     Tur "Dark Roast": rgb üçlüleri kahveye kaydırıldı (opaklık/ofset/blur AYNEN korundu).
+     marketing/app/globals.css ile BİREBİR AYNI kalmalı — parite bilinçli. */
+  --shadow-card: 0 1px 2px rgb(52 38 28 / 0.04), 0 12px 30px -14px rgb(58 42 30 / 0.16);
+  --shadow-float: 0 30px 60px -22px rgb(52 36 24 / 0.30), 0 12px 26px -16px rgb(52 36 24 / 0.18);
 }
 
 :root {

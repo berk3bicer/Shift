@@ -344,7 +344,7 @@ function StaticCard({ card }: { card: Card }) {
           {card.old}
           <span className="absolute left-3 top-3 rounded-full bg-[#5c5349]/80 px-2.5 py-0.5 text-[10px] font-bold text-white">Eskiden</span>
         </div>
-        <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-[var(--color-line)] shadow-[var(--shadow-card)]">
+        <div className="relative aspect-[16/10] overflow-hidden rounded-2xl card-warm">
           <img src={card.img} alt="" width={1600} height={1000} loading="lazy" decoding="async" className="h-full w-full object-cover" />
           <span className="absolute left-3 top-3 rounded-full bg-[var(--color-signal)] px-2.5 py-0.5 text-[10px] font-bold text-[var(--color-ink)]">Shiftle&apos;de</span>
         </div>

@@ -114,7 +114,7 @@ export default function CafeGuidePage() {
           <RevealStagger className="space-y-6" stagger={0.08}>
             {INSIGHTS.map((ins) => (
               <RevealItem key={ins.title}>
-                <article className="rounded-3xl border border-[var(--color-line)] bg-[var(--color-surface)] p-7 shadow-[var(--shadow-card)] sm:p-9">
+                <article className="rounded-3xl card-warm p-7 sm:p-9">
                   <div className="grid gap-6 sm:grid-cols-[auto_1fr] sm:gap-9">
                     {ins.stat ? (
                       <div className="sm:w-40">

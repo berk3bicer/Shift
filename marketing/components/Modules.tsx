@@ -89,7 +89,7 @@ export default function Modules() {
                     >
                       <Icon size={20} />
                     </span>
-                    <span className="font-mono text-xs font-semibold tracking-widest text-[var(--color-muted)]">
+                    <span className="font-mono text-xs font-semibold tracking-widest text-[var(--color-coffee)]">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                   </div>
@@ -122,7 +122,7 @@ export default function Modules() {
             const Icon = ICONS[m.icon] ?? Megaphone;
             return (
               <RevealItem key={m.key}>
-                <article className="flex h-full flex-col rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-signal)]/60">
+                <article className="flex h-full flex-col rounded-2xl card-warm p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-signal)]/60">
                   <div className="flex items-center gap-3">
                     <span
                       className="flex h-11 w-11 items-center justify-center rounded-xl"

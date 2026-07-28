@@ -116,7 +116,7 @@ export default async function ModuleDetailPage({ params }: { params: Promise<{ s
             <div className="anim-rise mt-8 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "280ms" }}>
               <a
                 href={REGISTER_URL}
-                className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--color-signal)] px-6 py-3.5 text-base font-bold text-[var(--color-ink)] shadow-[var(--shadow-cta)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-signal-deep)] hover:text-white"
+                className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--color-signal)] px-6 py-3.5 text-base font-bold text-[var(--color-ink)] shadow-[var(--shadow-cta)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-espresso)] hover:text-[var(--color-foam)]"
               >
                 Ücretsiz Başla
                 <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
@@ -148,7 +148,7 @@ export default async function ModuleDetailPage({ params }: { params: Promise<{ s
       <section className="bg-[var(--color-paper-deep)] py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
           <Reveal className="max-w-2xl">
-            <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-signal-deep)]">Özellikler</span>
+            <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-coffee)]">Özellikler</span>
             <h2 className="font-display mt-3 text-2xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-3xl">
               Neler var{mod.phase ? ", neler geliyor" : ""}?
             </h2>
@@ -156,7 +156,7 @@ export default async function ModuleDetailPage({ params }: { params: Promise<{ s
           <RevealStagger className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" stagger={0.07}>
             {mod.features.map((f) => (
               <RevealItem key={f.title}>
-                <article className="flex h-full flex-col rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-signal)]/50">
+                <article className="flex h-full flex-col rounded-2xl card-warm p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-signal)]/50">
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="font-display text-base font-bold text-[var(--color-ink)]">{f.title}</h3>
                     <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${TAG_STYLE[f.tag]}`}>
@@ -191,7 +191,7 @@ export default async function ModuleDetailPage({ params }: { params: Promise<{ s
           <RevealStagger className="mt-10 grid gap-4 md:grid-cols-3" stagger={0.1}>
             {mod.how.map((s, i) => (
               <RevealItem key={s.title}>
-                <div className="relative h-full rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6 pt-8 shadow-[var(--shadow-card)]">
+                <div className="relative h-full rounded-2xl card-warm p-6 pt-8">
                   <span
                     className="absolute -top-4 left-6 flex h-9 w-9 items-center justify-center rounded-xl font-display text-sm font-extrabold text-[var(--color-ink)] shadow-[var(--shadow-cta)]"
                     style={{ backgroundColor: "var(--color-signal)" }}

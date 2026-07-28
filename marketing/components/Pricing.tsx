@@ -13,7 +13,7 @@ export default function Pricing({ hideHeader = false }: { hideHeader?: boolean }
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         {!hideHeader && (
           <Reveal className="mx-auto max-w-2xl text-center">
-            <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-signal-deep)]">
+            <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-coffee)]">
               Fiyatlandırma
             </span>
             <h2 className="font-display mt-3 text-3xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-4xl">
@@ -29,10 +29,10 @@ export default function Pricing({ hideHeader = false }: { hideHeader?: boolean }
           {PRICING.map((plan) => (
             <RevealItem key={plan.name}>
               <div
-                className={`relative flex h-full flex-col rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 ${
+                className={`relative flex h-full flex-col rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 ${
                   plan.highlighted
-                    ? "border-2 border-[var(--color-signal)] bg-gradient-to-b from-[var(--color-cream)] to-[var(--color-surface)] shadow-[0_24px_50px_-24px_rgb(245_158_11_/_0.55)] lg:-translate-y-2 lg:hover:-translate-y-3"
-                    : "border-[var(--color-line)] bg-[var(--color-surface)] shadow-[var(--shadow-card)] hover:border-[var(--color-signal)]/50"
+                    ? "card-warm-hi lg:-translate-y-2 lg:hover:-translate-y-3"
+                    : "card-warm hover:border-[var(--color-signal)]/50"
                 }`}
               >
                 {plan.highlighted && (
@@ -68,7 +68,7 @@ export default function Pricing({ hideHeader = false }: { hideHeader?: boolean }
                   href={plan.price === "Özel" ? "/#pilot" : REGISTER_URL}
                   className={`mt-6 inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-bold transition-all ${
                     plan.highlighted
-                      ? "bg-[var(--color-signal)] text-[var(--color-ink)] shadow-[var(--shadow-cta)] hover:bg-[var(--color-signal-deep)] hover:text-white"
+                      ? "bg-[var(--color-signal)] text-[var(--color-ink)] shadow-[var(--shadow-cta)] hover:bg-[var(--color-espresso)] hover:text-[var(--color-foam)]"
                       : "border border-[var(--color-line-strong)] text-[var(--color-ink)] hover:border-[var(--color-signal)] hover:bg-[var(--color-cream)]/50"
                   }`}
                 >

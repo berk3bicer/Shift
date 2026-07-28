@@ -83,10 +83,8 @@ export default function WhyShiftPage() {
               return (
                 <RevealX key={s.name} from={i === 2 ? "right" : "left"} delay={i * 0.08}>
                   <article
-                    className={`flex h-full flex-col rounded-[2rem] border p-7 sm:p-8 ${
-                      isShift
-                        ? "border-2 border-[var(--color-signal)]/50 bg-gradient-to-b from-[var(--color-cream)] to-[var(--color-surface)] shadow-[var(--shadow-card)]"
-                        : "border-[var(--color-line)] bg-[var(--color-surface)] shadow-[var(--shadow-card)]"
+                    className={`flex h-full flex-col rounded-[2rem] p-7 sm:p-8 ${
+                      isShift ? "card-warm-hi" : "card-warm"
                     }`}
                   >
                     <span
@@ -133,7 +131,7 @@ export default function WhyShiftPage() {
               const Icon = ICONS[c.icon] ?? Scale;
               return (
                 <RevealItem key={c.title}>
-                  <div className="flex h-full flex-col rounded-3xl border border-[var(--color-line)] bg-gradient-to-b from-[var(--color-surface)] to-[var(--color-paper)] p-6 shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-signal)]/50">
+                  <div className="flex h-full flex-col rounded-3xl card-warm p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-signal)]/50">
                     <div className="flex items-center justify-between">
                       <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--color-cream)] text-[var(--color-signal-deep)]">
                         <Icon size={20} />

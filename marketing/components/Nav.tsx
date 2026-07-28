@@ -139,7 +139,7 @@ export default function Nav() {
           </a>
           <a
             href={REGISTER_URL}
-            className="rounded-lg bg-[var(--color-signal)] px-4 py-2 text-sm font-bold text-[var(--color-ink)] shadow-[var(--shadow-cta)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-signal-deep)] hover:text-white"
+            className="rounded-lg bg-[var(--color-signal)] px-4 py-2 text-sm font-bold text-[var(--color-ink)] shadow-[var(--shadow-cta)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-espresso)] hover:text-[var(--color-foam)]"
           >
             Ücretsiz Başla
           </a>

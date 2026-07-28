@@ -53,7 +53,7 @@ export default function PricingPage() {
           style={{ background: "radial-gradient(circle, var(--color-warm-soft), transparent 65%)" }}
         />
         <div className="relative mx-auto max-w-6xl px-5 text-center sm:px-8">
-          <span className="anim-rise inline-block text-sm font-bold uppercase tracking-wider text-[var(--color-signal-deep)]" style={{ animationDelay: "40ms" }}>
+          <span className="anim-rise inline-block text-sm font-bold uppercase tracking-wider text-[var(--color-coffee)]" style={{ animationDelay: "40ms" }}>
             Fiyatlandırma
           </span>
           <h1 className="anim-rise font-display mx-auto mt-3 max-w-3xl text-4xl font-extrabold leading-[1.08] text-[var(--color-ink)] sm:text-5xl" style={{ animationDelay: "120ms" }}>
@@ -74,7 +74,7 @@ export default function PricingPage() {
           <RevealStagger className="grid gap-4 md:grid-cols-3" stagger={0.08}>
             {TRUST.map((t) => (
               <RevealItem key={t.title}>
-                <div className="flex h-full flex-col rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)]">
+                <div className="flex h-full flex-col rounded-2xl card-warm p-6">
                   <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-barista)]/12 text-[var(--color-barista)]">
                     <ShieldCheck size={19} />
                   </span>
@@ -91,7 +91,7 @@ export default function PricingPage() {
       <section className="bg-[var(--color-paper)] py-16 sm:py-24">
         <div className="mx-auto max-w-3xl px-5 sm:px-8">
           <Reveal className="text-center">
-            <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-signal-deep)]">SSS</span>
+            <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-coffee)]">SSS</span>
             <h2 className="font-display mt-3 text-2xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-3xl">
               Sık sorulanlar
             </h2>
@@ -99,7 +99,7 @@ export default function PricingPage() {
           <RevealStagger className="mt-10 space-y-3" stagger={0.05}>
             {FAQ.map((f) => (
               <RevealItem key={f.q} y={20}>
-                <details className="group rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] px-6 py-4 shadow-[var(--shadow-card)] open:pb-5 [&_summary::-webkit-details-marker]:hidden">
+                <details className="group rounded-2xl card-warm px-6 py-4 open:pb-5 [&_summary::-webkit-details-marker]:hidden">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left font-display text-base font-bold text-[var(--color-ink)]">
                     {f.q}
                     <span

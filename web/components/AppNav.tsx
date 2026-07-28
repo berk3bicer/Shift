@@ -70,8 +70,11 @@ export default function AppNav({ mobileExtras }: { mobileExtras?: React.ReactNod
 
   const linkBase =
     "rounded-lg px-3 py-2 text-sm font-medium transition-colors";
-  const linkIdle = "text-muted hover:bg-paper-deep hover:text-ink";
-  const linkOn = "bg-cream font-semibold text-ink";
+  // Üst bar ESPRESSO (Tur "Sıcak Kahve") → bu iki sınıf koyu zemine göre. Aşağıdaki
+  // açılır paneller (masaüstü dropdown + mobil menü) BİLEREK açık kalır; onların kendi
+  // sınıfları var, buradan etkilenmezler.
+  const linkIdle = "text-latte hover:bg-roast hover:text-foam";
+  const linkOn = "bg-roast font-semibold text-foam";
 
   return (
     <div ref={rootRef} className="flex items-center">
@@ -129,7 +132,7 @@ export default function AppNav({ mobileExtras }: { mobileExtras?: React.ReactNod
         onClick={() => setMobileOpen((o) => !o)}
         aria-expanded={mobileOpen}
         aria-label={mobileOpen ? "Menüyü kapat" : "Menüyü aç"}
-        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted transition-colors hover:bg-paper-deep hover:text-ink lg:hidden"
+        className="flex h-11 w-11 items-center justify-center rounded-lg text-latte transition-colors hover:bg-roast hover:text-foam lg:hidden"
       >
         {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
       </button>

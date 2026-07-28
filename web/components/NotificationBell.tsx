@@ -30,8 +30,18 @@ const NOTIFICATION_META: Record<number, { label: string; href: string }> = {
   12: { label: "İzin Reddedildi", href: "/timeoff" },
 };
 
-export default function NotificationBell({ initialNotifications }: { initialNotifications: NotificationDto[] }) {
+// tone: zil butonu yönetici üst barında ESPRESSO zeminde (tone="dark"), staff başlığında
+// ise açık zeminde duruyor. Varsayılan "light" — koyu zemin istisna, çağıran açıkça söyler.
+// Açılır panel her iki durumda da AÇIK kalır (koyu barın altından açılan açık panel).
+export default function NotificationBell({
+  initialNotifications,
+  tone = "light",
+}: {
+  initialNotifications: NotificationDto[];
+  tone?: "dark" | "light";
+}) {
   const router = useRouter();
+  const dark = tone === "dark";
   const [notifications, setNotifications] = useState<NotificationDto[]>(initialNotifications);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -100,13 +110,19 @@ export default function NotificationBell({ initialNotifications }: { initialNoti
       <button
         onClick={handleOpen}
         aria-label="Bildirimler"
-        className="relative flex h-11 w-11 items-center justify-center rounded-full text-muted transition-colors hover:bg-paper-deep hover:text-ink focus:outline-none"
+        className={`relative flex h-11 w-11 items-center justify-center rounded-full transition-colors focus:outline-none ${
+          dark ? "text-latte hover:bg-roast hover:text-foam" : "text-muted hover:bg-paper-deep hover:text-ink"
+        }`}
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
           <span className="absolute right-2 top-2 flex h-2.5 w-2.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-75"></span>
-            <span className="relative inline-flex h-2.5 w-2.5 rounded-full border border-surface bg-signal-deep"></span>
+            <span
+              className={`relative inline-flex h-2.5 w-2.5 rounded-full border bg-signal-deep ${
+                dark ? "border-espresso" : "border-surface"
+              }`}
+            ></span>
           </span>
         )}
       </button>

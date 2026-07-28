@@ -18,8 +18,8 @@
   --color-paper-deep: #f2ece2;   /* sıcak ikinci ton: sütun/iç zemin */
   --color-cream: #fdf3e7;        /* sıcak krem aksan zemini (rozet/vurgu) */
   --color-surface: #ffffff;      /* kart yüzeyi */
-  --color-line: #ece4d8;         /* sıcak ince çizgi */
-  --color-line-strong: #ded3c2;  /* daha belirgin çizgi (input kenarı) */
+  --color-line: #E7DCCE;         /* kahve tonlu hairline (eski #ece4d8: nötr bej) */
+  --color-line-strong: #E0D3C2;  /* daha belirgin çizgi, input kenarı (eski #ded3c2) */
 
   /* Marka sinyali — amber */
   --color-signal: #f59e0b;       /* birincil eylem / vurgu */
@@ -43,6 +43,16 @@
   --color-coffee: #6F4E37;         /* açık zeminde metin/kontur */
   --color-crema: #E8D5C0;          /* açık zeminde yumuşak zemin; koyu zeminde metin */
 
+  /* Sıcak beyaz merdiveni — koyu yüzeylerde `text-white/XX` YERİNE (Tur: Sıcak Kahve).
+     Alpha'lı beyaz espresso üstünde griye düşüyor (ölçüm: white/65 → #B6B0AD, R≈G≈B).
+     Bunlar SOLID ve sıcak; hepsi AA gövde eşiğini (4.5) geçer. */
+  --color-foam:  #FBF4EA;   /* birincil/başlık — espresso 14.64 · roast 12.41 */
+  --color-latte: #CDB49A;   /* üçüncül (etiket, nav idle) — espresso 8.06 · roast 6.84 */
+  --color-mocha: #A98F76;   /* en soluk, hâlâ AA — espresso 5.24 · roast 4.44 */
+
+  /* Açık zeminde kahve derinliği */
+  --color-surface-2: #F7EFE4;  /* kart gradyanının alt ucu — ink 13.30 · muted 5.03 */
+
   /* Pozisyon renkleri (çizelge veri paleti — siteyle aynı) */
   --color-barista: #16a34a;
   --color-kasiyer: #2563eb;
@@ -55,16 +65,21 @@
   /* Sıcak-tonlu, yumuşak gölgeler (soğuk siyah gölge değil).
      Tur "Dark Roast": rgb üçlüleri kahveye kaydırıldı (opaklık/ofset/blur AYNEN korundu).
      marketing/app/globals.css ile BİREBİR AYNI kalmalı — parite bilinçli. */
-  --shadow-card: 0 1px 2px rgb(52 38 28 / 0.04), 0 12px 30px -14px rgb(58 42 30 / 0.16);
-  --shadow-float: 0 30px 60px -22px rgb(52 36 24 / 0.30), 0 12px 26px -16px rgb(52 36 24 / 0.18);
+  --shadow-card: 0 1px 2px rgb(46 30 22 / 0.05), 0 2px 6px -2px rgb(46 30 22 / 0.06), 0 18px 40px -18px rgb(46 30 22 / 0.20);
+  --shadow-float: 0 36px 70px -24px rgb(46 30 22 / 0.34), 0 14px 30px -18px rgb(46 30 22 / 0.20);
 }
 
 :root {
   color-scheme: light;
 }
 
-* {
-  border-color: var(--color-line);
+/* KATMAN ŞART: katmansız (unlayered) CSS, specificity'den bağımsız olarak Tailwind'in
+   katmanlı kurallarını ezer — bu kural @layer dışındayken `border-signal`,
+   `border-line-strong` gibi TÜM border-* utility'leri sessizce etkisiz kalıyordu. */
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
 }
 
 body {

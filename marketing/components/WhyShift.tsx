@@ -62,7 +62,7 @@ export function ComparisonTable({
   return (
     <>
       <Reveal className="overflow-x-auto">
-        <table className="w-full min-w-[560px] border-separate border-spacing-0 overflow-hidden rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] shadow-[var(--shadow-card)]">
+        <table className="w-full min-w-[560px] border-separate border-spacing-0 overflow-hidden rounded-2xl card-warm">
           <thead>
             <tr>
               <th className="bg-[var(--color-paper)] px-5 py-4 text-left text-xs font-bold uppercase tracking-wider text-[var(--color-muted)]">
@@ -72,7 +72,7 @@ export function ComparisonTable({
                 <th
                   key={c}
                   className={`px-4 py-4 text-center font-display text-sm font-semibold ${
-                    i === 0 ? "bg-[var(--color-ink)] text-white" : "bg-[var(--color-paper)] text-[var(--color-muted)]"
+                    i === 0 ? "bg-[var(--color-espresso)] text-[var(--color-foam)]" : "bg-[var(--color-paper)] text-[var(--color-muted)]"
                   }`}
                 >
                   {c}
@@ -87,7 +87,7 @@ export function ComparisonTable({
                 {row.values.map((v, i) => (
                   <td
                     key={i}
-                    className={`border-t border-[var(--color-line)] px-4 py-3 text-center ${i === 0 ? "bg-[var(--color-ink)]/[0.03]" : ""}`}
+                    className={`border-t border-[var(--color-line)] px-4 py-3 text-center ${i === 0 ? "bg-[var(--color-coffee)]/[0.05]" : ""}`}
                   >
                     <Cell value={v} isShift={i === 0} />
                   </td>
@@ -131,7 +131,7 @@ export default function WhyShift() {
             const Icon = ICONS[c.icon] ?? Scale;
             return (
               <RevealItem key={c.title}>
-                <div className="group flex h-full flex-col rounded-3xl border border-[var(--color-line)] bg-gradient-to-b from-[var(--color-surface)] to-[var(--color-paper)] p-6 shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-signal)]/50">
+                <div className="group flex h-full flex-col rounded-3xl card-warm p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-signal)]/50">
                   <div className="flex items-center justify-between">
                     <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--color-cream)] text-[var(--color-signal-deep)]">
                       <Icon size={20} />

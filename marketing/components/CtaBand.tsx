@@ -23,19 +23,19 @@ export default function CtaBand({
       />
       <Reveal className="relative mx-auto flex max-w-4xl flex-col items-center px-5 text-center sm:px-8">
         <span className="font-script -rotate-1 text-2xl text-[var(--color-signal-soft)]">hadi, birlikte kuralım</span>
-        <h2 className="font-display mt-3 text-2xl font-extrabold leading-tight text-white sm:text-3xl">{title}</h2>
-        <p className="mt-3 max-w-xl text-base leading-relaxed text-white/65">{sub}</p>
+        <h2 className="font-display mt-3 text-2xl font-extrabold leading-tight text-[var(--color-foam)] sm:text-3xl">{title}</h2>
+        <p className="mt-3 max-w-xl text-base leading-relaxed text-[var(--color-crema)]">{sub}</p>
         <div className="mt-7 flex flex-col gap-3 sm:flex-row">
           <a
             href={REGISTER_URL}
-            className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--color-signal)] px-6 py-3 text-base font-bold text-[var(--color-ink)] shadow-[var(--shadow-cta)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-signal-deep)] hover:text-white"
+            className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--color-signal)] px-6 py-3 text-base font-bold text-[var(--color-ink)] shadow-[var(--shadow-cta)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-espresso)] hover:text-[var(--color-foam)]"
           >
             Ücretsiz Başla
             <ArrowRight size={17} className="transition-transform group-hover:translate-x-0.5" />
           </a>
           <Link
             href="/#pilot"
-            className="inline-flex items-center justify-center rounded-xl border border-white/20 px-6 py-3 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:border-[var(--color-signal)]"
+            className="inline-flex items-center justify-center rounded-xl border border-[var(--color-espresso-line)] px-6 py-3 text-base font-semibold text-[var(--color-foam)] transition-all hover:-translate-y-0.5 hover:border-[var(--color-signal)]"
           >
             Ücretsiz pilot iste
           </Link>

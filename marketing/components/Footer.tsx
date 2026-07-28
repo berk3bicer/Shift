@@ -7,15 +7,15 @@ import Wordmark from "@/components/Wordmark";
 // (Ürün / Başla / Yasal). KVKK/Gizlilik → /kvkk (Tur 16, gap #P2 kapandı). Mono KALDIRILDI.
 export default function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-[var(--color-espresso)] pb-10 pt-16">
+    <footer className="border-t border-[var(--color-espresso-line)] bg-[var(--color-espresso)] pb-10 pt-16">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <div className="grid gap-10 border-b border-white/10 pb-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div className="grid gap-10 border-b border-[var(--color-espresso-line)] pb-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div className="max-w-xs">
             <div className="flex items-center gap-2">
               <ShiftleMark className="h-8 w-8" variant="onDark" />
-              <Wordmark className="text-xl text-white" />
+              <Wordmark className="text-xl text-[var(--color-foam)]" />
             </div>
-            <p className="mt-3 text-sm leading-relaxed text-white/50">
+            <p className="mt-3 text-sm leading-relaxed text-[var(--color-latte)]">
               Kafe ve restoran operasyonunu tek platformda dijitalleştir. Türkçe, İş Kanunu ve KVKK uyumlu.
             </p>
           </div>
@@ -27,10 +27,10 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col gap-2 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-white/40">
+          <p className="text-xs text-[var(--color-mocha)]">
             Shiftle — Kafe ve restoran operasyonunu dijitalleştir. © {new Date().getFullYear()}
           </p>
-          <p className="text-xs text-white/30">Verileriniz Avrupa / Türkiye veri merkezinde</p>
+          <p className="text-xs text-[var(--color-mocha)]">Verileriniz Avrupa / Türkiye veri merkezinde</p>
         </div>
       </div>
     </footer>
@@ -40,16 +40,16 @@ export default function Footer() {
 function FooterCol({ title, links }: { title: string; links: [string, string][] }) {
   return (
     <div>
-      <h3 className="text-xs font-bold uppercase tracking-wider text-white/40">{title}</h3>
+      <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-latte)]">{title}</h3>
       <ul className="mt-3 space-y-2">
         {links.map(([label, href]) => (
           <li key={label}>
             {href.startsWith("/") ? (
-              <Link href={href} className="text-sm text-white/60 transition-colors hover:text-white">
+              <Link href={href} className="text-sm text-[var(--color-crema)] transition-colors hover:text-[var(--color-foam)]">
                 {label}
               </Link>
             ) : (
-              <a href={href} className="text-sm text-white/60 transition-colors hover:text-white">
+              <a href={href} className="text-sm text-[var(--color-crema)] transition-colors hover:text-[var(--color-foam)]">
                 {label}
               </a>
             )}

@@ -49,12 +49,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen bg-paper">
-      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-line bg-surface px-4 sm:px-6">
+      {/* Üst bar espresso (Tur "Sıcak Kahve") — içerik AÇIK kalır (main + bg-paper).
+          Koyu kabuk panele "ürün" ağırlığı verir ve pazarlama sitesiyle aynı dili konuşur. */}
+      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-espresso-line bg-espresso px-4 sm:px-6">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <ShiftleMark className="h-7 w-7" />
-            <Wordmark className="text-lg text-ink" />
-            <span className="hidden text-xs font-medium text-faint sm:inline">Yönetici</span>
+            <ShiftleMark className="h-7 w-7" variant="onDark" />
+            <Wordmark className="text-lg text-foam" />
+            <span className="hidden text-xs font-medium text-latte sm:inline">Yönetici</span>
           </div>
           <div className="hidden lg:block">
             <AppNav />
@@ -62,26 +64,27 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="hidden sm:block">
-            <BranchSwitcher branches={branches} currentId={currentBranchId} />
+            <BranchSwitcher branches={branches} currentId={currentBranchId} tone="dark" />
           </div>
-          <NotificationBell initialNotifications={notifications} />
-          <div className="hidden h-6 w-px bg-line sm:block" />
-          <span className="hidden items-center gap-2 text-sm text-muted md:flex">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-espresso text-xs font-bold text-crema">
+          <NotificationBell initialNotifications={notifications} tone="dark" />
+          <div className="hidden h-6 w-px bg-espresso-line sm:block" />
+          <span className="hidden items-center gap-2 text-sm md:flex">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-signal text-xs font-bold text-espresso">
               {name ? name.charAt(0) : "?"}
             </span>
             <span className="flex flex-col leading-tight">
-              <span className="font-semibold text-ink">{name}</span>
-              {role && <span className="text-[10px] text-faint">{role}</span>}
+              <span className="font-semibold text-foam">{name}</span>
+              {role && <span className="text-[10px] text-latte">{role}</span>}
             </span>
           </span>
           <div className="hidden sm:block">
-            <LogoutButton />
+            <LogoutButton tone="dark" />
           </div>
           {/* Mobil: hamburger (menü içinde şube seçici + çıkış da var) */}
           <div className="lg:hidden">
             <AppNav
               mobileExtras={
+                /* Mobil menü paneli AÇIK zemin — varsayılan (light) ton doğru olan. */
                 <div className="flex items-center justify-between gap-3">
                   <BranchSwitcher branches={branches} currentId={currentBranchId} />
                   <LogoutButton />

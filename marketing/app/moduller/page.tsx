@@ -50,7 +50,7 @@ export default function ModulesIndexPage() {
           style={{ background: "radial-gradient(circle, var(--color-warm-soft), transparent 65%)" }}
         />
         <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
-          <span className="anim-rise inline-block text-sm font-bold uppercase tracking-wider text-[var(--color-signal-deep)]" style={{ animationDelay: "40ms" }}>
+          <span className="anim-rise inline-block text-sm font-bold uppercase tracking-wider text-[var(--color-coffee)]" style={{ animationDelay: "40ms" }}>
             Modüller
           </span>
           <h1 className="anim-rise font-display mt-3 max-w-3xl text-4xl font-extrabold leading-[1.08] text-[var(--color-ink)] sm:text-5xl" style={{ animationDelay: "120ms" }}>
@@ -74,7 +74,7 @@ export default function ModulesIndexPage() {
                 <RevealItem key={m.slug}>
                   <Link
                     href={`/moduller/${m.slug}`}
-                    className="group flex h-full flex-col rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-signal)]/60"
+                    className="group flex h-full flex-col rounded-2xl card-warm p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-signal)]/60"
                   >
                     <div className="flex items-center justify-between">
                       <span

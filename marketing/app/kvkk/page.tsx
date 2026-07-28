@@ -140,7 +140,7 @@ export default function KvkkPage() {
     <main>
       <section className="bg-[var(--color-paper)] pb-10 pt-28 lg:pt-36">
         <div className="mx-auto max-w-3xl px-5 sm:px-8">
-          <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-signal-deep)]">
+          <span className="text-sm font-bold uppercase tracking-wider text-[var(--color-coffee)]">
             Yasal
           </span>
           <h1 className="font-display mt-3 text-3xl font-extrabold leading-[1.1] text-[var(--color-ink)] sm:text-4xl">

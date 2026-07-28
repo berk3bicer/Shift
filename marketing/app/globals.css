@@ -18,8 +18,8 @@
   --color-cream: #fdf3e7;        /* sıcak krem aksan zemini */
   --color-cream-2: #fbeee0;      /* şeftali-krem aksan zemini (daha derin) */
   --color-surface: #ffffff;      /* açık zeminde kart */
-  --color-line: #ece4d8;         /* sıcak ince çizgi */
-  --color-line-strong: #ded3c2;  /* daha belirgin çizgi */
+  --color-line: #E7DCCE;         /* kahve tonlu hairline (eski #ece4d8: nötr bej) */
+  --color-line-strong: #E0D3C2;  /* daha belirgin çizgi (eski #ded3c2) */
   --color-muted: #6d655b;        /* sıcak ikincil metin */
 
   /* Marka aksanları — amber + ikincil sıcak turuncu */
@@ -47,6 +47,16 @@
   --color-coffee: #6F4E37;         /* açık zeminde metin/kontur + dekoratif glow */
   --color-crema: #E8D5C0;          /* açık zeminde yumuşak zemin; koyu zeminde metin */
 
+  /* Sıcak beyaz merdiveni — koyu yüzeylerde `text-white/XX` YERİNE (Tur: Sıcak Kahve).
+     Alpha'lı beyaz espresso üstünde griye düşüyor (ölçüm: white/65 → #B6B0AD, R≈G≈B).
+     Bunlar SOLID ve sıcak; hepsi AA gövde eşiğini (4.5) geçer. */
+  --color-foam:  #FBF4EA;   /* birincil/başlık — espresso 14.64 · roast 12.41 */
+  --color-latte: #CDB49A;   /* üçüncül (etiket, nav idle) — espresso 8.06 · roast 6.84 */
+  --color-mocha: #A98F76;   /* en soluk, hâlâ AA — espresso 5.24 · roast 4.44 */
+
+  /* Açık zeminde kahve derinliği */
+  --color-surface-2: #F7EFE4;  /* kart gradyanının alt ucu — ink 13.30 · muted 5.03 */
+
   /* Çizelge veri paleti — açık zemine uygun canlı-ama-yumuşak tonlar */
   --color-barista: #16a34a;
   --color-kasiyer: #2563eb;
@@ -63,17 +73,22 @@
   /* Sıcak-tonlu, yumuşak gölgeler — aydınlık zeminde derinlik.
      Tur "Dark Roast": rgb üçlüleri kahveye kaydırıldı (opaklık/ofset/blur AYNEN korundu) —
      yüzeyler "sıcak kahve ışığında" durur. web/app/globals.css ile BİREBİR AYNI kalmalı. */
-  --shadow-card: 0 1px 2px rgb(52 38 28 / 0.04), 0 12px 30px -14px rgb(58 42 30 / 0.16);
-  --shadow-float: 0 30px 60px -22px rgb(52 36 24 / 0.30), 0 12px 26px -16px rgb(52 36 24 / 0.18);
-  --shadow-cta: 0 12px 26px -8px rgb(245 158 11 / 0.5);
+  --shadow-card: 0 1px 2px rgb(46 30 22 / 0.05), 0 2px 6px -2px rgb(46 30 22 / 0.06), 0 18px 40px -18px rgb(46 30 22 / 0.20);
+  --shadow-float: 0 36px 70px -24px rgb(46 30 22 / 0.34), 0 14px 30px -18px rgb(46 30 22 / 0.20);
+  --shadow-cta: 0 10px 24px -8px rgb(217 119 6 / 0.45), 0 2px 8px -3px rgb(46 30 22 / 0.20);
 }
 
 :root {
   color-scheme: light;
 }
 
-* {
-  border-color: var(--color-line);
+/* KATMAN ŞART: katmansız (unlayered) CSS, specificity'den bağımsız olarak Tailwind'in
+   katmanlı kurallarını ezer — bu kural @layer dışındayken `border-signal`,
+   `border-white/10` gibi TÜM border-* utility'leri sessizce etkisiz kalıyordu. */
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
 }
 
 html {
@@ -180,5 +195,27 @@ body::after {
   .scribble-css path {
     stroke-dashoffset: 0;
     animation: none;
+  }
+}
+
+@layer components {
+  /* Premium sıcak kart: dikey krem gradyan + sağ-üstten kahve radyal yıkaması.
+     Pseudo-element/z-index YOK — tek elemanda iki background katmanı; rounded-* ve
+     çocuklarla sorunsuz. Utility'ler (bg-*, border-*) bunu hâlâ ezebilir: components
+     katmanı utilities'in altında. */
+  .card-warm {
+    background-image:
+      radial-gradient(120% 85% at 100% 0%, color-mix(in srgb, var(--color-coffee) 9%, transparent) 0%, transparent 60%),
+      linear-gradient(180deg, var(--color-surface) 0%, var(--color-surface-2) 100%);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--shadow-card);
+  }
+  /* Vurgulu kart (Pricing "Büyüme", ProblemSolution sağ panel) — radyal amber */
+  .card-warm-hi {
+    background-image:
+      radial-gradient(130% 90% at 100% 0%, color-mix(in srgb, var(--color-signal) 14%, transparent) 0%, transparent 62%),
+      linear-gradient(180deg, var(--color-cream) 0%, var(--color-surface) 100%);
+    border: 2px solid color-mix(in srgb, var(--color-signal) 55%, var(--color-line));
+    box-shadow: 0 24px 50px -24px rgb(217 119 6 / 0.42), 0 2px 6px -2px rgb(46 30 22 / 0.10);
   }
 }

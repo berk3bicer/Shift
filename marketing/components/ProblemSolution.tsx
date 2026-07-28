@@ -60,7 +60,7 @@ export default function ProblemSolution() {
           </div>
 
           {/* Sağ: Shift'te toplanmış — SICAK krem/amber kart */}
-          <Reveal className="rounded-3xl border-2 border-[var(--color-signal)]/40 bg-gradient-to-b from-[var(--color-cream)] to-[var(--color-surface)] p-6 shadow-[var(--shadow-card)] sm:p-7">
+          <Reveal className="card-warm-hi rounded-3xl p-6 sm:p-7">
             <div className="mb-5 flex items-center gap-2.5">
               <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-signal)]" />
               <span className="font-display text-sm font-bold text-[var(--color-ink)]">Shiftle ile — tek çatıda</span>

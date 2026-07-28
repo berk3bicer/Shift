@@ -51,7 +51,7 @@ export default function Hero() {
           <div className="anim-rise mt-9 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "280ms" }}>
             <a
               href={REGISTER_URL}
-              className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--color-signal)] px-7 py-3.5 text-base font-bold text-[var(--color-ink)] shadow-[var(--shadow-cta)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-signal-deep)] hover:text-white"
+              className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--color-signal)] px-7 py-3.5 text-base font-bold text-[var(--color-ink)] shadow-[var(--shadow-cta)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-espresso)] hover:text-[var(--color-foam)]"
             >
               Ücretsiz Başla
               <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />

@@ -72,8 +72,13 @@
   color-scheme: light;
 }
 
-* {
-  border-color: var(--color-line);
+/* KATMAN ŞART: katmansız (unlayered) CSS, specificity'den bağımsız olarak Tailwind'in
+   katmanlı kurallarını ezer — bu kural @layer dışındayken `border-signal`,
+   `border-white/10` gibi TÜM border-* utility'leri sessizce etkisiz kalıyordu. */
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
 }
 
 html {

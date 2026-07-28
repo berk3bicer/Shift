@@ -49,13 +49,14 @@ const VISUALS: Record<string, ReactNode> = {
   hygiene: <HygieneMock />,
 };
 
-// Özellik etiketi renkleri — dürüst faz iletişimi: MVP yeşil (çekirdek), Faz amber (yol
-// haritası), TR mavi (Türkiye'ye özgü).
+// Rozet paleti — hepsi sıcak palet içinden, hepsi AA (10px kalın metin, eşik 4.5).
+// Eski hali AA'yı geçmiyordu (MVP 2.72 · TR 4.10 · Faz 2.69) ve TR soğuk maviydi.
+// Renk artık bilgi taşıyor: yeşil = hazır, kahve = yol haritası, toprak = Türkiye'ye özgü.
 const TAG_STYLE: Record<string, string> = {
-  MVP: "bg-[var(--color-barista)]/12 text-[var(--color-barista)]",
-  "Faz 2": "bg-[var(--color-signal)]/15 text-[var(--color-signal-deep)]",
-  "Faz 3": "bg-[var(--color-signal)]/15 text-[var(--color-signal-deep)]",
-  TR: "bg-[var(--color-kasiyer)]/12 text-[var(--color-kasiyer)]",
+  MVP: "bg-[var(--color-sage-soft)] text-[var(--color-sage-deep)]",      // 5.67 — hazır/olumlu
+  "Faz 2": "bg-[var(--color-crema)] text-[var(--color-coffee)]",          // 5.21 — yol haritası
+  "Faz 3": "bg-[var(--color-crema)] text-[var(--color-coffee)]",          // 5.21
+  TR: "bg-[var(--color-terra-soft)] text-[var(--color-coffee)]",          // 5.68 — toprak zemin
 };
 
 export function generateStaticParams() {
@@ -99,7 +100,7 @@ export default async function ModuleDetailPage({ params }: { params: Promise<{ s
                 {mod.name}
               </span>
               {mod.phase && (
-                <span className="rounded-full bg-[var(--color-signal)]/15 px-3.5 py-1.5 text-xs font-bold text-[var(--color-signal-deep)]">
+                <span className="rounded-full bg-[var(--color-crema)] px-3.5 py-1.5 text-xs font-bold text-[var(--color-coffee)]">
                   {mod.phase}
                 </span>
               )}
@@ -156,14 +157,14 @@ export default async function ModuleDetailPage({ params }: { params: Promise<{ s
           <RevealStagger className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" stagger={0.07}>
             {mod.features.map((f) => (
               <RevealItem key={f.title}>
-                <article className="flex h-full flex-col rounded-2xl card-warm p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-signal)]/50">
+                <article className="flex h-full flex-col rounded-2xl card-warm p-6 sm:p-7 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-coffee)]/35 hover:shadow-[var(--shadow-card-hover)]">
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="font-display text-base font-bold text-[var(--color-ink)]">{f.title}</h3>
                     <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${TAG_STYLE[f.tag]}`}>
                       {f.tag}
                     </span>
                   </div>
-                  <p className="mt-2 text-sm leading-relaxed text-[var(--color-muted)]">{f.desc}</p>
+                  <p className="mt-2.5 text-sm leading-relaxed text-[var(--color-muted)]">{f.desc}</p>
                 </article>
               </RevealItem>
             ))}
@@ -193,8 +194,8 @@ export default async function ModuleDetailPage({ params }: { params: Promise<{ s
               <RevealItem key={s.title}>
                 <div className="relative h-full rounded-2xl card-warm p-6 pt-8">
                   <span
-                    className="absolute -top-4 left-6 flex h-9 w-9 items-center justify-center rounded-xl font-display text-sm font-extrabold text-[var(--color-ink)] shadow-[var(--shadow-cta)]"
-                    style={{ backgroundColor: "var(--color-signal)" }}
+                    className="absolute -top-4 left-6 flex h-9 w-9 items-center justify-center rounded-xl font-display text-sm font-extrabold text-[var(--color-foam)] shadow-[var(--shadow-card)]"
+                    style={{ backgroundColor: "var(--color-espresso)" }}
                   >
                     {i + 1}
                   </span>
@@ -219,7 +220,7 @@ export default async function ModuleDetailPage({ params }: { params: Promise<{ s
                   style={{ background: "radial-gradient(circle at 85% 15%, var(--color-warm-soft), transparent 55%)" }}
                 />
                 <div className="relative max-w-3xl">
-                  <span className="inline-flex items-center gap-2 rounded-full bg-[var(--color-surface)] px-3.5 py-1.5 text-xs font-bold text-[var(--color-signal-deep)] shadow-sm">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-[var(--color-surface)] px-3.5 py-1.5 text-xs font-bold text-[var(--color-coffee)] shadow-sm">
                     <Scale size={14} /> Türkiye farkı
                   </span>
                   <h2 className="font-display mt-4 text-2xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-3xl">

@@ -74,7 +74,7 @@ export default function ModulesIndexPage() {
                 <RevealItem key={m.slug}>
                   <Link
                     href={`/moduller/${m.slug}`}
-                    className="group flex h-full flex-col rounded-2xl card-warm p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-signal)]/60"
+                    className="group flex h-full flex-col rounded-2xl card-warm p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-coffee)]/35 hover:shadow-[var(--shadow-card-hover)]"
                   >
                     <div className="flex items-center justify-between">
                       <span
@@ -84,14 +84,14 @@ export default function ModulesIndexPage() {
                         <Icon size={20} />
                       </span>
                       {m.phase && (
-                        <span className="rounded-full bg-[var(--color-signal)]/15 px-2.5 py-1 text-[10px] font-bold text-[var(--color-signal-deep)]">
+                        <span className="rounded-full bg-[var(--color-crema)] px-2.5 py-1 text-[10px] font-bold text-[var(--color-coffee)]">
                           {m.phase}
                         </span>
                       )}
                     </div>
                     <h2 className="font-display mt-4 text-lg font-bold text-[var(--color-ink)]">{m.name}</h2>
                     <p className="mt-1.5 flex-1 text-sm leading-relaxed text-[var(--color-muted)]">{m.headline} {m.short}.</p>
-                    <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-[var(--color-signal-deep)] transition-colors group-hover:text-[var(--color-ink)]">
+                    <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-[var(--color-coffee)] transition-colors group-hover:text-[var(--color-ink)]">
                       İncele <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
                     </span>
                   </Link>
@@ -117,8 +117,8 @@ export default function ModulesIndexPage() {
                     <span
                       className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold ${
                         m.tag === "Çekirdekte"
-                          ? "bg-[var(--color-barista)]/12 text-[var(--color-barista)]"
-                          : "bg-[var(--color-signal)]/15 text-[var(--color-signal-deep)]"
+                          ? "bg-[var(--color-sage-soft)] text-[var(--color-sage-deep)]"
+                          : "bg-[var(--color-crema)] text-[var(--color-coffee)]"
                       }`}
                     >
                       {m.tag}
